@@ -45,7 +45,10 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\data\world_meta_data.cpp">
+    <ClCompile Include="src\data\meta_data.cpp">
+      <Filter>data\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\data\world.cpp">
       <Filter>data\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,7 +56,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\data\world_meta_data.h">
+    <ClInclude Include="src\data\meta_data.h">
+      <Filter>data\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\world.h">
       <Filter>data\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

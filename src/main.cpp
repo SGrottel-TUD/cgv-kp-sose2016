@@ -1,4 +1,4 @@
-#include "data/world_meta_data.h"
+#include "data/world.h"
 
 //#include "GL/glew.h"
 //#include "GLFW/glfw3.h"
@@ -62,7 +62,7 @@
 //}
 
 int main(int argc, char **argv) {
-	cgvkp::data::world_meta_data world;
+	cgvkp::data::world w[2];
 
 
 /*

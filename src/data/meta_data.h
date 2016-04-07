@@ -3,10 +3,12 @@
 namespace cgvkp {
 namespace data {
 
-	class world_meta_data {
+	class meta_data {
 	public:
-		world_meta_data();
-		~world_meta_data();
+		meta_data();
+		~meta_data();
+
+        void copy_from(const meta_data& src);
 
 		float get_width(void) const {
 			return width;
