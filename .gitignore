@@ -1,0 +1,6 @@
+/.vs
+/*.sdf
+/*.opendb
+/Debug
+/Release
+/x64
