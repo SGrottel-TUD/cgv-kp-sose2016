@@ -51,6 +51,12 @@
     <ClCompile Include="src\data\world.cpp">
       <Filter>data\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\data\star.cpp">
+      <Filter>data\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\data\hand.cpp">
+      <Filter>data\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -60,6 +66,12 @@
       <Filter>data\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\data\world.h">
+      <Filter>data\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\star.h">
+      <Filter>data\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\hand.h">
       <Filter>data\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
