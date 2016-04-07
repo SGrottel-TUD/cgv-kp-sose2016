@@ -19,10 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\data\world_meta_data.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\data\world_meta_data.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D212F91F-5F4A-4757-9EBA-CA3EA546B69A}</ProjectGuid>

@@ -13,13 +13,48 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="vision">
+      <UniqueIdentifier>{f41b95b5-b1a0-45ce-af3c-2b59689ca5f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data">
+      <UniqueIdentifier>{7d388dc8-8edd-4a6d-874a-117aa0fe5a89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering">
+      <UniqueIdentifier>{5245b17c-8f1a-420b-8f19-32d3a1202db4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\Header Files">
+      <UniqueIdentifier>{1997149e-f9f3-4655-a727-3b417fe4b677}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\Source Files">
+      <UniqueIdentifier>{2e75ce4a-5b1c-4699-b9b4-92d01684d246}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\Header Files">
+      <UniqueIdentifier>{07e89116-71bb-4411-ba69-ef1a25754aca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\Source Files">
+      <UniqueIdentifier>{36ed8f53-a3ed-4a25-a041-361ca73fd57c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vision\Header Files">
+      <UniqueIdentifier>{4382b8e4-879f-4d8b-a3bb-a33d355824fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vision\Source Files">
+      <UniqueIdentifier>{d3fb6ae6-5903-404e-a4ad-bbee1e4118a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\data\world_meta_data.cpp">
+      <Filter>data\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\data\world_meta_data.h">
+      <Filter>data\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

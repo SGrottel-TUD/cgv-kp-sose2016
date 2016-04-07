@@ -1,66 +1,72 @@
-#include "GL/glew.h"
-#include "GLFW/glfw3.h"
-#include "glm/glm.hpp"
-#include "glm/gtx/transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include <iostream>
-#include <cassert>
-#include <chrono>
+#include "data/world_meta_data.h"
 
-namespace {
-
-    void APIENTRY my_ogl_debug_func(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam) {
-        const char * type_str = "Default";
-        const char *sever_str = "Default";
-        switch (type) {
-        case GL_DEBUG_TYPE_ERROR_ARB: type_str = "Error"; break;
-        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB: type_str = "Deprecated Behavior"; break;
-        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB: type_str = "Undefined Behavior"; break;
-            //case GL_DEBUG_TYPE_PORTABILITY_ARB: type_str = "Portability"; break;
-            //case GL_DEBUG_TYPE_PERFORMANCE_ARB: type_str = "Performance"; break;
-            //case GL_DEBUG_TYPE_OTHER_ARB: type_str = "Other"; break;
-        default: return;
-        }
-        switch (severity) {
-        case GL_DEBUG_SEVERITY_HIGH_ARB: sever_str = "High"; break;
-        case GL_DEBUG_SEVERITY_MEDIUM_ARB: sever_str = "Medium"; break;
-        case GL_DEBUG_SEVERITY_LOW_ARB: sever_str = "Low"; break;
-            //default: return;
-        }
-
-        std::cerr << "ogl_dbg: " << type_str << ", " << sever_str << ", " << message << std::endl;
-    }
-
-}
-
-void printShaderInfoLog(GLuint obj) {
-    int infologLength = 0;
-    int charsWritten = 0;
-    char *infoLog;
-    ::glGetShaderiv(obj, GL_INFO_LOG_LENGTH, &infologLength);
-    if (infologLength > 0) {
-        infoLog = (char *)malloc(infologLength);
-        ::glGetShaderInfoLog(obj, infologLength, &charsWritten, infoLog);
-        std::cout << infoLog << std::endl;
-        free(infoLog);
-    }
-}
-
-void printProgramInfoLog(GLuint obj) {
-    int infologLength = 0;
-    int charsWritten = 0;
-    char *infoLog;
-    ::glGetProgramiv(obj, GL_INFO_LOG_LENGTH, &infologLength);
-    if (infologLength > 0) {
-        infoLog = (char *)malloc(infologLength);
-        ::glGetProgramInfoLog(obj, infologLength, &charsWritten, infoLog);
-        std::cout << infoLog << std::endl;
-        free(infoLog);
-    }
-}
+//#include "GL/glew.h"
+//#include "GLFW/glfw3.h"
+//#include "glm/glm.hpp"
+//#include "glm/gtx/transform.hpp"
+//#include "glm/gtc/type_ptr.hpp"
+//#include <iostream>
+//#include <cassert>
+//#include <chrono>
+//
+//namespace {
+//
+//    void APIENTRY my_ogl_debug_func(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam) {
+//        const char * type_str = "Default";
+//        const char *sever_str = "Default";
+//        switch (type) {
+//        case GL_DEBUG_TYPE_ERROR_ARB: type_str = "Error"; break;
+//        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB: type_str = "Deprecated Behavior"; break;
+//        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB: type_str = "Undefined Behavior"; break;
+//            //case GL_DEBUG_TYPE_PORTABILITY_ARB: type_str = "Portability"; break;
+//            //case GL_DEBUG_TYPE_PERFORMANCE_ARB: type_str = "Performance"; break;
+//            //case GL_DEBUG_TYPE_OTHER_ARB: type_str = "Other"; break;
+//        default: return;
+//        }
+//        switch (severity) {
+//        case GL_DEBUG_SEVERITY_HIGH_ARB: sever_str = "High"; break;
+//        case GL_DEBUG_SEVERITY_MEDIUM_ARB: sever_str = "Medium"; break;
+//        case GL_DEBUG_SEVERITY_LOW_ARB: sever_str = "Low"; break;
+//            //default: return;
+//        }
+//
+//        std::cerr << "ogl_dbg: " << type_str << ", " << sever_str << ", " << message << std::endl;
+//    }
+//
+//}
+//
+//void printShaderInfoLog(GLuint obj) {
+//    int infologLength = 0;
+//    int charsWritten = 0;
+//    char *infoLog;
+//    ::glGetShaderiv(obj, GL_INFO_LOG_LENGTH, &infologLength);
+//    if (infologLength > 0) {
+//        infoLog = (char *)malloc(infologLength);
+//        ::glGetShaderInfoLog(obj, infologLength, &charsWritten, infoLog);
+//        std::cout << infoLog << std::endl;
+//        free(infoLog);
+//    }
+//}
+//
+//void printProgramInfoLog(GLuint obj) {
+//    int infologLength = 0;
+//    int charsWritten = 0;
+//    char *infoLog;
+//    ::glGetProgramiv(obj, GL_INFO_LOG_LENGTH, &infologLength);
+//    if (infologLength > 0) {
+//        infoLog = (char *)malloc(infologLength);
+//        ::glGetProgramInfoLog(obj, infologLength, &charsWritten, infoLog);
+//        std::cout << infoLog << std::endl;
+//        free(infoLog);
+//    }
+//}
 
 int main(int argc, char **argv) {
-    std::cout << "Started" << std::endl;
+	cgvkp::data::world_meta_data world;
+
+
+/*
+	std::cout << "Started" << std::endl;
 
     //
     // init glfw window
@@ -291,6 +297,6 @@ void main() {\n\
     ::glDeleteTextures(1, &tex);
 
     ::glfwTerminate();
-
+*/
     return 0;
 }
