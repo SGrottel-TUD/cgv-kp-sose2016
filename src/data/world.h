@@ -2,27 +2,60 @@
 #include "data/world_config.h"
 #include "data/input_layer.h"
 #include "data/tripple_buffer.h"
-//#include <vector>
-//#include "data/hand.h"
-//#include "data/star.h"
+#include <memory>
+#include <vector>
 
 namespace cgvkp {
 namespace data {
 
 	class world {
 	public:
+
+        struct hand;
+        struct star;
+        typedef std::shared_ptr<hand> hand_ptr;
+        typedef std::shared_ptr<star> star_ptr;
+
+        struct hand {
+            unsigned int id;    // unique hand id
+            float x, y;         // position (meter)
+            float height;       // height of hand over ground (meter)
+            star_ptr star;      // pointer to the star in hand (or nullptr)
+        };
+
+        struct star {
+            unsigned int id;    // unique star id
+            float x, y;         // position (meter)
+            float dx, dy;       // movement direction
+            bool in_hand;       // true if star is captured in a hand
+            // TODO: more to come
+        };
+
 		world();
 		~world();
 
         void init();
 
+        inline input_layer& get_input_layer() {
+            return input;
+        }
+
+        /** merges data from the input layer */
+        void merge_input(void);
+        /** updates the data assuming 1/60s time step */
+        void update_step(void);
+
     private:
         world_config cfg;
         tripple_buffer<input_layer::hand_collection> hands_input;
+        tripple_buffer_facade<input_layer::hand_collection, 1> in_hands;
         input_layer input;
 
-        //std::vector<hand::ptr_type> hands;
-        //std::vector<star::ptr_type> stars;
+        std::vector<hand_ptr> hands;
+        std::vector<star_ptr> stars;
+        unsigned int score;
+        unsigned int next_hand_id;
+        unsigned int next_star_id;
 	};
 
 }

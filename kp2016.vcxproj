@@ -19,10 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\data\hand.cpp" />
     <ClCompile Include="src\data\input_layer.cpp" />
     <ClCompile Include="src\data\world_config.cpp" />
-    <ClCompile Include="src\data\star.cpp" />
     <ClCompile Include="src\data\world.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
@@ -30,11 +28,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\data\hand.h" />
     <ClInclude Include="src\data\input_layer.h" />
     <ClInclude Include="src\data\tripple_buffer.h" />
     <ClInclude Include="src\data\world_config.h" />
-    <ClInclude Include="src\data\star.h" />
     <ClInclude Include="src\data\world.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
