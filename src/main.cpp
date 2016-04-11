@@ -62,7 +62,7 @@
 //}
 
 int main(int argc, char **argv) {
-	cgvkp::data::world w[2];
+    cgvkp::data::world data;
 
 
 /*

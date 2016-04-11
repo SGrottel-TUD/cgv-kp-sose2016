@@ -1,8 +1,7 @@
 #pragma once
 #include "data/world_config.h"
-#include <memory>
-#include <mutex>
-#include <list>
+#include "data/tripple_buffer.h"
+#include <vector>
 
 namespace cgvkp {
 namespace data {
@@ -10,92 +9,42 @@ namespace data {
     class input_layer {
     public:
 
-        class hand {
-        public:
-            ~hand();
-
-            inline unsigned int get_id(void) const {
-                return id;
-            }
-            inline float get_x(void) const {
-                return x;
-            }
-            inline float get_y(void) const {
-                return y;
-            }
-
-            /** The height in meter */
-            inline float get_height(void) const {
-                return height;
-            }
-            void set_height(float h);
-
-        private:
-            hand(std::mutex& sync, unsigned int id, float x, float y);
-
-            std::mutex& sync;
-            unsigned int id;
-            /** position and height in meter */
-            float x, y, height;
-
-            friend class ::cgvkp::data::input_layer;
+        struct hand {
+            /** Position in the world in meter */
+            float x, y;
+            /** Height of the hand over the game ground */
+            float h;
         };
 
-        typedef std::shared_ptr<hand> hand_ptr;
+        typedef std::vector<hand> hand_collection;
 
-        input_layer(const world_config& config);
-        ~input_layer();
+        typedef tripple_buffer<hand_collection> input_hand_tripple_buffer;
+        typedef tripple_buffer_facade<hand_collection, 0> input_hand_buffer;
 
-        /** Answer the number of active hands in the data model */
-        unsigned int hand_count();
-        /**
-         * Answer a hand in the data model
-         *
-         * @param idx Zero-based index
-         */
-        hand_ptr get_hand_from_index(unsigned int idx);
-        /**
-         * Answer a hand in the data model 
-         *
-         * @param id The hand id;
-         */
-        hand_ptr get_hand_from_id(unsigned int id);
+        input_layer(const world_config& config, input_hand_buffer& buf);
 
-        /**
-         * Answer the hand at the specified position
-         *
-         * @param x The x coordinate in meter
-         * @param y The y coordinate in meter
-         * @param pos_eps Positional epsilon for searching the closes hand
-         */
-        hand_ptr find_hand_at(float x, float y, float pos_eps);
-        inline hand_ptr find_hand_at(float x, float y) {
-            return find_hand_at(x, y, config.positional_epsilon());
+        inline const world_config& get_config(void) const {
+            return config;
         }
 
         /**
-         * Creates a new hand at the specified coordinates with height 0 
-         *
-         * If a hand on this location already exists
+         * Access to the input buffer
          */
-        hand_ptr add_hand_at(float x, float y, float pos_eps);
-        hand_ptr add_hand_at(float x, float y) {
-            return add_hand_at(x, y, config.positional_epsilon());
+        inline hand_collection& buffer(void) {
+            return buf.buffer();
         }
 
         /**
-         * Sync methods are called by the framework to sync the data of the input layer into the data model.
-         *
-         * DO NOT CALL DIRECTLY!
+         * Synchronizes the input buffer with the data model.
+         * Contents of buffer is undefined after this call and should be assumed invalid.
          */
-        void begin_sync();
-        void end_sync();
+        inline void sync_buffer(void) {
+            buf.sync();
+        }
 
     private:
         const world_config& config;
-        std::mutex sync;
-        unsigned int next_hand_id;
-        std::list<hand_ptr> hands;
+        input_hand_buffer& buf;
 
     };
 

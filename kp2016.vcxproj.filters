@@ -80,5 +80,8 @@
     <ClInclude Include="src\data\input_layer.h">
       <Filter>data\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\data\tripple_buffer.h">
+      <Filter>data\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
