@@ -57,6 +57,9 @@
     <ClCompile Include="src\data\world_config.cpp">
       <Filter>data\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\data\input_layer.cpp">
+      <Filter>data\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -72,6 +75,9 @@
       <Filter>data\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\data\world_config.h">
+      <Filter>data\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\input_layer.h">
       <Filter>data\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
