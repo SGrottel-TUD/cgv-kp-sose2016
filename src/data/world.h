@@ -26,9 +26,9 @@ namespace data {
         struct star {
             unsigned int id;    // unique star id
             float x, y;         // position (meter)
+            float height;       // height of star over ground (meter)
             float dx, dy;       // movement direction
             bool in_hand;       // true if star is captured in a hand
-            // TODO: more to come
         };
 
 		world();
@@ -38,6 +38,15 @@ namespace data {
 
         inline input_layer& get_input_layer() {
             return input;
+        }
+
+        /** Access to the hands */
+        inline const std::vector<hand_ptr>& get_hands(void) const {
+            return hands;
+        }
+        /** Access to the stars */
+        inline const std::vector<star_ptr>& get_stars(void) const {
+            return stars;
         }
 
         /** merges data from the input layer */
@@ -51,8 +60,15 @@ namespace data {
         tripple_buffer_facade<input_layer::hand_collection, 1> in_hands;
         input_layer input;
 
+        struct star_state {
+            // TODO: more to come
+        };
+        typedef std::shared_ptr<star_state> star_state_ptr;
+
         std::vector<hand_ptr> hands;
         std::vector<star_ptr> stars;
+        std::vector<star_state_ptr> stars_states;
+
         unsigned int score;
         unsigned int next_hand_id;
         unsigned int next_star_id;
