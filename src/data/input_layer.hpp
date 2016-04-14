@@ -1,6 +1,6 @@
 #pragma once
-#include "data/world_config.h"
-#include "data/tripple_buffer.h"
+#include "data/world_config.hpp"
+#include "data/tripple_buffer.hpp"
 #include <vector>
 
 namespace cgvkp {

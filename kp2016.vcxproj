@@ -19,19 +19,23 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\application.cpp" />
     <ClCompile Include="src\data\input_layer.cpp" />
     <ClCompile Include="src\data\world_config.cpp" />
     <ClCompile Include="src\data\world.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\rendering\window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\application.hpp" />
     <ClInclude Include="src\data\input_layer.hpp" />
     <ClInclude Include="src\data\tripple_buffer.hpp" />
     <ClInclude Include="src\data\world_config.hpp" />
     <ClInclude Include="src\data\world.hpp" />
+    <ClInclude Include="src\rendering\window.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D212F91F-5F4A-4757-9EBA-CA3EA546B69A}</ProjectGuid>

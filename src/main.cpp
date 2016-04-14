@@ -1,4 +1,8 @@
-#include "data/world.hpp"
+#include "application.hpp"
+#include <iostream>
+
+//#include "data/world.hpp"
+//#include "rendering/window.hpp"
 
 //#include "GL/glew.h"
 //#include "GLFW/glfw3.h"
@@ -62,7 +66,42 @@
 //}
 
 int main(int argc, char **argv) {
-    cgvkp::data::world data;
+    cgvkp::application app;
+
+    try {
+        if (!app.init()) {
+            std::cout << "Failed to init the application" << std::endl;
+            return -1;
+        }
+    } catch (const std::exception &e) {
+        std::cout << "Failed to init the application: " << e.what() << std::endl;
+        return -1;
+    } catch (...) {
+        std::cout << "Failed to init the application: unexpected exception" << std::endl;
+        return -1;
+    }
+
+    try {
+        app.run();
+    } catch (const std::exception &e) {
+        std::cout << "Application run exception: " << e.what() << std::endl;
+        return -2;
+    } catch (...) {
+        std::cout << "Application run exception: unexpected exception" << std::endl;
+        return -2;
+    }
+
+    try {
+        app.deinit();
+    } catch (const std::exception &e) {
+        std::cout << "Failed to deinit the application: " << e.what() << std::endl;
+        return -3;
+    } catch (...) {
+        std::cout << "Failed to deinit the application: unexpected exception" << std::endl;
+        return -3;
+    }
+
+    //cgvkp::data::world data;
 
 
 /*

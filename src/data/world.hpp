@@ -1,7 +1,7 @@
 #pragma once
-#include "data/world_config.h"
-#include "data/input_layer.h"
-#include "data/tripple_buffer.h"
+#include "data/world_config.hpp"
+#include "data/input_layer.hpp"
+#include "data/tripple_buffer.hpp"
 #include <memory>
 #include <vector>
 

@@ -54,6 +54,12 @@
     <ClCompile Include="src\data\input_layer.cpp">
       <Filter>data\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\rendering\window.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -70,6 +76,12 @@
     </ClInclude>
     <ClInclude Include="src\data\world_config.hpp">
       <Filter>data\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\window.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\application.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
