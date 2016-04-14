@@ -15,19 +15,18 @@ namespace rendering {
         ~window();
 
         void close();
-        bool is_alive();
+        bool is_alive() const;
         void do_events();
-        void make_current();
-        void swap_buffers();
+        void make_current() const;
+        void swap_buffers() const;
 
-        bool get_size(unsigned int &out_width, unsigned int &out_height);
+        bool get_size(unsigned int &out_width, unsigned int &out_height) const;
 
     private:
         void ctor_impl(GLFWmonitor* fullscreen, unsigned int w, unsigned int h, const char* title);
         void dtor_impl();
 
         GLFWwindow *handle;
-        unsigned int last_width, last_height;
     };
 
 }

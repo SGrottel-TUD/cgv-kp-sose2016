@@ -1,5 +1,6 @@
 #include "application.hpp"
 #include "rendering/window.hpp"
+#include "rendering/debug_renderer.hpp"
 #include "GLFW/glfw3.h"
 #include <cassert>
 #include <iostream>
@@ -22,38 +23,48 @@ bool application::init() {
 }
 
 void application::run() {
+    std::shared_ptr<rendering::debug_renderer> debug_renderer;
 
+    // create debug window
     debug_window = std::make_shared<rendering::window>(1280, 720);
     if (!debug_window || !debug_window->is_alive()) {
         debug_window.reset();
+    } else {
+        // init debug window
+        debug_renderer = std::make_shared<rendering::debug_renderer>();
+        if (!debug_renderer || !debug_renderer->init(*debug_window)) {
+            std::cout << "Failed to create Debug renderer" << std::endl;
+            debug_renderer.reset();
+            debug_window.reset();
+        }
     }
-
-    debug_window->make_current();
-    ::glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    ::glEnable(GL_DEPTH_TEST);
-    ::glEnable(GL_CULL_FACE);
 
     // main loop
-    while ((debug_window) && (debug_window->is_alive())) {
-        debug_window->do_events();
-        debug_window->make_current();
-        //main_window->update_size(scene.camera());
-        //main_window->update_cursor(scene.cursor());
+    while (debug_window) {
 
-        //manage_views_and_controllers();
-        //update_models();
+        //if (debug_window) { // this if is preparation for multiple windows
+            // debug window is valid.
+        if (debug_window->is_alive()) {
+            debug_window->do_events();
+            debug_renderer->render(*debug_window);
+            debug_window->swap_buffers();
 
-        ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        } else { // window close is requested
+            if (debug_renderer) {
+                debug_renderer->deinit();
+                debug_renderer.reset();
+            }
+            debug_window.reset();
+        }
+        //}
 
-        //render_views();
-
-        debug_window->swap_buffers();
     }
 
-
-    debug_window.reset(); // deletes the window object
+    assert(!debug_renderer);
+    assert(!debug_window);
 
 }
 
 void application::deinit() {
+    // empty atm
 }

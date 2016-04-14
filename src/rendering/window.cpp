@@ -34,12 +34,12 @@ namespace {
 }
 
 rendering::window::window(unsigned int w, unsigned int h, const char* title) 
-        : handle(nullptr), last_width(-2), last_height(0) {
+        : handle(nullptr) {
     ctor_impl(nullptr, w, h, title);
 }
 
 rendering::window::window(GLFWmonitor* fullscreen, unsigned int w, unsigned int h, const char* title)
-        : handle(nullptr), last_width(-2), last_height(0) {
+        : handle(nullptr) {
     ctor_impl(fullscreen, w, h, title);
 }
 
@@ -51,7 +51,7 @@ void rendering::window::close() {
     ::glfwSetWindowShouldClose(this->handle, true);
 }
 
-bool rendering::window::is_alive() {
+bool rendering::window::is_alive() const {
     return (handle != nullptr)
         && (!::glfwWindowShouldClose(handle));
 }
@@ -81,17 +81,17 @@ void rendering::window::do_events() {
     //}
 }
 
-void rendering::window::make_current() {
+void rendering::window::make_current() const {
     if (!is_alive()) return;
     ::glfwMakeContextCurrent(handle);
 }
 
-void rendering::window::swap_buffers() {
+void rendering::window::swap_buffers() const {
     if (!is_alive()) return;
     ::glfwSwapBuffers(handle);
 }
 
-bool rendering::window::get_size(unsigned int &out_width, unsigned int &out_height) {
+bool rendering::window::get_size(unsigned int &out_width, unsigned int &out_height) const {
     int w, h;
     ::glfwGetFramebufferSize(handle, &w, &h);
     if (w < 0) w = 0;

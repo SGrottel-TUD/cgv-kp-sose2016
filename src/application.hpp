@@ -1,4 +1,5 @@
 #pragma once
+#include "data/world.hpp"
 #include <memory>
 
 namespace cgvkp {
@@ -16,6 +17,7 @@ namespace rendering {
         void deinit();
 
     private:
+        data::world data;
         std::shared_ptr<rendering::window> debug_window;
 
     };

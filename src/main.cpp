@@ -65,47 +65,49 @@
 //    }
 //}
 
+namespace {
+    const char * regionDescription(int regVal) {
+        switch (regVal) {
+        case -1: return "Failed to init the application: ";
+        case -2: return "Application run exception: ";
+        case -3: return "Failed to deinit the application: ";
+        default: return "Unexpected exception: ";
+        }
+        return "";
+    }
+}
+
 int main(int argc, char **argv) {
     cgvkp::application app;
+    int retval;
+
+    std::cout << "Started" << std::endl;
 
     try {
+
+        retval = -1;
         if (!app.init()) {
-            std::cout << "Failed to init the application" << std::endl;
-            return -1;
+            throw std::runtime_error("application::init returned false");
         }
-    } catch (const std::exception &e) {
-        std::cout << "Failed to init the application: " << e.what() << std::endl;
-        return -1;
-    } catch (...) {
-        std::cout << "Failed to init the application: unexpected exception" << std::endl;
-        return -1;
-    }
 
-    try {
+        retval = -2;
         app.run();
-    } catch (const std::exception &e) {
-        std::cout << "Application run exception: " << e.what() << std::endl;
-        return -2;
-    } catch (...) {
-        std::cout << "Application run exception: unexpected exception" << std::endl;
-        return -2;
-    }
 
-    try {
+        retval = -3;
         app.deinit();
+
+        retval = 0;
+
     } catch (const std::exception &e) {
-        std::cout << "Failed to deinit the application: " << e.what() << std::endl;
-        return -3;
+        std::cout << regionDescription(retval) << e.what() << std::endl;
     } catch (...) {
-        std::cout << "Failed to deinit the application: unexpected exception" << std::endl;
-        return -3;
+        std::cout << regionDescription(retval) << "unexpected exception" << std::endl;
     }
 
-    //cgvkp::data::world data;
-
+    std::cout << "Ended" << std::endl;
+    return retval;
 
 /*
-	std::cout << "Started" << std::endl;
 
     //
     // init glfw window
@@ -336,6 +338,7 @@ void main() {\n\
     ::glDeleteTextures(1, &tex);
 
     ::glfwTerminate();
-*/
+
     return 0;
+*/
 }
