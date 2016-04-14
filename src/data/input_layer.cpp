@@ -1,4 +1,4 @@
-#include "data/input_layer.h"
+#include "data/input_layer.hpp"
 
 using namespace cgvkp;
 

@@ -1,4 +1,4 @@
-#include "data/world_config.h"
+#include "data/world_config.hpp"
 
 using namespace cgvkp;
 

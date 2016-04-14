@@ -59,16 +59,16 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\data\world.h">
+    <ClInclude Include="src\data\input_layer.hpp">
       <Filter>data\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\data\world_config.h">
+    <ClInclude Include="src\data\tripple_buffer.hpp">
       <Filter>data\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\data\input_layer.h">
+    <ClInclude Include="src\data\world.hpp">
       <Filter>data\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\data\tripple_buffer.h">
+    <ClInclude Include="src\data\world_config.hpp">
       <Filter>data\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
