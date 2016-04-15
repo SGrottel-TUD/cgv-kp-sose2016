@@ -19,6 +19,9 @@ bool application::init() {
         std::cerr << "glfwInit failed" << std::endl;
         return false;
     }
+
+    data.init();
+
     return true;
 }
 
