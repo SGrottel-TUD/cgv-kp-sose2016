@@ -31,8 +31,8 @@ namespace data {
             bool in_hand;       // true if star is captured in a hand
         };
 
-		world();
-		~world();
+        world();
+        ~world();
 
         void init();
 

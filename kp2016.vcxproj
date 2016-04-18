@@ -26,6 +26,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\rendering\debug_renderer.cpp" />
     <ClCompile Include="src\rendering\window.cpp" />
+    <ClCompile Include="src\vision\dummy_vision.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -38,6 +39,7 @@
     <ClInclude Include="src\data\world.hpp" />
     <ClInclude Include="src\rendering\debug_renderer.hpp" />
     <ClInclude Include="src\rendering\window.hpp" />
+    <ClInclude Include="src\vision\dummy_vision.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D212F91F-5F4A-4757-9EBA-CA3EA546B69A}</ProjectGuid>

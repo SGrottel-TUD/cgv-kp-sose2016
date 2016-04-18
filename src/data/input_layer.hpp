@@ -39,12 +39,13 @@ namespace data {
          * Contents of buffer is undefined after this call and should be assumed invalid.
          */
         inline void sync_buffer(void) {
+            buf.valid() = true; // sets the outgoing buffer to 'valid'
             buf.sync();
         }
 
     private:
         const world_config& config;
-        input_hand_buffer& buf;
+        input_hand_buffer buf;
 
     };
 

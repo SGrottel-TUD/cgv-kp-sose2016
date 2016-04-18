@@ -24,6 +24,7 @@ void data::world::merge_input(void) {
 
     // TODO: merge hands data
 
+    in_hands.valid() = false; // mark data consumed
 }
 
 void data::world::update_step(void) {

@@ -7,6 +7,11 @@ namespace data {
     template<class T, int pi>
     class tripple_buffer_facade;
 
+    /*
+     * WARNING!
+     *  This tripple_buffer implementation is not safe.
+     *  It only works if you ensure that each end-point facade exists exactly once.
+     */
     template<class T>
     class tripple_buffer {
     public:
@@ -15,6 +20,7 @@ namespace data {
             p[0] = 0;
             p[1] = 1;
         }
+        tripple_buffer(const tripple_buffer& src) = delete;
     private:
         std::mutex sync;
         T buf[3];
@@ -31,6 +37,9 @@ namespace data {
         static_assert((pi == 0) || (pi == 1), "index must be 0 or 1");
 
         tripple_buffer_facade(tripple_buffer<T>& b) : b(b) {
+        }
+        tripple_buffer_facade(const tripple_buffer_facade& src) = delete;
+        explicit tripple_buffer_facade(tripple_buffer_facade&& src) : b(src.b) {
         }
 
         T& buffer(void) {

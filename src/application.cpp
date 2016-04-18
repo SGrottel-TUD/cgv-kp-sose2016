@@ -1,6 +1,7 @@
 #include "application.hpp"
 #include "rendering/window.hpp"
 #include "rendering/debug_renderer.hpp"
+#include "vision/dummy_vision.hpp"
 #include "GLFW/glfw3.h"
 #include <cassert>
 #include <iostream>
@@ -42,8 +43,26 @@ void application::run() {
         }
     }
 
+    // create a vision component to be run in the main thread alongside the rendering
+    std::shared_ptr<vision::dummy_vision> vision = std::make_shared<vision::dummy_vision>(data.get_input_layer());
+    if (!vision->init()) {
+        std::cout << "Failed to create Vision component" << std::endl;
+        vision.reset();
+    }
+
     // main loop
     while (debug_window) {
+
+        // 1) vision in the main thread
+        if (vision) {
+            vision->update();
+        }
+
+        // 2) updating data model
+        data.merge_input(); // merge input from the input_layer (vision) into the data model
+        data.update_step(); // update the data (moving the star creatures)
+
+        // 3) and now for the rendering
 
         //if (debug_window) { // this if is preparation for multiple windows
             // debug window is valid.
@@ -61,6 +80,12 @@ void application::run() {
         }
         //}
 
+    }
+
+    // shutdown vision
+    if (vision) {
+        vision->deinit();
+        vision.reset();
     }
 
     assert(!debug_renderer);
