@@ -48,6 +48,10 @@ namespace data {
         inline const std::vector<star_ptr>& get_stars(void) const {
             return stars;
         }
+        /** The current game score aka number of catched stars */
+        inline unsigned int get_score(void)const {
+            return score;
+        }
 
         /** merges data from the input layer */
         void merge_input(void);
@@ -60,12 +64,18 @@ namespace data {
         tripple_buffer_facade<input_layer::hand_collection, 1> in_hands;
         input_layer input;
 
+        struct hand_state {
+            bool valid;
+            // TODO: more to come
+        };
+        typedef std::shared_ptr<hand_state> hand_state_ptr;
         struct star_state {
             // TODO: more to come
         };
         typedef std::shared_ptr<star_state> star_state_ptr;
 
         std::vector<hand_ptr> hands;
+        std::vector<hand_state_ptr> hands_states;
         std::vector<star_ptr> stars;
         std::vector<star_state_ptr> stars_states;
 
