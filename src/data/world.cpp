@@ -76,6 +76,9 @@ void data::world::merge_input(void) {
 }
 
 void data::world::update_step(void) {
+    static int c = 0;
+    c++;
+    if ((c % 60) == 0) printf("*\n");
 
     // TODO: update data of hands and stars
 

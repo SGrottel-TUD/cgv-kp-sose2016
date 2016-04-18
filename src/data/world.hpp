@@ -40,6 +40,10 @@ namespace data {
             return input;
         }
 
+        inline const world_config& get_config(void) const {
+            return cfg;
+        }
+
         /** Access to the hands */
         inline const std::vector<hand_ptr>& get_hands(void) const {
             return hands;

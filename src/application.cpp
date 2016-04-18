@@ -22,6 +22,7 @@ bool application::init() {
     }
 
     data.init();
+    start_time = std::chrono::high_resolution_clock::now();
 
     return true;
 }
@@ -51,7 +52,11 @@ void application::run() {
     }
 
     // main loop
+    uint64_t last_sim_frame = 0;
     while (debug_window) {
+
+        std::chrono::duration<double> game_time_seconds(std::chrono::high_resolution_clock::now() - start_time);
+        uint64_t game_time_sim_frames = static_cast<uint64_t>(game_time_seconds.count() * data.get_config().simulation_fps());
 
         // 1) vision in the main thread
         if (vision) {
@@ -60,7 +65,11 @@ void application::run() {
 
         // 2) updating data model
         data.merge_input(); // merge input from the input_layer (vision) into the data model
-        data.update_step(); // update the data (moving the star creatures)
+        if ((last_sim_frame == 0) && (game_time_sim_frames > 0)) last_sim_frame = game_time_sim_frames - 1;
+        while (last_sim_frame < game_time_sim_frames) {
+            data.update_step(); // update the data (moving the star creatures)
+            last_sim_frame++;
+        }
 
         // 3) and now for the rendering
 

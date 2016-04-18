@@ -1,6 +1,7 @@
 #pragma once
 #include "data/world.hpp"
 #include <memory>
+#include <chrono>
 
 namespace cgvkp {
 namespace rendering {
@@ -19,6 +20,7 @@ namespace rendering {
     private:
         data::world data;
         std::shared_ptr<rendering::window> debug_window;
+        std::chrono::high_resolution_clock::time_point start_time;
 
     };
 
