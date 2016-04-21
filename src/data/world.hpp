@@ -40,6 +40,10 @@ namespace data {
             return input;
         }
 
+        inline world_config& get_config(void) {
+            return cfg;
+        }
+
         inline const world_config& get_config(void) const {
             return cfg;
         }

@@ -1,6 +1,7 @@
 #include "data/world.hpp"
 #include <cassert>
 #include <iostream>
+#include <algorithm>
 
 using namespace cgvkp;
 
@@ -76,10 +77,31 @@ void data::world::merge_input(void) {
 }
 
 void data::world::update_step(void) {
-    static int c = 0;
-    c++;
-    if ((c % 60) == 0) printf("*\n");
 
     // TODO: update data of hands and stars
+
+    // A dummy star for debugging:
+    if (stars.size() != 1) {
+        stars.resize(1);
+        stars_states.resize(1);
+        stars[0] = std::make_shared<star>();
+        stars_states[0] = std::make_shared<star_state>();
+        stars[0]->id = next_star_id++;
+    }
+    double seconds_timer
+        = static_cast<double>(std::chrono::system_clock::now().time_since_epoch().count())
+        * static_cast<double>(std::chrono::system_clock::period::num)
+        / static_cast<double>(std::chrono::system_clock::period::den);
+
+    float cx = get_config().width() / 2.0f;
+    float cy = get_config().height() / 2.0f;
+    float rad = std::min<float>(cx / 2.0f, cy / 2.0f);
+
+    stars[0]->height = 0.1f;
+    stars[0]->in_hand = false;
+    stars[0]->x = cx + static_cast<float>(std::cos(seconds_timer)) * rad;
+    stars[0]->y = cy + static_cast<float>(std::sin(seconds_timer)) * rad;
+    stars[0]->dx = -static_cast<float>(std::sin(seconds_timer));
+    stars[0]->dy = static_cast<float>(std::cos(seconds_timer));
 
 }

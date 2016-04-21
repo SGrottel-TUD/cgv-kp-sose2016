@@ -3,7 +3,7 @@
 
 using namespace cgvkp;
 
-rendering::debug_renderer::debug_renderer() {
+rendering::debug_renderer::debug_renderer(const data::world& data) : data(data) {
 
 }
 

@@ -22,6 +22,9 @@ bool application::init() {
     }
 
     data.init();
+    data.get_config().set_size(4.0f, 3.0f); // 4x3 meter game area
+    data.get_config().set_positional_epsilon(0.1f); // 10cm positional precision (used for hand matching)
+
     start_time = std::chrono::high_resolution_clock::now();
 
     return true;
@@ -36,7 +39,7 @@ void application::run() {
         debug_window.reset();
     } else {
         // init debug window
-        debug_renderer = std::make_shared<rendering::debug_renderer>();
+        debug_renderer = std::make_shared<rendering::debug_renderer>(data);
         if (!debug_renderer || !debug_renderer->init(*debug_window)) {
             std::cout << "Failed to create Debug renderer" << std::endl;
             debug_renderer.reset();
