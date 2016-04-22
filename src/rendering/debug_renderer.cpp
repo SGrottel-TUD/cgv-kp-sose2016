@@ -61,10 +61,9 @@ uniform vec2 area;\n\
 uniform vec2 p1;\n\
 uniform vec2 p2;\n\
 uniform float win_scale;\n\
-in float position;\n\
 \n\
 void main() {\n\
-    vec2 pos = mix(p1, p2, position);\n\
+    vec2 pos = (gl_VertexID == 0) ? p1 : p2;\n\
     gl_Position = vec4( ((pos / area) * 2.0 - 1.0) * win_scale, 0.0, 1.0);\n\
 }";
     const char *frag_src = "#version 330 core\n\
@@ -94,24 +93,7 @@ void main() {\n\
     ::glUniform2f(::glGetUniformLocation(shader, "area"), static_cast<float>(data.get_config().width()), static_cast<float>(data.get_config().height()));
     ::glUniform1f(::glGetUniformLocation(shader, "win_scale"), win_scale);
 
-    //
-    // VAOs
-    //
-    const float dat[] = { 0.0f, 1.0 };
-    GLuint buf;
-
     ::glGenVertexArrays(1, &vao);
-    ::glBindVertexArray(vao);
-    // Generate two slots for the vertex and color buffers
-    ::glGenBuffers(1, &buf);
-    //// bind buffer for vertices and copy data into buffer
-    ::glBindBuffer(GL_ARRAY_BUFFER, buf);
-    ::glBufferData(GL_ARRAY_BUFFER, sizeof(dat), dat, GL_STATIC_DRAW);
-    ::glEnableVertexAttribArray(0/*location*/);
-    ::glVertexAttribPointer(0, 1, GL_FLOAT, 0, 0, 0);
-
-    ::glBindVertexArray(0);
-    //::glDeleteBuffers(1, &buf); // because it already is bound to the bbox_vao
 
     return true;
 }
