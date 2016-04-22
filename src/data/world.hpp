@@ -73,7 +73,9 @@ namespace data {
         input_layer input;
 
         struct hand_state {
+            static const float retraction_accel;
             bool valid;
+            float retract_speed;
             // TODO: more to come
         };
         typedef std::shared_ptr<hand_state> hand_state_ptr;

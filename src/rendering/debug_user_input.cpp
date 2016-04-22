@@ -62,8 +62,8 @@ void rendering::debug_user_input::mouse_wheel(GLFWwindow *window, double xoffset
     mouse_pos_in_game_area(window, x, y);
     int h = hand_at(x, y);
     if (h >= 0) {
-        hands[h].h += 0.1f * yoffset;
-        if (hands[h].h < 0.0f) hands.erase(hands.begin() + h);
+        hands[h].h += static_cast<float>(0.1 * yoffset);
+        if (hands[h].h < 0.0) hands.erase(hands.begin() + h);
     }
 }
 
@@ -92,11 +92,13 @@ int rendering::debug_user_input::hand_at(float x, float y) {
     float near_hand_dist = 10000.0f;
     std::vector<hand>::iterator near_hand = hands.end();
     std::vector<hand>::iterator hands_end = hands.end();
+    double pos_eps_sq = input_layer.get_config().positional_epsilon();
+    pos_eps_sq *= pos_eps_sq;
     for (std::vector<hand>::iterator hi = hands.begin(); hi != hands_end; ++hi) {
         float dx(hi->x - x);
         float dy(hi->y - y);
         float d(dx * dx + dy * dy);
-        if (d > input_layer.get_config().positional_epsilon()) continue; // too far apart
+        if (d > pos_eps_sq) continue; // too far apart
         if (d < near_hand_dist) {
             near_hand_dist = d;
             near_hand = hi;

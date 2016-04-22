@@ -5,6 +5,8 @@
 
 using namespace cgvkp;
 
+const float data::world::hand_state::retraction_accel = 0.02f;
+
 data::world::world()
     : cfg(), hands_input(),
         in_hands(hands_input),
@@ -70,6 +72,7 @@ void data::world::merge_input(void) {
             hands_states.push_back(std::make_shared<hand_state>());
             std::shared_ptr<hand_state> hs = hands_states.back();
             hs->valid = true;
+            hs->retract_speed = 0.0f;
         }
 
     }
@@ -85,13 +88,25 @@ void data::world::update_step(void) {
     while (hi != hands_end) {
 
         if (!(*hsi)->valid) {
-            // TODO: retract hand quickly
-            (*hi)->height = 0.0f;
+            // retract hand quickly
+            (*hsi)->retract_speed += hand_state::retraction_accel;
+            (*hi)->height -= (*hsi)->retract_speed;
+        } else {
+            (*hsi)->retract_speed = 0.0f;
         }
 
         if ((*hi)->height <= 0.0f) { // remove hand!
 
-            // TODO: check for captured star creature
+            if ((*hi)->star) {
+                // remove captured star and increase score
+
+                ptrdiff_t si = std::distance(stars.begin(), std::find(stars.begin(), stars.end(), (*hi)->star));
+                stars.erase(stars.begin() + si);
+                stars_states.erase(stars_states.begin() + si);
+
+                score++;
+
+            }
 
             hands.erase(hi);
             hands_states.erase(hsi);
@@ -102,7 +117,12 @@ void data::world::update_step(void) {
             continue;
         }
 
-        // TODO: further update hand
+        if (!(*hi)->star) {
+            // Try capture star
+
+            // TODO:
+
+        }
 
         ++idx;
         ++hi;
