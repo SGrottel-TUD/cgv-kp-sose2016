@@ -105,6 +105,7 @@ void data::world::update_step(void) {
                 stars_states.erase(stars_states.begin() + si);
 
                 score++;
+                std::cout << "Score++ = " << score << std::endl;
 
             }
 
@@ -119,9 +120,34 @@ void data::world::update_step(void) {
 
         if (!(*hi)->star) {
             // Try capture star
+            std::shared_ptr<star> cs;
+            double csd = 10000.0;
+            const double pos_eps_sq(cfg.positional_epsilon() * cfg.positional_epsilon());
 
-            // TODO:
+            for (std::shared_ptr<star> si : stars) {
+                double dx(si->x - (*hi)->x);
+                double dy(si->y - (*hi)->y);
+                double d(dx * dx + dy * dy);
+                if (d > pos_eps_sq) continue; // too far apart
+                if (si->height - cfg.positional_epsilon() > (*hi)->height) continue; // star too high
+                if (csd > d) {
+                    // star could be captured
+                    csd = d;
+                    cs = si;
+                }
+            }
 
+            if (cs) {
+                // capture star!
+                (*hi)->star = cs;
+                cs->in_hand = true;
+            }
+        }
+
+        if ((*hi)->star) {
+            (*hi)->star->x = (*hi)->x;
+            (*hi)->star->y = (*hi)->y;
+            (*hi)->star->height = (*hi)->height;
         }
 
         ++idx;
@@ -133,28 +159,26 @@ void data::world::update_step(void) {
 
     // TODO: update data of hands and stars
 
-    // A dummy star for debugging:
-    if (stars.size() != 1) {
-        stars.resize(1);
-        stars_states.resize(1);
-        stars[0] = std::make_shared<star>();
-        stars_states[0] = std::make_shared<star_state>();
-        stars[0]->id = next_star_id++;
+    // A dummy stars for debugging:
+    static int starmakecounter = 0;
+    starmakecounter++;
+    if (starmakecounter > 100) {
+        starmakecounter = 0;
+
+        if (stars.size() < 10) {
+            stars.push_back(std::make_shared<star>());
+            stars_states.push_back(std::make_shared<star_state>());
+
+            std::shared_ptr<star> s = stars.back();
+            s->id = next_star_id++;
+            s->x = (static_cast<float>(::rand()) / static_cast<float>(RAND_MAX)) * get_config().width();
+            s->y = (static_cast<float>(::rand()) / static_cast<float>(RAND_MAX)) * get_config().height();
+            s->dx = 0.0f;
+            s->dy = -1.0f;
+            s->height = 0.7f;
+            s->in_hand = false;
+
+        }
     }
-    double seconds_timer
-        = static_cast<double>(std::chrono::system_clock::now().time_since_epoch().count())
-        * static_cast<double>(std::chrono::system_clock::period::num)
-        / static_cast<double>(std::chrono::system_clock::period::den);
-
-    float cx = get_config().width() / 2.0f;
-    float cy = get_config().height() / 2.0f;
-    float rad = std::min<float>(cx / 2.0f, cy / 2.0f);
-
-    stars[0]->height = 0.1f;
-    stars[0]->in_hand = false;
-    stars[0]->x = cx + static_cast<float>(std::cos(seconds_timer)) * rad;
-    stars[0]->y = cy + static_cast<float>(std::sin(seconds_timer)) * rad;
-    stars[0]->dx = -static_cast<float>(std::sin(seconds_timer));
-    stars[0]->dy = static_cast<float>(std::cos(seconds_timer));
 
 }
