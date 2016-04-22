@@ -9,12 +9,15 @@ namespace rendering {
 
     class debug_renderer {
     public:
+        static const float presentation_scale;
+
         debug_renderer(const ::cgvkp::data::world& data);
         ~debug_renderer();
 
         bool init(const window& wnd);
         void render(const window& wnd);
         void deinit();
+
     private:
 
         // some utility functions for simple und INEFFICIENT rendering
@@ -33,7 +36,6 @@ namespace rendering {
         unsigned int vao;
         unsigned int shader;
         unsigned int win_w, win_h;
-        const float win_scale;
     };
 
 }

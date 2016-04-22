@@ -25,6 +25,8 @@
     <ClCompile Include="src\data\world.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\rendering\debug_renderer.cpp" />
+    <ClCompile Include="src\rendering\abstract_user_input.cpp" />
+    <ClCompile Include="src\rendering\debug_user_input.cpp" />
     <ClCompile Include="src\rendering\window.cpp" />
     <ClCompile Include="src\vision\dummy_vision.cpp" />
   </ItemGroup>
@@ -38,6 +40,8 @@
     <ClInclude Include="src\data\world_config.hpp" />
     <ClInclude Include="src\data\world.hpp" />
     <ClInclude Include="src\rendering\debug_renderer.hpp" />
+    <ClInclude Include="src\rendering\abstract_user_input.hpp" />
+    <ClInclude Include="src\rendering\debug_user_input.hpp" />
     <ClInclude Include="src\rendering\window.hpp" />
     <ClInclude Include="src\vision\dummy_vision.hpp" />
   </ItemGroup>

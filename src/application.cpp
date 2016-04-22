@@ -1,6 +1,7 @@
 #include "application.hpp"
 #include "rendering/window.hpp"
 #include "rendering/debug_renderer.hpp"
+#include "rendering/debug_user_input.hpp"
 #include "vision/dummy_vision.hpp"
 #include "GLFW/glfw3.h"
 #include <cassert>
@@ -48,7 +49,11 @@ void application::run() {
     }
 
     // create a vision component to be run in the main thread alongside the rendering
-    std::shared_ptr<vision::dummy_vision> vision = std::make_shared<vision::dummy_vision>(data.get_input_layer());
+    //std::shared_ptr<vision::dummy_vision> vision = std::make_shared<vision::dummy_vision>(data.get_input_layer());
+
+    std::shared_ptr<rendering::debug_user_input> vision = std::make_shared<rendering::debug_user_input>(data.get_input_layer());
+    debug_window->set_user_input_object(vision);
+
     if (!vision->init()) {
         std::cout << "Failed to create Vision component" << std::endl;
         vision.reset();

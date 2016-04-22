@@ -13,7 +13,7 @@ vision::dummy_vision::~dummy_vision() {
 
 bool vision::dummy_vision::init() {
 
-    // else nothing to do here
+    // nothing to do here
 
     return true;
 }

@@ -35,11 +35,12 @@ namespace {
 
 }
 
+const float rendering::debug_renderer::presentation_scale = 0.95f;
+
 rendering::debug_renderer::debug_renderer(const ::cgvkp::data::world& data) 
     : data(data), 
     vao(0), shader(0),
-    win_w(0), win_h(0),
-    win_scale(0.95f) {
+    win_w(0), win_h(0) {
 
 }
 
@@ -91,7 +92,7 @@ void main() {\n\
 
     ::glUseProgram(shader);
     ::glUniform2f(::glGetUniformLocation(shader, "area"), static_cast<float>(data.get_config().width()), static_cast<float>(data.get_config().height()));
-    ::glUniform1f(::glGetUniformLocation(shader, "win_scale"), win_scale);
+    ::glUniform1f(::glGetUniformLocation(shader, "win_scale"), presentation_scale);
 
     ::glGenVertexArrays(1, &vao);
 

@@ -34,6 +34,7 @@ void data::world::merge_input(void) {
 
     const double pos_eps_sq(cfg.positional_epsilon() * cfg.positional_epsilon());
     for (input_layer::hand& in_hand : in_buf) {
+        if (in_hand.h < 0.0f) continue; // skip dead hands
 
         // search for the closest matching hand (greedy)
         std::shared_ptr<hand> h;
@@ -77,6 +78,38 @@ void data::world::merge_input(void) {
 }
 
 void data::world::update_step(void) {
+
+    std::vector<hand_ptr>::iterator hi = hands.begin(), hands_end = hands.end();
+    std::vector<hand_state_ptr>::iterator hsi = hands_states.begin();
+    int idx = 0;
+    while (hi != hands_end) {
+
+        if (!(*hsi)->valid) {
+            // TODO: retract hand quickly
+            (*hi)->height = 0.0f;
+        }
+
+        if ((*hi)->height <= 0.0f) { // remove hand!
+
+            // TODO: check for captured star creature
+
+            hands.erase(hi);
+            hands_states.erase(hsi);
+
+            hands_end = hands.end();
+            hi = hands.begin() + idx;
+            hsi = hands_states.begin() + idx;
+            continue;
+        }
+
+        // TODO: further update hand
+
+        ++idx;
+        ++hi;
+        ++hsi;
+    }
+
+
 
     // TODO: update data of hands and stars
 

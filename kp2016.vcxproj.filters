@@ -66,6 +66,12 @@
     <ClCompile Include="src\rendering\debug_renderer.cpp">
       <Filter>rendering\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\rendering\abstract_user_input.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\debug_user_input.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -93,6 +99,12 @@
       <Filter>vision\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\debug_renderer.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\abstract_user_input.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\debug_user_input.hpp">
       <Filter>rendering\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

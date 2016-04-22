@@ -4,6 +4,7 @@
 #include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
 #include "glm/gtx/transform.hpp"
+#include "rendering/abstract_user_input.hpp"
 
 using namespace cgvkp;
 
@@ -34,12 +35,12 @@ namespace {
 }
 
 rendering::window::window(unsigned int w, unsigned int h, const char* title) 
-        : handle(nullptr) {
+        : handle(nullptr), user_input() {
     ctor_impl(nullptr, w, h, title);
 }
 
 rendering::window::window(GLFWmonitor* fullscreen, unsigned int w, unsigned int h, const char* title)
-        : handle(nullptr) {
+        : handle(nullptr), user_input() {
     ctor_impl(fullscreen, w, h, title);
 }
 
@@ -103,6 +104,16 @@ bool rendering::window::get_size(unsigned int &out_width, unsigned int &out_heig
     return rv;
 }
 
+void rendering::window::mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+    rendering::window *that = static_cast<rendering::window*>(::glfwGetWindowUserPointer(window));
+    if (that->user_input) that->user_input->mouse_button(window, button, action, mods);
+}
+
+void rendering::window::mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    rendering::window *that = static_cast<rendering::window*>(::glfwGetWindowUserPointer(window));
+    if (that->user_input) that->user_input->mouse_wheel(window, xoffset, yoffset);
+}
+
 void rendering::window::ctor_impl(GLFWmonitor* fullscreen, unsigned int w, unsigned int h, const char* title) {
     ::glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // ogl 3.3 core
     ::glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -121,6 +132,11 @@ void rendering::window::ctor_impl(GLFWmonitor* fullscreen, unsigned int w, unsig
         std::cerr << "glfwCreateWindow failed" << std::endl;
         return;
     }
+
+    ::glfwSetWindowUserPointer(handle, this);
+
+    ::glfwSetMouseButtonCallback(handle, window::mouse_button_callback);
+    ::glfwSetScrollCallback(handle, window::mouse_scroll_callback);
 
     ::glfwMakeContextCurrent(handle);
 
@@ -152,6 +168,7 @@ void rendering::window::ctor_impl(GLFWmonitor* fullscreen, unsigned int w, unsig
 }
 
 void rendering::window::dtor_impl() {
+    user_input.reset();
     if (handle != nullptr) {
         ::glfwDestroyWindow(handle);
         handle = nullptr;
