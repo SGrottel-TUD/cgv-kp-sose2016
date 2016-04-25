@@ -26,6 +26,8 @@ int main(int argc, char **argv) {
             throw std::runtime_error("application::init returned false");
         }
 
+        app.config = cgvkp::application_config(argc, argv);
+
         retval = -2;
         app.run();
 

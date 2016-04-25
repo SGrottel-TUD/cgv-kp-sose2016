@@ -1,21 +1,19 @@
 #pragma once
-#include "data/input_layer.hpp"
+#include "vision/abstract_vision.hpp"
 #include <memory>
 
 namespace cgvkp {
 namespace vision {
 
-    class dummy_vision {
+    class dummy_vision : public abstract_vision {
     public:
         dummy_vision(data::input_layer& input_layer);
-        ~dummy_vision();
+        virtual ~dummy_vision();
 
-        bool init();
-        void update();
-        void deinit();
-
-    private:
-        data::input_layer& input_layer;
+        virtual void update();
+    protected:
+        bool init_impl();
+        void deinit_impl();
     };
 
 }

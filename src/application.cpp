@@ -1,6 +1,7 @@
 #include "application.hpp"
 #include "rendering/window.hpp"
 #include "rendering/debug_renderer.hpp"
+#include "rendering/release_renderer.hpp"
 #include "rendering/debug_user_input.hpp"
 #include "vision/dummy_vision.hpp"
 #include "GLFW/glfw3.h"
@@ -9,7 +10,7 @@
 
 using namespace cgvkp;
 
-application::application() : debug_window(nullptr) {
+application::application() : debug_window(nullptr), config(application_config()) {
 }
 
 application::~application() {
@@ -32,27 +33,42 @@ bool application::init() {
 }
 
 void application::run() {
-    std::shared_ptr<rendering::debug_renderer> debug_renderer;
+    std::shared_ptr<rendering::abstract_renderer> renderer;
 
     // create debug window
     debug_window = std::make_shared<rendering::window>(1280, 720);
     if (!debug_window || !debug_window->is_alive()) {
         debug_window.reset();
     } else {
-        // init debug window
-        debug_renderer = std::make_shared<rendering::debug_renderer>(data);
-        if (!debug_renderer || !debug_renderer->init(*debug_window)) {
+        // init renderer selected in Project Property Sheet
+        switch (config.active_renderer) {
+        case application_config::renderers::release:
+            renderer = std::make_shared<rendering::release_renderer>(data);
+            break;
+        default:
+            renderer = std::make_shared<rendering::debug_renderer>(data);
+            break;
+        }
+
+        if (!renderer || !renderer->init(*debug_window)) {
             std::cout << "Failed to create Debug renderer" << std::endl;
-            debug_renderer.reset();
+            renderer.reset();
             debug_window.reset();
         }
     }
 
-    // create a vision component to be run in the main thread alongside the rendering
-    //std::shared_ptr<vision::dummy_vision> vision = std::make_shared<vision::dummy_vision>(data.get_input_layer());
-
-    std::shared_ptr<rendering::debug_user_input> vision = std::make_shared<rendering::debug_user_input>(data.get_input_layer());
-    debug_window->set_user_input_object(vision);
+    std::shared_ptr<vision::abstract_vision> vision;
+    switch (config.active_vision) {
+    case application_config::vision_inputs::dummy:
+        // create a vision component to be run in the main thread alongside the rendering
+        vision = std::make_shared<vision::dummy_vision>(data.get_input_layer());
+        break;
+    default:
+        auto debug_vision = std::make_shared<rendering::debug_user_input>(data.get_input_layer());
+        vision = debug_vision;
+        debug_window->set_user_input_object(debug_vision);
+        break;
+    }
 
     if (!vision->init()) {
         std::cout << "Failed to create Vision component" << std::endl;
@@ -85,13 +101,13 @@ void application::run() {
             // debug window is valid.
         if (debug_window->is_alive()) {
             debug_window->do_events();
-            debug_renderer->render(*debug_window);
+            renderer->render(*debug_window);
             debug_window->swap_buffers();
 
         } else { // window close is requested
-            if (debug_renderer) {
-                debug_renderer->deinit();
-                debug_renderer.reset();
+            if (renderer) {
+                renderer->deinit();
+                renderer.reset();
             }
             debug_window.reset();
         }
@@ -105,7 +121,7 @@ void application::run() {
         vision.reset();
     }
 
-    assert(!debug_renderer);
+    assert(!renderer);
     assert(!debug_window);
 
 }

@@ -38,7 +38,7 @@ namespace {
 const float rendering::debug_renderer::presentation_scale = 0.95f;
 
 rendering::debug_renderer::debug_renderer(const ::cgvkp::data::world& data) 
-    : data(data), 
+    : abstract_renderer(data),
     vao(0), shader(0),
     win_w(0), win_h(0) {
 
@@ -48,7 +48,7 @@ rendering::debug_renderer::~debug_renderer() {
 
 }
 
-bool rendering::debug_renderer::init(const window& wnd) {
+bool rendering::debug_renderer::init_impl(const window& wnd) {
     wnd.make_current();
     ::glClearColor(0.0f, 0.25f, 0.0f, 0.0f);
     ::glEnable(GL_DEPTH_TEST);
@@ -144,7 +144,7 @@ void rendering::debug_renderer::render(const window& wnd) {
 
 }
 
-void rendering::debug_renderer::deinit() {
+void rendering::debug_renderer::deinit_impl() {
     ::glBindVertexArray(0);
     ::glDeleteVertexArrays(1, &vao);
     ::glUseProgram(0);

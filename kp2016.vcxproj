@@ -20,14 +20,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\application.cpp" />
+    <ClCompile Include="src\application_config.cpp" />
     <ClCompile Include="src\data\input_layer.cpp" />
     <ClCompile Include="src\data\world_config.cpp" />
     <ClCompile Include="src\data\world.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\rendering\abstract_renderer.cpp" />
     <ClCompile Include="src\rendering\debug_renderer.cpp" />
     <ClCompile Include="src\rendering\abstract_user_input.cpp" />
     <ClCompile Include="src\rendering\debug_user_input.cpp" />
+    <ClCompile Include="src\rendering\release_renderer.cpp" />
     <ClCompile Include="src\rendering\window.cpp" />
+    <ClCompile Include="src\vision\abstract_vision.cpp" />
     <ClCompile Include="src\vision\dummy_vision.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -35,14 +39,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\application.hpp" />
+    <ClInclude Include="src\application_config.hpp" />
     <ClInclude Include="src\data\input_layer.hpp" />
     <ClInclude Include="src\data\tripple_buffer.hpp" />
     <ClInclude Include="src\data\world_config.hpp" />
     <ClInclude Include="src\data\world.hpp" />
+    <ClInclude Include="src\rendering\abstract_renderer.hpp" />
     <ClInclude Include="src\rendering\debug_renderer.hpp" />
     <ClInclude Include="src\rendering\abstract_user_input.hpp" />
     <ClInclude Include="src\rendering\debug_user_input.hpp" />
+    <ClInclude Include="src\rendering\release_renderer.hpp" />
     <ClInclude Include="src\rendering\window.hpp" />
+    <ClInclude Include="src\vision\abstract_vision.hpp" />
     <ClInclude Include="src\vision\dummy_vision.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

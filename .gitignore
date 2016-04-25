@@ -1,7 +1,9 @@
 /.vs
 /*.sdf
 /*.opendb
+/*.VC.db
 /Debug
 /Release
 /x64
 /packages
+/kp2016.vcxproj.user

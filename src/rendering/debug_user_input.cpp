@@ -4,7 +4,7 @@
 using namespace cgvkp;
 
 rendering::debug_user_input::debug_user_input(data::input_layer& input_layer)
-        : abstract_user_input(), input_layer(input_layer), hands(), mbtns() {
+        : abstract_user_input(), vision::abstract_vision(input_layer), hands(), mbtns() {
     for (bool& b : mbtns) b = false;
 }
 
@@ -12,7 +12,7 @@ rendering::debug_user_input::~debug_user_input() {
     // intentionally empty
 }
 
-bool rendering::debug_user_input::init() {
+bool rendering::debug_user_input::init_impl() {
     // intentionally empty
     return true;
 }
@@ -22,7 +22,7 @@ void rendering::debug_user_input::update() {
     input_layer.sync_buffer();
 }
 
-void rendering::debug_user_input::deinit() {
+void rendering::debug_user_input::deinit_impl() {
     // intentionally empty
 }
 

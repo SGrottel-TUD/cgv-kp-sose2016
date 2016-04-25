@@ -1,5 +1,6 @@
 #pragma once
 #include "data/world.hpp"
+#include "application_config.hpp"
 #include <memory>
 #include <chrono>
 
@@ -16,6 +17,8 @@ namespace rendering {
         bool init();
         void run();
         void deinit();
+
+        application_config config;
 
     private:
         data::world data;
