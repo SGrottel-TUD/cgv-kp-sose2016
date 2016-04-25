@@ -2,6 +2,7 @@
 #include "rendering/window.hpp"
 #include "rendering/debug_renderer.hpp"
 #include "rendering/release_renderer.hpp"
+#include "rendering/model_listing_renderer.hpp"
 #include "rendering/debug_user_input.hpp"
 #include "vision/dummy_vision.hpp"
 #include "GLFW/glfw3.h"
@@ -44,6 +45,9 @@ void application::run() {
         switch (config.active_renderer) {
         case application_config::renderers::release:
             renderer = std::make_shared<rendering::release_renderer>(data);
+            break;
+        case application_config::renderers::models:
+            renderer = std::make_shared<rendering::model_listing_renderer>(data);
             break;
         default:
             renderer = std::make_shared<rendering::debug_renderer>(data);

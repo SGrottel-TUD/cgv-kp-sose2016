@@ -84,6 +84,9 @@
     <ClCompile Include="src\rendering\release_renderer.cpp">
       <Filter>rendering\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\rendering\model_listing_renderer.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -129,6 +132,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\release_renderer.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\model_listing_renderer.hpp">
       <Filter>rendering\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

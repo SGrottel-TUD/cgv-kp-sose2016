@@ -10,7 +10,8 @@ namespace cgvkp {
         // enum classes
         enum class renderers : unsigned int {
             debug = 0u,
-            release = 1u
+            release = 1u,
+            models = 2u
         };
         enum class vision_inputs : unsigned int {
             debug = 0u,
