@@ -1,5 +1,6 @@
 #pragma once
 #include "rendering/abstract_renderer.hpp"
+#include <glm/glm.hpp>
 
 namespace cgvkp {
 namespace data {
@@ -15,6 +16,11 @@ namespace rendering {
     protected:
         virtual bool init_impl(const window& wnd);
         virtual void deinit_impl();
+    private:
+        unsigned int vao;
+        unsigned int shader;
+        unsigned int buffers[3];
+        unsigned int element_count;
     };
 }
 }
