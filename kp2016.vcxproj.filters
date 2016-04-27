@@ -131,5 +131,26 @@
     <ClInclude Include="src\rendering\release_renderer.hpp">
       <Filter>rendering\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\rendering\camera.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\stereo_camera.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\mono_camera.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\star.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\model.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\unit.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\light.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
