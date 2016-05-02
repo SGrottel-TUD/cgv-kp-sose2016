@@ -40,6 +40,15 @@
     <Filter Include="vision\Source Files">
       <UniqueIdentifier>{d3fb6ae6-5903-404e-a4ad-bbee1e4118a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{aa39f407-c90a-4b47-ac18-339cf5eaa6c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\Header Files">
+      <UniqueIdentifier>{f31d6f02-98d9-4d63-92e5-1d3a59563e0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\Source Files">
+      <UniqueIdentifier>{fd40c22e-3ec1-49f1-87bd-ba2f370aa180}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -86,6 +95,9 @@
     </ClCompile>
     <ClCompile Include="src\rendering\model_listing_renderer.cpp">
       <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\resource_file.cpp">
+      <Filter>util\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -136,6 +148,9 @@
     </ClInclude>
     <ClInclude Include="src\rendering\model_listing_renderer.hpp">
       <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\resource_file.hpp">
+      <Filter>util\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
