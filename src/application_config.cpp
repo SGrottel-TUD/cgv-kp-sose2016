@@ -12,6 +12,9 @@ cgvkp::application_config::application_config(int argc, char **argv)
         if (strncmp(argv[i], "-rR", 3) == 0) {
             active_renderer = renderers::release;
         }
+        if (strncmp(argv[i], "-rM", 3) == 0) {
+            active_renderer = renderers::models;
+        }
         if (strncmp(argv[i], "-vR", 3) == 0) {
             active_vision = vision_inputs::release;
         }
