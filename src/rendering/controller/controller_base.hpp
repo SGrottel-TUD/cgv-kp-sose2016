@@ -25,7 +25,7 @@ namespace controller {
         /**
          * @param seconds Time elapsed since last call, in seconds
          */
-        virtual void update(double seconds, const abstract_user_input& input) = 0;
+        virtual void update(double seconds, std::shared_ptr<abstract_user_input> input) = 0;
 
     protected:
         /** The main model used by this controller */
