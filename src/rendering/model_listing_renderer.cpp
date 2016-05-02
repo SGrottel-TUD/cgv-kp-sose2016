@@ -5,19 +5,28 @@
 #include "GL/glew.h"
 #include <iostream>
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
 
 cgvkp::rendering::model_listing_renderer::model_listing_renderer(const ::cgvkp::data::world& data)
-    : cgvkp::rendering::abstract_renderer(data) {
+	: cgvkp::rendering::abstract_renderer(data),
+	model_matrix(glm::mat4(1.0f)), projection_matrix(glm::mat4(1.0f)), view_matrix(glm::mat4(1.0f)) {
 }
 cgvkp::rendering::model_listing_renderer::~model_listing_renderer() {}
 
 bool cgvkp::rendering::model_listing_renderer::init_impl(const window& wnd) {
     wnd.make_current();
-    ::glClearColor(0.0f, 0.25f, 0.0f, 0.0f);
-    ::glEnable(GL_DEPTH_TEST);
-    ::glEnable(GL_CULL_FACE);
 
+	::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	::glDisable(GL_CULL_FACE);
+	::glEnable(GL_DEPTH_TEST);
+	::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	::glDepthMask(GL_TRUE);
+
+	// ****
+	// Star
+	// ****
     //
     // Shaders
     //
@@ -46,6 +55,10 @@ bool cgvkp::rendering::model_listing_renderer::init_impl(const window& wnd) {
     //printProgramInfoLog(shader);
 
     ::glUseProgram(shader);
+
+	model_loc = ::glGetUniformLocation(shader, "model");
+	projection_loc = ::glGetUniformLocation(shader, "projection");
+	view_loc = ::glGetUniformLocation(shader, "view");
 
     ::glGenVertexArrays(1, &vao);
     ::glBindVertexArray(vao);
@@ -154,14 +167,29 @@ void cgvkp::rendering::model_listing_renderer::render(const window& wnd) {
     }
     if ((win_w == 0) || (win_h == 0)) return;
     */
+	// Update model_matrix
+	std::chrono::high_resolution_clock::time_point now_time = std::chrono::high_resolution_clock::now();
+	float elapsed = std::chrono::duration<float>(now_time - last_time).count();
+	last_time = now_time;
+
+	model_matrix *= glm::rotate(10.0f * glm::radians(elapsed),
+		glm::vec3(0.0f, 1.0f, 0.0f));
+
+	::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	::glDisable(GL_CULL_FACE);
+	::glEnable(GL_DEPTH_TEST);
+	::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	::glDepthMask(GL_TRUE);;
+
     ::glUseProgram(shader);
 
-    ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    ::glDisable(GL_DEPTH_TEST);
-    ::glDisable(GL_CULL_FACE);
-
     ::glBindVertexArray(vao);
+
+	::glUniformMatrix4fv(model_loc, 1, false, glm::value_ptr(model_matrix));
+	::glUniformMatrix4fv(view_loc, 1, false, glm::value_ptr(view_matrix));
+	::glUniformMatrix4fv(projection_loc, 1, false, glm::value_ptr(projection_matrix));
+
     ::glDrawElements(GL_TRIANGLES, element_count, GL_UNSIGNED_INT, nullptr);
 
 }
