@@ -49,6 +49,33 @@
     <Filter Include="util\Source Files">
       <UniqueIdentifier>{fd40c22e-3ec1-49f1-87bd-ba2f370aa180}</UniqueIdentifier>
     </Filter>
+    <Filter Include="rendering\model">
+      <UniqueIdentifier>{19b50978-cc35-41f3-8ddd-de17cd856e50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\view">
+      <UniqueIdentifier>{dd242a34-37be-4a7e-a063-81d86ed8db59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\controller">
+      <UniqueIdentifier>{1a31e74b-16d2-4fcd-ad08-9aab8a05c07a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\model\Header Files">
+      <UniqueIdentifier>{14301e43-4d7e-40e9-813a-bf86235936ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\model\Source Files">
+      <UniqueIdentifier>{26ffc615-d983-4661-bb34-252f33c2f660}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\controller\Source Files">
+      <UniqueIdentifier>{c8c264d5-5889-49ce-a94d-5ab4b67b85db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\view\Source Files">
+      <UniqueIdentifier>{e5c63cea-b4f0-4e61-bbb1-587b144f9e99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\controller\Header Files">
+      <UniqueIdentifier>{a169b4e4-dbbe-495a-adfa-65cff03297fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\view\Header Files">
+      <UniqueIdentifier>{f122605c-8f64-48fa-9f49-86153c5f07d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -101,6 +128,15 @@
     </ClCompile>
     <ClCompile Include="src\util\obj_parser.cpp">
       <Filter>util\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\view\view_base.cpp">
+      <Filter>rendering\view\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\controller\controller_base.cpp">
+      <Filter>rendering\controller\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\model\model_base.cpp">
+      <Filter>rendering\model\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +193,18 @@
     </ClInclude>
     <ClInclude Include="src\util\obj_parser.hpp">
       <Filter>util\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\view\view_base.hpp">
+      <Filter>rendering\view\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\controller\controller_base.hpp">
+      <Filter>rendering\controller\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\model\model_base.hpp">
+      <Filter>rendering\model\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\view\view_geometry_base.hpp">
+      <Filter>rendering\view\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
