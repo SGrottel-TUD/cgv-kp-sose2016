@@ -138,6 +138,12 @@
     <ClCompile Include="src\rendering\model\model_base.cpp">
       <Filter>rendering\model\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\rendering\view\star_view.cpp">
+      <Filter>rendering\view\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\view\star_geometry.cpp">
+      <Filter>rendering\view\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -205,6 +211,15 @@
     </ClInclude>
     <ClInclude Include="src\rendering\view\view_geometry_base.hpp">
       <Filter>rendering\view\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\view\star_geometry.hpp">
+      <Filter>rendering\view\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\view\star_view.hpp">
+      <Filter>rendering\view\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\model\star_model.hpp">
+      <Filter>rendering\model\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

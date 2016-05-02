@@ -33,6 +33,8 @@
     <ClCompile Include="src\rendering\model\model_base.cpp" />
     <ClCompile Include="src\rendering\model_listing_renderer.cpp" />
     <ClCompile Include="src\rendering\release_renderer.cpp" />
+    <ClCompile Include="src\rendering\view\star_geometry.cpp" />
+    <ClCompile Include="src\rendering\view\star_view.cpp" />
     <ClCompile Include="src\rendering\view\view_base.cpp" />
     <ClCompile Include="src\rendering\window.cpp" />
     <ClCompile Include="src\util\obj_parser.cpp" />
@@ -56,8 +58,11 @@
     <ClInclude Include="src\rendering\abstract_user_input.hpp" />
     <ClInclude Include="src\rendering\debug_user_input.hpp" />
     <ClInclude Include="src\rendering\model\model_base.hpp" />
+    <ClInclude Include="src\rendering\model\star_model.hpp" />
     <ClInclude Include="src\rendering\model_listing_renderer.hpp" />
     <ClInclude Include="src\rendering\release_renderer.hpp" />
+    <ClInclude Include="src\rendering\view\star_geometry.hpp" />
+    <ClInclude Include="src\rendering\view\star_view.hpp" />
     <ClInclude Include="src\rendering\view\view_base.hpp" />
     <ClInclude Include="src\rendering\view\view_geometry_base.hpp" />
     <ClInclude Include="src\rendering\window.hpp" />
