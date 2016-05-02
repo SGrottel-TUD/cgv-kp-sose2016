@@ -1,0 +1,11 @@
+#version 330 core
+in vec3 vert_position;
+in vec3 vert_normal;
+out vec3 frag_position;
+out vec3 frag_normal;
+
+void main() {
+    frag_position = abs(vert_position);
+    frag_normal = abs(vert_normal);
+    gl_Position = vec4(vert_position, 1.0);
+}

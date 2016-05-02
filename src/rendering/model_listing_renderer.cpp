@@ -1,6 +1,7 @@
 #include "model_listing_renderer.hpp"
 #include "data/world.hpp"
 #include "rendering/window.hpp"
+#include "util/resource_file.hpp"
 #include "GL/glew.h"
 #include <iostream>
 #include <glm/glm.hpp>
@@ -20,32 +21,20 @@ bool cgvkp::rendering::model_listing_renderer::init_impl(const window& wnd) {
     //
     // Shaders
     //
-    const char *vert_src = "#version 330 core\n\
-in vec3 vert_position;\n\
-in vec3 vert_normal;\n\
-out vec3 frag_position;\n\
-out vec3 frag_normal;\n\
-\n\
-void main() {\n\
-    frag_position = abs(vert_position);\n\
-    frag_normal = abs(vert_normal);\n\
-    gl_Position = vec4(vert_position, 1.0);\n\
-}";
-    const char *frag_src = "#version 330 core\n\
-in vec3 frag_position;\n\
-in vec3 frag_normal;\n\
-out vec4 o_color;\n\
-\n\
-void main() {\n\
-    o_color = vec4(frag_position + frag_normal, 1.0);\n\
-}";
+	std::string path = cgvkp::util::resource_file::find_resource_file("shaders/star_vs"); 
+	std::string vert_src = cgvkp::util::resource_file::read_file_as_text(path);
+	path = cgvkp::util::resource_file::find_resource_file("shaders/star_fs");
+	std::string frag_src = cgvkp::util::resource_file::read_file_as_text(path);
+	const char *c_str;
     GLuint v, f;
     v = ::glCreateShader(GL_VERTEX_SHADER);
     f = ::glCreateShader(GL_FRAGMENT_SHADER);
-    ::glShaderSource(v, 1, &vert_src, nullptr);
+	c_str = vert_src.data();
+    ::glShaderSource(v, 1, &c_str, nullptr);
     ::glCompileShader(v);
     //printShaderInfoLog(v);
-    ::glShaderSource(f, 1, &frag_src, nullptr);
+	c_str = frag_src.data();
+	::glShaderSource(f, 1, &c_str, nullptr);
     ::glCompileShader(f);
     //printShaderInfoLog(f);
 
@@ -147,7 +136,7 @@ void main() {\n\
 
     ::glBindVertexArray(0);
 
-    element_count = indices.size();
+    element_count = (unsigned int)indices.size();
 
     std::cout << "Model listing renderer initialized" << std::endl;
     return true;
