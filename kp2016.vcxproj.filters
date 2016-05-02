@@ -144,6 +144,12 @@
     <ClCompile Include="src\rendering\view\star_geometry.cpp">
       <Filter>rendering\view\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\rendering\view\hand_geometry.cpp">
+      <Filter>rendering\view\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\view\hand_view.cpp">
+      <Filter>rendering\view\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -219,6 +225,15 @@
       <Filter>rendering\view\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\model\star_model.hpp">
+      <Filter>rendering\model\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\view\hand_geometry.hpp">
+      <Filter>rendering\view\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\view\hand_view.hpp">
+      <Filter>rendering\view\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\model\hand_model.hpp">
       <Filter>rendering\model\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

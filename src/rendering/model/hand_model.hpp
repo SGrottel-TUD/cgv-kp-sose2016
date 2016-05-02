@@ -6,11 +6,11 @@
 namespace cgvkp {
 namespace rendering {
 namespace model {
-    class star_model : public model_base {
+    class hand_model : public model_base {
     public:
-        star_model() : model_matrix(glm::rotate(glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f))) {}
+        hand_model() : model_matrix(glm::rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f))) {}
         
-        virtual ~star_model() {}
+        virtual ~hand_model() {}
         glm::mat4 model_matrix;
     };
 }

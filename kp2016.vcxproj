@@ -33,6 +33,8 @@
     <ClCompile Include="src\rendering\model\model_base.cpp" />
     <ClCompile Include="src\rendering\model_listing_renderer.cpp" />
     <ClCompile Include="src\rendering\release_renderer.cpp" />
+    <ClCompile Include="src\rendering\view\hand_geometry.cpp" />
+    <ClCompile Include="src\rendering\view\hand_view.cpp" />
     <ClCompile Include="src\rendering\view\star_geometry.cpp" />
     <ClCompile Include="src\rendering\view\star_view.cpp" />
     <ClCompile Include="src\rendering\view\view_base.cpp" />
@@ -57,10 +59,13 @@
     <ClInclude Include="src\rendering\debug_renderer.hpp" />
     <ClInclude Include="src\rendering\abstract_user_input.hpp" />
     <ClInclude Include="src\rendering\debug_user_input.hpp" />
+    <ClInclude Include="src\rendering\model\hand_model.hpp" />
     <ClInclude Include="src\rendering\model\model_base.hpp" />
     <ClInclude Include="src\rendering\model\star_model.hpp" />
     <ClInclude Include="src\rendering\model_listing_renderer.hpp" />
     <ClInclude Include="src\rendering\release_renderer.hpp" />
+    <ClInclude Include="src\rendering\view\hand_geometry.hpp" />
+    <ClInclude Include="src\rendering\view\hand_view.hpp" />
     <ClInclude Include="src\rendering\view\star_geometry.hpp" />
     <ClInclude Include="src\rendering\view\star_view.hpp" />
     <ClInclude Include="src\rendering\view\view_base.hpp" />

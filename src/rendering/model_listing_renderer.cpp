@@ -11,7 +11,9 @@
 cgvkp::rendering::model_listing_renderer::model_listing_renderer(const ::cgvkp::data::world& data)
 	: cgvkp::rendering::abstract_renderer(data),
     star_model(std::make_shared<model::star_model>()),
-    star_view(std::make_shared<view::star_view>()) {
+    star_view(std::make_shared<view::star_view>()),
+    hand_model(std::make_shared<model::hand_model>()),
+    hand_view(std::make_shared<view::hand_view>()) {
 }
 cgvkp::rendering::model_listing_renderer::~model_listing_renderer() {}
 
@@ -25,8 +27,19 @@ bool cgvkp::rendering::model_listing_renderer::init_impl(const window& wnd) {
 	::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	::glDepthMask(GL_TRUE);
 
+    star_model->model_matrix =
+        glm::translate(glm::vec3(-0.5f, 0.0f, 0.0f)) *
+        glm::scale(glm::vec3(0.5f)) *
+        star_model->model_matrix;
     star_view->set_model(star_model);
     star_view->init();
+
+    hand_model->model_matrix =
+        glm::translate(glm::vec3(0.5f, 0.0f, 0.0f)) *
+        glm::scale(glm::vec3(0.5f)) *
+        hand_model->model_matrix;
+    hand_view->set_model(hand_model);
+    hand_view->init();
 
     std::cout << "Model listing renderer initialized" << std::endl;
     return true;
@@ -35,6 +48,10 @@ void cgvkp::rendering::model_listing_renderer::deinit_impl() {
     star_view->deinit();
     star_view.reset();
     star_model.reset();
+
+    hand_view->deinit();
+    hand_view.reset();
+    hand_model.reset();
 }
 
 void cgvkp::rendering::model_listing_renderer::render(const window& wnd) {
@@ -49,10 +66,13 @@ void cgvkp::rendering::model_listing_renderer::render(const window& wnd) {
 	float elapsed = std::chrono::duration<float>(now_time - last_time).count();
 	last_time = now_time;
 
-	star_model->model_matrix *= glm::rotate(10.0f * glm::radians(elapsed),
-		glm::vec3(0.0f, 1.0f, 0.0f));
+	star_model->model_matrix *= glm::rotate(0.5f * elapsed,
+		glm::vec3(1.0f, 0.0f, 0.0f));
+	hand_model->model_matrix *= glm::rotate(-0.5f * elapsed,
+		glm::vec3(0.0f, 0.0f, 1.0f));
 
 	::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     star_view->render();
+    hand_view->render();
 }

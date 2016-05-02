@@ -2,6 +2,8 @@
 #include "rendering/abstract_renderer.hpp"
 #include "rendering/model/star_model.hpp"
 #include "rendering/view/star_view.hpp"
+#include "rendering/model/hand_model.hpp"
+#include "rendering/view/hand_view.hpp"
 #include <glm/glm.hpp>
 #include <chrono>
 
@@ -23,6 +25,8 @@ namespace rendering {
 		std::chrono::high_resolution_clock::time_point last_time;
         std::shared_ptr<model::star_model> star_model;
         std::shared_ptr<view::star_view> star_view;
+        std::shared_ptr<model::hand_model> hand_model;
+        std::shared_ptr<view::hand_view> hand_view;
     };
 }
 }
