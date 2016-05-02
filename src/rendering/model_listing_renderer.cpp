@@ -153,6 +153,9 @@ void main() {\n\
     return true;
 }
 void cgvkp::rendering::model_listing_renderer::deinit_impl() {
+	::glBindVertexArray(0);
+	::glDeleteBuffers(2, buffers);
+	::glDeleteVertexArrays(1, &vao);
 }
 
 void cgvkp::rendering::model_listing_renderer::render(const window& wnd) {
