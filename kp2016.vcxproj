@@ -31,6 +31,7 @@
     <ClCompile Include="src\rendering\debug_user_input.cpp" />
     <ClCompile Include="src\rendering\release_renderer.cpp" />
     <ClCompile Include="src\rendering\window.cpp" />
+    <ClCompile Include="src\util\resource_file.cpp" />
     <ClCompile Include="src\vision\abstract_vision.cpp" />
     <ClCompile Include="src\vision\dummy_vision.cpp" />
   </ItemGroup>
@@ -50,6 +51,7 @@
     <ClInclude Include="src\rendering\debug_user_input.hpp" />
     <ClInclude Include="src\rendering\release_renderer.hpp" />
     <ClInclude Include="src\rendering\window.hpp" />
+    <ClInclude Include="src\util\resource_file.hpp" />
     <ClInclude Include="src\vision\abstract_vision.hpp" />
     <ClInclude Include="src\vision\dummy_vision.hpp" />
   </ItemGroup>
