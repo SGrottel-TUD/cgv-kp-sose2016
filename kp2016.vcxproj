@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="src\application.cpp" />
     <ClCompile Include="src\application_config.cpp" />
+    <ClCompile Include="src\config.cpp" />
     <ClCompile Include="src\data\input_layer.cpp" />
     <ClCompile Include="src\data\world_config.cpp" />
     <ClCompile Include="src\data\world.cpp" />
@@ -40,6 +41,7 @@
   <ItemGroup>
     <ClInclude Include="src\application.hpp" />
     <ClInclude Include="src\application_config.hpp" />
+    <ClInclude Include="src\config.hpp" />
     <ClInclude Include="src\data\input_layer.hpp" />
     <ClInclude Include="src\data\tripple_buffer.hpp" />
     <ClInclude Include="src\data\world_config.hpp" />
