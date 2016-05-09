@@ -35,6 +35,7 @@ namespace cgvkp {
 		int window_height;
 		bool fullscreen;
 		std::string data_path;
+		bool stereo;
 
 	private:
 		void interpret_arguments(int argc, char** argv);

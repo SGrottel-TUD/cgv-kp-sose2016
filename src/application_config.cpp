@@ -5,7 +5,12 @@
 #include <sstream>
 
 cgvkp::application_config::application_config()
-    : active_vision(vision_inputs::debug), active_renderer(renderers::debug), window_width(1280), window_height(720) {
+    : active_vision(vision_inputs::debug),
+	active_renderer(renderers::debug),
+	window_width(1280),
+	window_height(720),
+	stereo(false),
+	fullscreen(false),data_path("config.ini"){
     // Intentionally empty
 }
 
@@ -65,6 +70,7 @@ std::ostream& cgvkp::operator<<(std::ostream& lhs, application_config const& rhs
 	lhs << "width = " << rhs.window_width << std::endl;
 	lhs << "heigth = " << rhs.window_height << std::endl;
 	lhs << "data_path = \"" << rhs.data_path << "\"" << std::endl;
+	lhs << "stereo = " << (rhs.stereo ? 1 : 0) << std::endl;
 	
 	return lhs;
 }
@@ -97,6 +103,10 @@ std::istream& cgvkp::operator>>(std::istream& lhs, application_config& rhs)
 			std::string idc;
 			std::getline(ss, idc, '"');
 			std::getline(ss, rhs.data_path, '"');
+		}
+		else if (key.find("stereo") != std::string::npos)
+		{
+			ss >> rhs.stereo;
 		}
 	}
 
