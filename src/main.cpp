@@ -26,13 +26,14 @@ int main(int argc, char **argv) {
             throw std::runtime_error("application::init returned false");
         }
 
-        app.config = cgvkp::application_config(argc, argv);
+        app.config = cgvkp::application_config(argc, argv, "config.ini");
 
         retval = -2;
         app.run();
 
         retval = -3;
         app.deinit();
+		app.config.save_file("config.ini");
 
         retval = 0;
 
