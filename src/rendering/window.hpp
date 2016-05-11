@@ -1,9 +1,12 @@
 #pragma once
 #include <memory>
+#include <string>
 
 // forward declaration of internal GLFW types
 struct GLFWmonitor;
 struct GLFWwindow;
+
+#define GetKeyOnce(w, k) (glfwGetKey(w, k) ? (keys[k] ? false : (keys[k] = true)) : (keys[k] = false))
 
 namespace cgvkp {
 namespace rendering {
@@ -19,7 +22,8 @@ namespace rendering {
 
         void close();
         bool is_alive() const;
-        void do_events();
+        bool do_events();
+		void toggle_fullscreen();
         void make_current() const;
         void swap_buffers() const;
 
@@ -37,11 +41,20 @@ namespace rendering {
 
         static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
         static void mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+		static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
         void ctor_impl(GLFWmonitor* fullscreen, unsigned int w, unsigned int h, const char* title);
         void dtor_impl();
+		bool create_window(int width, int height, char const* title, GLFWmonitor* fullscreen);
 
         GLFWwindow *handle;
+		std::string title;
+		bool fullscreen;
+		int windowed_x;
+		int windowed_y;
+		int windowed_width;
+		int windowed_height;
+		bool keys[256];
         std::shared_ptr<abstract_user_input> user_input;
     };
 

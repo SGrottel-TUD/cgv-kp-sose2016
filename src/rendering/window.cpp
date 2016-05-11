@@ -35,7 +35,7 @@ namespace {
 }
 
 rendering::window::window(unsigned int w, unsigned int h, const char* title) 
-        : handle(nullptr), user_input() {
+        : handle(nullptr), user_input(), fullscreen(false), windowed_width(w), windowed_height(h), windowed_x(0), windowed_y(0) {
     ctor_impl(nullptr, w, h, title);
 }
 
@@ -57,9 +57,18 @@ bool rendering::window::is_alive() const {
         && (!::glfwWindowShouldClose(handle));
 }
 
-void rendering::window::do_events() {
-    if (!is_alive()) return;
+bool rendering::window::do_events() {
+    if (!is_alive()) return false;
     ::glfwPollEvents();
+
+	bool retVal = false;
+	if (GetKeyOnce(handle, GLFW_KEY_F))
+	{
+		toggle_fullscreen();
+		retVal = true;
+	}
+
+	return retVal;
 
     //// Keys
     //keys.update(handle);
@@ -115,30 +124,17 @@ void rendering::window::mouse_scroll_callback(GLFWwindow* window, double xoffset
 }
 
 void rendering::window::ctor_impl(GLFWmonitor* fullscreen, unsigned int w, unsigned int h, const char* title) {
+	for (int i = 0; i < 256; ++i) {
+		keys[i] = false;
+	}
+
     ::glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // ogl 3.3 core
     ::glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     ::glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     ::glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    if (((w == -1) || (h == -1)) && (fullscreen != nullptr)) {
-        const GLFWvidmode* mode = ::glfwGetVideoMode(fullscreen);
-        w = mode->width;
-        h = mode->height;
-    }
-
-    handle = ::glfwCreateWindow(w, h, title, fullscreen, NULL);
-
-    if (!handle) {
-        std::cerr << "glfwCreateWindow failed" << std::endl;
-        return;
-    }
-
-    ::glfwSetWindowUserPointer(handle, this);
-
-    ::glfwSetMouseButtonCallback(handle, window::mouse_button_callback);
-    ::glfwSetScrollCallback(handle, window::mouse_scroll_callback);
-
-    ::glfwMakeContextCurrent(handle);
+	this->title = title;
+	create_window(w, h, title, fullscreen);
 
     ::glewExperimental = GL_TRUE;
     GLenum err = ::glewInit();
@@ -173,4 +169,56 @@ void rendering::window::dtor_impl() {
         ::glfwDestroyWindow(handle);
         handle = nullptr;
     }
+}
+
+bool rendering::window::create_window(int width, int height, char const* title, GLFWmonitor* fullscreen) {
+	if (fullscreen != nullptr) {
+		const GLFWvidmode* mode = ::glfwGetVideoMode(fullscreen);
+
+		glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+		glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+		glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+		glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+
+		if (width == -1 || height == -1) {
+			width = mode->width;
+			height = mode->height;
+		}
+	}
+
+	handle = ::glfwCreateWindow(width, height, title, fullscreen, nullptr);
+
+	if (!handle) {
+		std::cerr << "glfwCreateWindow failed" << std::endl;
+		return false;
+	}
+
+	this->fullscreen = fullscreen != nullptr;
+
+	::glfwSetWindowUserPointer(handle, this);
+
+	::glfwSetMouseButtonCallback(handle, window::mouse_button_callback);
+	::glfwSetScrollCallback(handle, window::mouse_scroll_callback);
+
+	::glfwMakeContextCurrent(handle);
+
+	return true;
+}
+
+void rendering::window::toggle_fullscreen() {
+	if (fullscreen) {
+		glfwDestroyWindow(handle);
+
+		if(create_window(windowed_width, windowed_height, title.c_str(), nullptr)) {
+			glfwSetWindowPos(handle, windowed_x, windowed_y);
+		}
+	}
+	else {
+		glfwGetWindowPos(handle, &windowed_x, &windowed_y);
+		glfwGetWindowSize(handle, &windowed_width, &windowed_height);
+
+		glfwDestroyWindow(handle);
+
+		create_window(-1, -1, title.c_str(), glfwGetPrimaryMonitor());
+	}
 }
