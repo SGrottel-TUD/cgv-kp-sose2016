@@ -104,7 +104,10 @@ void application::run() {
         //if (debug_window) { // this if is preparation for multiple windows
             // debug window is valid.
         if (debug_window->is_alive()) {
-            debug_window->do_events();
+			if (debug_window->do_events()) {
+				renderer->deinit();
+				renderer->init(*debug_window);
+			}
             renderer->render(*debug_window);
             debug_window->swap_buffers();
 
