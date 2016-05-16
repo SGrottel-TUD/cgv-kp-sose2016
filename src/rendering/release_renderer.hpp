@@ -17,6 +17,8 @@ namespace rendering {
         virtual ~release_renderer();
         virtual void render(const window& wnd);
 
+		virtual void set_framebuffer_size(int width, int height);
+
     protected:
         virtual bool init_impl(const window& wnd);
         virtual void deinit_impl();

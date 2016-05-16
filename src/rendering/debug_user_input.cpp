@@ -1,5 +1,5 @@
-#include "rendering/debug_user_input.hpp"
 #include "rendering/debug_renderer.hpp"
+#include "rendering/debug_user_input.hpp"
 
 using namespace cgvkp;
 
