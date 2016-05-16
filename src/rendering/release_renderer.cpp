@@ -30,3 +30,7 @@ void cgvkp::rendering::release_renderer::render(const window& wnd) {
         view->render();
     }
 }
+
+void cgvkp::rendering::release_renderer::set_framebuffer_size(int width, int height)
+{
+}

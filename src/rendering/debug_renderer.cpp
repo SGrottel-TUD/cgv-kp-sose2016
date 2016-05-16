@@ -50,6 +50,9 @@ rendering::debug_renderer::~debug_renderer() {
 
 bool rendering::debug_renderer::init_impl(const window& wnd) {
     wnd.make_current();
+	if (wnd.get_size(win_w, win_h)) {
+		::glViewport(0, 0, win_w, win_h);
+	}
     ::glClearColor(0.0f, 0.25f, 0.0f, 0.0f);
     ::glEnable(GL_DEPTH_TEST);
     ::glEnable(GL_CULL_FACE);
@@ -100,9 +103,6 @@ void main() {\n\
 }
 
 void rendering::debug_renderer::render(const window& wnd) {
-    if (wnd.get_size(win_w, win_h)) {
-        ::glViewport(0, 0, win_w, win_h);
-    }
     if ((win_w == 0) || (win_h == 0)) return;
 
     ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -149,6 +149,13 @@ void rendering::debug_renderer::deinit_impl() {
     ::glDeleteVertexArrays(1, &vao);
     ::glUseProgram(0);
     ::glDeleteProgram(shader);
+}
+
+void rendering::debug_renderer::set_framebuffer_size(int width, int height)
+{
+	win_w = width;
+	win_h = height;
+	::glViewport(0, 0, width, height);
 }
 
 // some utility functions for simple und INEFFICIENT rendering

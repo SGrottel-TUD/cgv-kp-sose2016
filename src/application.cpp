@@ -5,7 +5,7 @@
 #include "rendering/model_listing_renderer.hpp"
 #include "rendering/debug_user_input.hpp"
 #include "vision/dummy_vision.hpp"
-#include "GLFW/glfw3.h"
+//#include "GLFW/glfw3.h"
 #include <cassert>
 #include <iostream>
 
@@ -34,7 +34,6 @@ bool application::init() {
 }
 
 void application::run() {
-    std::shared_ptr<rendering::abstract_renderer> renderer;
 
     // create debug window
     debug_window = std::make_shared<rendering::window>(1280, 720);
@@ -60,6 +59,8 @@ void application::run() {
             debug_window.reset();
         }
     }
+	debug_window->register_key_callback(GLFW_KEY_F, std::bind(&application::toggle_fullscreen, this), rendering::window::OnRelease);
+	debug_window->register_framebuffer_size_callback(std::bind(&rendering::abstract_renderer::set_framebuffer_size, renderer, std::placeholders::_1, std::placeholders::_2));
 
     std::shared_ptr<vision::abstract_vision> vision;
     switch (config.active_vision) {
@@ -104,10 +105,7 @@ void application::run() {
         //if (debug_window) { // this if is preparation for multiple windows
             // debug window is valid.
         if (debug_window->is_alive()) {
-			if (debug_window->do_events()) {
-				renderer->deinit();
-				renderer->init(*debug_window);
-			}
+			debug_window->do_events();
             renderer->render(*debug_window);
             debug_window->swap_buffers();
 
@@ -135,4 +133,12 @@ void application::run() {
 
 void application::deinit() {
     // empty atm
+}
+
+void application::toggle_fullscreen()
+{
+	renderer->deinit();
+	debug_window->toggle_fullscreen();
+	config.fullscreen = !config.fullscreen;
+	renderer->init(*debug_window);
 }

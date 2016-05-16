@@ -17,6 +17,8 @@ namespace rendering {
         void deinit();
         // Do render
         virtual void render(const window& wnd) = 0;
+		virtual void set_framebuffer_size(int width, int height) = 0;
+
     protected:
         // return true on success
         virtual bool init_impl(const window& wnd) = 0;

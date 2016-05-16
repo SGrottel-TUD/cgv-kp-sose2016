@@ -1,9 +1,5 @@
 #include "rendering/window.hpp"
 #include <iostream>
-#include "GL/glew.h"
-#include "GLFW/glfw3.h"
-#include "glm/glm.hpp"
-#include "glm/gtx/transform.hpp"
 #include "rendering/abstract_user_input.hpp"
 
 using namespace cgvkp;
@@ -57,18 +53,9 @@ bool rendering::window::is_alive() const {
         && (!::glfwWindowShouldClose(handle));
 }
 
-bool rendering::window::do_events() {
-    if (!is_alive()) return false;
+void rendering::window::do_events() {
+    if (!is_alive()) return;
     ::glfwPollEvents();
-
-	bool retVal = false;
-	if (GetKeyOnce(handle, GLFW_KEY_F))
-	{
-		toggle_fullscreen();
-		retVal = true;
-	}
-
-	return retVal;
 
     //// Keys
     //keys.update(handle);
@@ -101,6 +88,31 @@ void rendering::window::swap_buffers() const {
     ::glfwSwapBuffers(handle);
 }
 
+bool rendering::window::register_key_callback(int key, std::function<void()> callback, on_event ev /* = OnDown */)
+{
+	if (key > GLFW_KEY_LAST)
+	{
+		return false;
+	}
+
+	key_events& k = keys[key];
+
+	if (ev & OnPress)
+	{
+		k.onPress = callback;
+	}
+	if (ev & OnRepeat)
+	{
+		k.onRepeat = callback;
+	}
+	if (ev & OnRelease)
+	{
+		k.onRelease = callback;
+	}
+
+	return true;
+}
+
 bool rendering::window::get_size(unsigned int &out_width, unsigned int &out_height) const {
     int w, h;
     ::glfwGetFramebufferSize(handle, &w, &h);
@@ -113,6 +125,27 @@ bool rendering::window::get_size(unsigned int &out_width, unsigned int &out_heig
     return rv;
 }
 
+void rendering::window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	rendering::window* w = static_cast<rendering::window*>(glfwGetWindowUserPointer(window));
+	if (key < 256)
+	{
+		key_events const& k = w->keys[key];
+		if (action == GLFW_PRESS && k.onPress)
+		{
+			k.onPress();
+		}
+		else if (action == GLFW_REPEAT && k.onRepeat)
+		{
+			k.onRepeat();
+		}
+		else if (action == GLFW_RELEASE && k.onRelease)
+		{
+			k.onRelease();
+		}
+	}
+}
+
 void rendering::window::mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
     rendering::window *that = static_cast<rendering::window*>(::glfwGetWindowUserPointer(window));
     if (that->user_input) that->user_input->mouse_button(window, button, action, mods);
@@ -123,11 +156,16 @@ void rendering::window::mouse_scroll_callback(GLFWwindow* window, double xoffset
     if (that->user_input) that->user_input->mouse_wheel(window, xoffset, yoffset);
 }
 
-void rendering::window::ctor_impl(GLFWmonitor* fullscreen, unsigned int w, unsigned int h, const char* title) {
-	for (int i = 0; i < 256; ++i) {
-		keys[i] = false;
+void rendering::window::framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	rendering::window* w = static_cast<rendering::window*>(glfwGetWindowUserPointer(window));
+	if (w->framebuffer_size_cb)
+	{
+		w->framebuffer_size_cb(width, height);
 	}
+}
 
+void rendering::window::ctor_impl(GLFWmonitor* fullscreen, unsigned int w, unsigned int h, const char* title) {
     ::glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // ogl 3.3 core
     ::glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     ::glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -199,6 +237,8 @@ bool rendering::window::create_window(int width, int height, char const* title, 
 
 	::glfwSetMouseButtonCallback(handle, window::mouse_button_callback);
 	::glfwSetScrollCallback(handle, window::mouse_scroll_callback);
+	::glfwSetFramebufferSizeCallback(handle, window::framebuffer_size_callback);
+	::glfwSetKeyCallback(handle, window::key_callback);
 
 	::glfwMakeContextCurrent(handle);
 
