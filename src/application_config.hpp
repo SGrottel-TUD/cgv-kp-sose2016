@@ -1,5 +1,5 @@
 #pragma once
-
+#include "rendering/release_renderer.hpp"
 #include <iostream>
 #include <iosfwd>
 
@@ -31,12 +31,14 @@ namespace cgvkp {
         // Properties
         renderers active_renderer;
         vision_inputs active_vision;
+		std::string data_path;
 
 		int window_width;
 		int window_height;
 		bool fullscreen;
-		std::string data_path;
-		bool stereo;
+		rendering::camera_mode camera_mode;
+		float eye_separation;
+		float zzero_parallax;
 
 	private:
 		void interpret_arguments(int argc, char** argv);

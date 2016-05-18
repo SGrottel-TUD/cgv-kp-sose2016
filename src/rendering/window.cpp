@@ -79,8 +79,10 @@ void rendering::window::do_events() {
 }
 
 void rendering::window::make_current() const {
-    if (!is_alive()) return;
-    ::glfwMakeContextCurrent(handle);
+	if (handle != nullptr)
+	{
+		::glfwMakeContextCurrent(handle);
+	}
 }
 
 void rendering::window::swap_buffers() const {
@@ -113,22 +115,21 @@ bool rendering::window::register_key_callback(int key, std::function<void()> cal
 	return true;
 }
 
-bool rendering::window::get_size(unsigned int &out_width, unsigned int &out_height) const {
+bool rendering::window::get_size(int &out_width, int &out_height) const {
     int w, h;
     ::glfwGetFramebufferSize(handle, &w, &h);
     if (w < 0) w = 0;
     if (h < 0) h = 0;
-    bool rv = (static_cast<unsigned int>(w) != out_width)
-        || (static_cast<unsigned int>(h) != out_height);
-    out_width = static_cast<unsigned int>(w);
-    out_height = static_cast<unsigned int>(h);
+    bool rv = (w != out_width) || (h != out_height);
+    out_width = w;
+    out_height = h;
     return rv;
 }
 
 void rendering::window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	rendering::window* w = static_cast<rendering::window*>(glfwGetWindowUserPointer(window));
-	if (key < 256)
+	if (key <= GLFW_KEY_LAST)
 	{
 		key_events const& k = w->keys[key];
 		if (action == GLFW_PRESS && k.onPress)

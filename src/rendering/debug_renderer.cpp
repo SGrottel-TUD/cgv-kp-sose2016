@@ -105,6 +105,8 @@ void main() {\n\
 void rendering::debug_renderer::render(const window& wnd) {
     if ((win_w == 0) || (win_h == 0)) return;
 
+	wnd.make_current();
+
     ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     ::glDisable(GL_DEPTH_TEST);
