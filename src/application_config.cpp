@@ -5,12 +5,15 @@
 #include <sstream>
 
 cgvkp::application_config::application_config()
-    : active_vision(vision_inputs::debug),
+	: active_vision(vision_inputs::debug),
 	active_renderer(renderers::debug),
 	window_width(1280),
 	window_height(720),
-	stereo(false),
-	fullscreen(false),data_path("config.ini"){
+	camera_mode(rendering::camera_mode::mono),
+	eye_separation(0),
+	zzero_parallax(0),
+	fullscreen(false),
+	data_path("config.ini") {
     // Intentionally empty
 }
 
@@ -75,7 +78,9 @@ std::ostream& cgvkp::operator<<(std::ostream& lhs, application_config const& rhs
 	lhs << "width = " << rhs.window_width << std::endl;
 	lhs << "heigth = " << rhs.window_height << std::endl;
 	lhs << "data_path = \"" << rhs.data_path << "\"" << std::endl;
-	lhs << "stereo = " << (rhs.stereo ? 1 : 0) << std::endl;
+	lhs << "camera_mode = " << rhs.camera_mode << std::endl;
+	lhs << "eye_separation = " << rhs.eye_separation << std::endl;
+	lhs << "zzero_parallax = " << rhs.camera_mode << std::endl;
 	
 	return lhs;
 }
@@ -109,9 +114,19 @@ std::istream& cgvkp::operator>>(std::istream& lhs, application_config& rhs)
 			std::getline(ss, idc, '"');
 			std::getline(ss, rhs.data_path, '"');
 		}
-		else if (key.find("stereo") != std::string::npos)
+		else if (key.find("camera_mode") != std::string::npos)
 		{
-			ss >> rhs.stereo;
+			int mode = 0;
+			ss >> mode;
+			rhs.camera_mode = static_cast<rendering::camera_mode>(mode);
+		}
+		else if (key.find("eye_separation") != std::string::npos)
+		{
+			ss >> rhs.eye_separation;
+		}
+		else if (key.find("zzero_parallax") != std::string::npos)
+		{
+			ss >> rhs.zzero_parallax;
 		}
 	}
 

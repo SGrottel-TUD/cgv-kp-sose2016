@@ -37,7 +37,7 @@ namespace rendering {
 
         unsigned int vao;
         unsigned int shader;
-        unsigned int win_w, win_h;
+        int win_w, win_h;
     };
 
 }

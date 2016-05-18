@@ -17,6 +17,7 @@ namespace rendering {
 			OnRepeat = 2,
 			OnRelease = 4
 		};
+
         window(unsigned int w, unsigned int h, const char* title = "CGV KP SoSe2016");
         // Use a width of '-1' and a monitor, to keep that monitors video mode
         window(GLFWmonitor* fullscreen, unsigned int w, unsigned int h, const char* title = "CGV KP SoSe2016");
@@ -29,7 +30,7 @@ namespace rendering {
         void make_current() const;
         void swap_buffers() const;
 
-        bool get_size(unsigned int &out_width, unsigned int &out_height) const;
+        bool get_size(int &out_width, int &out_height) const;
 
 		bool register_key_callback(int key, std::function<void()> callback, on_event ev = OnPress);
 		inline void register_framebuffer_size_callback(std::function<void(int, int)> callback) { framebuffer_size_cb = callback; }
@@ -70,5 +71,10 @@ namespace rendering {
 		std::function<void(int, int)> framebuffer_size_cb;
     };
 
+
+	inline window::on_event operator|(window::on_event a, window::on_event b)
+	{
+		return static_cast<window::on_event>(static_cast<int>(a) | static_cast<int>(b));
+	}
 }
 }
