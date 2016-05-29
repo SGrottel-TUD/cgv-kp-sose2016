@@ -150,6 +150,9 @@
     <ClCompile Include="src\rendering\view\hand_view.cpp">
       <Filter>rendering\view\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\rendering\technique.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -235,6 +238,9 @@
     </ClInclude>
     <ClInclude Include="src\rendering\model\hand_model.hpp">
       <Filter>rendering\model\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique.hpp">
+      <Filter>rendering\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

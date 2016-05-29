@@ -8,7 +8,7 @@ namespace util {
     public:
 
         static std::string find_resource_file(const char *name);
-        static std::string read_file_as_text(const std::string& path);
+        static bool read_file_as_text(char const* filename, std::string& string);
 
     private:
         resource_file() = delete;

@@ -1,8 +1,9 @@
 #pragma once
-#include "rendering/abstract_renderer.hpp"
-#include "rendering/model/model_base.hpp"
-#include "rendering/view/view_base.hpp"
-#include "rendering/controller/controller_base.hpp"
+#include "abstract_renderer.hpp"
+#include "technique.hpp"
+#include "model/model_base.hpp"
+#include "view/view_base.hpp"
+#include "controller/controller_base.hpp"
 #include "glm/mat4x4.hpp"
 #include <vector>
 #include <chrono>
@@ -17,6 +18,18 @@ namespace rendering {
 		stereo = 1
 	};
 
+	// This is only an example technique. (Thus no extra file.)
+	class ExampleTechnique : public Technique
+	{
+	public:
+		ExampleTechnique();
+		virtual bool init();
+		void setProjectionView(glm::mat4x4 const& projectionView) const;
+
+	private:
+		GLint projectionViewLocation;
+	};
+
     class release_renderer : public abstract_renderer {
     public:
         release_renderer(const ::cgvkp::data::world& data);
@@ -28,7 +41,7 @@ namespace rendering {
 		virtual void set_framebuffer_size(int width, int height);
 
 		virtual void lost_context();
-		virtual void restore_context(window const& wnd);
+		virtual bool restore_context(window const& wnd);
 
     protected:
         virtual bool init_impl(const window& wnd);
@@ -47,8 +60,8 @@ namespace rendering {
 		float eyeSeparation;
 		float zZeroParallax;
 
+		ExampleTechnique exampleTechnique;
 		unsigned int vao;
-		unsigned int shader;
 
 		unsigned int vertexbuffer;
 		float g_vertex_buffer_data[2 * 3 * 3];

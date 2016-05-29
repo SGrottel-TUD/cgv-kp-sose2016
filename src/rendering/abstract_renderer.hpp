@@ -22,7 +22,7 @@ namespace rendering {
 		virtual void set_framebuffer_size(int width, int height) = 0;
 
 		virtual void lost_context() {}
-		virtual void restore_context(window const& wnd) {}
+		virtual bool restore_context(window const& wnd) { return true; }
 
     protected:
         // return true on success

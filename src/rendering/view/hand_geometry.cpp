@@ -24,9 +24,11 @@ namespace view {
         // Shaders
         //
         std::string path = cgvkp::util::resource_file::find_resource_file("shaders/star_vs");
-        std::string vert_src = cgvkp::util::resource_file::read_file_as_text(path);
+		std::string vert_src;
+		cgvkp::util::resource_file::read_file_as_text(path.c_str(), vert_src);
         path = cgvkp::util::resource_file::find_resource_file("shaders/star_fs");
-        std::string frag_src = cgvkp::util::resource_file::read_file_as_text(path);
+		std::string frag_src;
+		cgvkp::util::resource_file::read_file_as_text(path.c_str(), frag_src);
         const char *c_str;
         GLuint v, f;
         v = ::glCreateShader(GL_VERTEX_SHADER);

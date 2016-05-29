@@ -31,14 +31,20 @@ std::string cgvkp::util::resource_file::find_resource_file(const char *name) {
     return "";
 }
 
-std::string cgvkp::util::resource_file::read_file_as_text(const std::string& path) {
-    std::ifstream file(path);
-    if (!file.is_open()) return nullptr;
-    file.seekg(0, std::ifstream::end);
-    unsigned int len = static_cast<unsigned int>(file.tellg());
-    std::vector<char> cont;
-    cont.resize(len);
-    file.seekg(0, std::ifstream::beg);
-    file.read(cont.data(), len);
-    return std::string(cont.data(), len);
+bool cgvkp::util::resource_file::read_file_as_text(char const* filename, std::string& string)
+{
+    std::ifstream file(filename, std::ios::binary);
+	if (file)
+	{
+		file.seekg(0, std::ios::end);
+		string.resize(file.tellg());
+		file.seekg(0, std::ios::beg);
+		file.read(&string[0], string.size());
+
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
