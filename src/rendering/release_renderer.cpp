@@ -5,15 +5,15 @@
 
 cgvkp::rendering::release_renderer::release_renderer(const ::cgvkp::data::world& data)
     : cgvkp::rendering::abstract_renderer(data),
-	models(), views(), controllers(), vao(0), shader(0), framebufferWidth(0), framebufferHeight(0), cameraMode(mono) {
+	models(), views(), controllers(), vao(0), framebufferWidth(0), framebufferHeight(0), cameraMode(mono) {
 }
 cgvkp::rendering::release_renderer::~release_renderer(){}
 
 bool cgvkp::rendering::release_renderer::init_impl(const window& wnd) {
-	// TODO: Implement release_renderer::init_impl
-	std::cout << "Release renderer initialized" << std::endl;
-	
-	restore_context(wnd);
+	if (!restore_context(wnd))
+	{
+		return false;
+	}
 
 	float w = data.get_config().width();
 	float h = data.get_config().height();
@@ -104,10 +104,10 @@ void cgvkp::rendering::release_renderer::render(const window& wnd) {
 
 void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projection) const
 {
-	::glUseProgram(shader);
 	glBindVertexArray(vao);
-	glUniformMatrix4fv(glGetUniformLocation(shader, "view"), 1, GL_FALSE, &view[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, &projection[0][0]);
+
+	exampleTechnique.use();
+	exampleTechnique.setProjectionView(projection * view);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -145,10 +145,10 @@ void cgvkp::rendering::release_renderer::lost_context()
 	::glBindVertexArray(0);
 	::glDeleteVertexArrays(1, &vao);
 	::glUseProgram(0);
-	::glDeleteProgram(shader);
+	exampleTechnique.deinit();
 }
 
-void cgvkp::rendering::release_renderer::restore_context(window const& wnd)
+bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 {
 	wnd.get_size(framebufferWidth, framebufferHeight);
 
@@ -158,34 +158,10 @@ void cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 	::glEnable(GL_DEPTH_TEST);
 	::glEnable(GL_CULL_FACE);
 
-	//
-	// Shaders
-	//
-	const char *vert_src = "#version 330 core\n\
-						   uniform mat4x4 view;\n\
-						   uniform mat4x4 projection;\n\
-						   layout(location = 0) in vec3 vertexPosition_modelspace;\n\
-						   \n\
-						   void main() {\n\
-gl_Position = projection * view * vec4(vertexPosition_modelspace, 1);\n\
-								   }";
-	const char *frag_src = "#version 330 core\n\
-						   out vec3 o_color;\n\
-						   void main() {\n\
-						   o_color = vec3(1, 0, 0);\n\
-							   }";
-	GLuint v, f;
-	v = ::glCreateShader(GL_VERTEX_SHADER);
-	f = ::glCreateShader(GL_FRAGMENT_SHADER);
-	::glShaderSource(v, 1, &vert_src, nullptr);
-	::glCompileShader(v);
-	::glShaderSource(f, 1, &frag_src, nullptr);
-	::glCompileShader(f);
-
-	shader = ::glCreateProgram();
-	::glAttachShader(shader, v);
-	::glAttachShader(shader, f);
-	::glLinkProgram(shader);
+	if (!exampleTechnique.init())
+	{
+		return false;
+	}
 
 	::glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -216,4 +192,49 @@ gl_Position = projection * view * vec4(vertexPosition_modelspace, 1);\n\
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 	glBindVertexArray(0);
+
+	return true;
+}
+
+/*
+ * Example technique. Should be deleted in the near future.
+*/
+
+cgvkp::rendering::ExampleTechnique::ExampleTechnique()
+	: projectionViewLocation(0)
+{
+}
+
+bool cgvkp::rendering::ExampleTechnique::init()
+{
+	if (!Technique::init())
+	{
+		return false;
+	}
+	if (!addShader(GL_VERTEX_SHADER, "res/shaders/example.vs"))
+	{
+		return false;
+	}
+	if (!addShader(GL_FRAGMENT_SHADER, "res/shaders/example.fs"))
+	{
+		return false;
+	}
+	if (!link())
+	{
+		return false;
+	}
+
+	projectionViewLocation = getUniformLocation("projectionView");
+
+	if (projectionViewLocation == -1)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void cgvkp::rendering::ExampleTechnique::setProjectionView(glm::mat4x4 const& projectionView) const
+{
+	glUniformMatrix4fv(projectionViewLocation, 1, GL_FALSE, &projectionView[0][0]);
 }
