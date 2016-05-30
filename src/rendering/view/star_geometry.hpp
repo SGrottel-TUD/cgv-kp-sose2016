@@ -11,8 +11,6 @@ namespace view {
         ~star_geometry();
         star_geometry();
         bool init();
-        GLuint shader;
-        GLuint model_loc, projection_loc, view_loc;
         GLuint vao;
         GLuint buffers[3];
         GLuint element_count;

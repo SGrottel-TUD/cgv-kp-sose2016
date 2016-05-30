@@ -1,4 +1,5 @@
 #include "rendering/view/star_geometry.hpp"
+#include "rendering/technique.hpp"
 #include "util/resource_file.hpp"
 #include <iostream>
 #include <glm/glm.hpp>
@@ -8,57 +9,18 @@
 namespace cgvkp {
 namespace rendering {
 namespace view {
-    star_geometry::star_geometry() : shader(0u),
-        model_loc(0u), projection_loc(0u), view_loc(0u),
+    star_geometry::star_geometry() :
         vao(0u), element_count(0u) {
     }
     star_geometry::~star_geometry() {
-        ::glDeleteShader(shader);
         ::glBindVertexArray(0u);
         ::glDeleteVertexArrays(1, &vao);
         ::glDeleteBuffers(3, buffers);
     }
     bool star_geometry::init() {
-        //
-        // Shaders
-        //
-        std::string path = cgvkp::util::resource_file::find_resource_file("shaders/star_vs");
-		std::string vert_src;
-		cgvkp::util::resource_file::read_file_as_text(path.c_str(), vert_src);
-        path = cgvkp::util::resource_file::find_resource_file("shaders/star_fs");
-		std::string frag_src;
-		cgvkp::util::resource_file::read_file_as_text(path.c_str(), frag_src);
-        const char *c_str;
-        GLuint v, f;
-        v = ::glCreateShader(GL_VERTEX_SHADER);
-        f = ::glCreateShader(GL_FRAGMENT_SHADER);
-        c_str = vert_src.data();
-        ::glShaderSource(v, 1, &c_str, nullptr);
-        ::glCompileShader(v);
-        //printShaderInfoLog(v);
-        c_str = frag_src.data();
-        ::glShaderSource(f, 1, &c_str, nullptr);
-        ::glCompileShader(f);
-        //printShaderInfoLog(f);
-
-        shader = ::glCreateProgram();
-        ::glAttachShader(shader, v);
-        ::glAttachShader(shader, f);
-        //::glBindFragDataLocation(p, 0, "output_color");
-        ::glLinkProgram(shader);
-        //printProgramInfoLog(shader);
-
-        ::glUseProgram(shader);
-
-        model_loc = ::glGetUniformLocation(shader, "model");
-        projection_loc = ::glGetUniformLocation(shader, "projection");
-        view_loc = ::glGetUniformLocation(shader, "view");
-
         ::glGenVertexArrays(1, &vao);
         ::glBindVertexArray(vao);
 
-        GLuint vertexLoc = ::glGetAttribLocation(shader, "vert_position");
-        GLuint normalLoc = ::glGetAttribLocation(shader, "vert_normal");
 
         // Calculate star positions
         std::vector<float> poss, normals;
@@ -129,14 +91,14 @@ namespace view {
         ::glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
         ::glBufferData(GL_ARRAY_BUFFER, poss.size() * sizeof(float), poss.data(), GL_STATIC_DRAW);
 
-        ::glEnableVertexAttribArray(vertexLoc);
-        ::glVertexAttribPointer(vertexLoc, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+        ::glEnableVertexAttribArray(IN_LOC_POSITION);
+        ::glVertexAttribPointer(IN_LOC_POSITION, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 
         ::glBindBuffer(GL_ARRAY_BUFFER, buffers[1]);
         ::glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), normals.data(), GL_STATIC_DRAW);
 
-        ::glEnableVertexAttribArray(normalLoc);
-        ::glVertexAttribPointer(normalLoc, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+        ::glEnableVertexAttribArray(IN_LOC_NORMAL);
+        ::glVertexAttribPointer(IN_LOC_NORMAL, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 
         ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[2]);
         ::glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32_t), indices.data(), GL_STATIC_DRAW);
