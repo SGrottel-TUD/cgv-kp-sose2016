@@ -20,14 +20,12 @@ namespace cgvkp
 			void deinit();
 			void setWorldViewProjection(glm::mat4x4 const& worldViewProjection) const;
 			inline void use() const { glUseProgram(program); }
-            virtual void setProjectionView(glm::mat4x4 const& projectionView) const;
 
 		protected:
 			Technique();
 			bool addShader(GLenum shaderType, char const* filename);
 			GLint getUniformLocation(GLchar const* name) const;
 			bool link();
-            GLint projectionViewLocation;
 
 			GLint worldViewProjectionLocation;
 
