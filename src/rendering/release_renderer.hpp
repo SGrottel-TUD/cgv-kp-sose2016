@@ -1,6 +1,6 @@
 #pragma once
 #include "abstract_renderer.hpp"
-#include "technique.hpp"
+#include "technique_normal_as_colour.hpp"
 #include "model/model_base.hpp"
 #include "view/view_base.hpp"
 #include "controller/controller_base.hpp"
@@ -16,14 +16,6 @@ namespace rendering {
 	enum camera_mode {
 		mono = 0,
 		stereo = 1
-	};
-
-	// This is only an example technique. (Thus no extra file.)
-	class ExampleTechnique : public Technique
-	{
-	public:
-		ExampleTechnique();
-		virtual bool init();
 	};
 
     class release_renderer : public abstract_renderer {
@@ -56,7 +48,7 @@ namespace rendering {
 		float eyeSeparation;
 		float zZeroParallax;
 
-		ExampleTechnique exampleTechnique;
+		technique_normal_as_colour exampleTechnique;
 		unsigned int vao;
 
 		unsigned int vertexbuffer;
