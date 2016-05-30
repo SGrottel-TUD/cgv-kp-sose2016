@@ -40,6 +40,7 @@
     <ClCompile Include="src\rendering\view\star_view.cpp" />
     <ClCompile Include="src\rendering\view\view_base.cpp" />
     <ClCompile Include="src\rendering\window.cpp" />
+    <ClCompile Include="src\rendering\technique_normal_as_colour.cpp" />
     <ClCompile Include="src\util\obj_parser.cpp" />
     <ClCompile Include="src\util\resource_file.cpp" />
     <ClCompile Include="src\vision\abstract_vision.cpp" />
@@ -66,6 +67,7 @@
     <ClInclude Include="src\rendering\model_listing_renderer.hpp" />
     <ClInclude Include="src\rendering\release_renderer.hpp" />
     <ClInclude Include="src\rendering\technique.hpp" />
+    <ClInclude Include="src\rendering\technique_normal_as_colour.hpp" />
     <ClInclude Include="src\rendering\view\hand_geometry.hpp" />
     <ClInclude Include="src\rendering\view\hand_view.hpp" />
     <ClInclude Include="src\rendering\view\star_geometry.hpp" />

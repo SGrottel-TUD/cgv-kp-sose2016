@@ -202,6 +202,7 @@ bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 */
 
 cgvkp::rendering::ExampleTechnique::ExampleTechnique()
+	: Technique()
 {
 }
 

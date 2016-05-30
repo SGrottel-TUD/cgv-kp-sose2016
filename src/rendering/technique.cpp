@@ -51,6 +51,12 @@ void cgvkp::rendering::Technique::setWorldViewProjection(glm::mat4x4 const& worl
 	{
 		glUniformMatrix4fv(worldViewProjectionLocation, 1, GL_FALSE, &worldViewProjection[0][0]);
 	}
+	#if defined(_DEBUG) || defined(DEBUG)
+	else
+	{
+		std::cerr << "WARNING: worldViewProjectionLocation was not defined in a Technique subclass" << std::endl;
+	}
+	#endif
 }
 
 bool cgvkp::rendering::Technique::addShader(GLenum shaderType, char const* filename)
