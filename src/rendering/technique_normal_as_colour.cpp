@@ -1,4 +1,4 @@
-#include "rendering/technique_normal_as_colour.hpp"
+#include "technique_normal_as_colour.hpp"
 
 cgvkp::rendering::TechniqueNormalAsColour::TechniqueNormalAsColour()
 	: Technique()
@@ -38,4 +38,11 @@ bool cgvkp::rendering::TechniqueNormalAsColour::init()
     }
 
 	return true;
+}
+void cgvkp::rendering::TechniqueNormalAsColour::setModelMatrix(glm::mat4x4 const& modelMatrix) const
+{
+	if (modelMatrixLocation != -1)
+	{
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &modelMatrix[0][0]);
+	}
 }

@@ -6,7 +6,7 @@ namespace cgvkp
 {
     namespace rendering
     {
-        class TechniqueNormalAsColour : Technique
+        class TechniqueNormalAsColour : public Technique
         {
         public:
             TechniqueNormalAsColour();
