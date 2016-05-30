@@ -1,11 +1,11 @@
 #include "technique_normal_as_colour.hpp"
 
-cgvkp::rendering::TechniqueNormalAsColour::TechniqueNormalAsColour()
+cgvkp::rendering::technique_normal_as_colour::technique_normal_as_colour()
 	: Technique()
 {
 }
 
-bool cgvkp::rendering::TechniqueNormalAsColour::init()
+bool cgvkp::rendering::technique_normal_as_colour::init()
 {
 	if (!Technique::init())
 	{
@@ -39,7 +39,7 @@ bool cgvkp::rendering::TechniqueNormalAsColour::init()
 
 	return true;
 }
-void cgvkp::rendering::TechniqueNormalAsColour::setModelMatrix(glm::mat4x4 const& modelMatrix) const
+void cgvkp::rendering::technique_normal_as_colour::setModelMatrix(glm::mat4x4 const& modelMatrix) const
 {
 	if (modelMatrixLocation != -1)
 	{

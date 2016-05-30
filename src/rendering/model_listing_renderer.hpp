@@ -24,7 +24,7 @@ namespace rendering {
         virtual bool init_impl(const window& wnd);
         virtual void deinit_impl();
     private:
-        TechniqueNormalAsColour technique1;
+        technique_normal_as_colour technique1;
 		std::chrono::high_resolution_clock::time_point last_time;
         std::shared_ptr<model::star_model> star_model;
         std::shared_ptr<view::star_view> star_view;
