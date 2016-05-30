@@ -4,6 +4,9 @@
 #include <GL/glew.h>
 #include <list>
 
+#define IN_LOC_POSITION 0
+#define IN_LOC_NORMAL 1
+
 namespace cgvkp
 {
 	namespace rendering
