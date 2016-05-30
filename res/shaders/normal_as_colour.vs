@@ -4,8 +4,8 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-in vec3 vert_position;
-in vec3 vert_normal;
+layout(location = 0) vert_position;
+layout(location = 1) vert_normal;
 out vec3 frag_position;
 out vec3 frag_normal;
 
