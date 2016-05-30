@@ -1,12 +1,12 @@
-#include "technique.hpp"
-#include "util/resource_file.hpp"
-#include <string>
 #if defined(_DEBUG) || defined(DEBUG)
 #include <iostream>
 #endif
+#include <string>
+#include "technique.hpp"
+#include "util/resource_file.hpp"
 
 cgvkp::rendering::Technique::Technique()
-    : program(0), projectionViewLocation(-1)
+	: program(0), worldViewProjectionLocation(-1)
 {
 }
 
@@ -43,6 +43,20 @@ void cgvkp::rendering::Technique::deinit()
 		glDeleteShader(shader);
 	}
 	shaders.clear();
+}
+
+void cgvkp::rendering::Technique::setWorldViewProjection(glm::mat4x4 const& worldViewProjection) const
+{
+	if (worldViewProjectionLocation != -1)
+	{
+		glUniformMatrix4fv(worldViewProjectionLocation, 1, GL_FALSE, &worldViewProjection[0][0]);
+	}
+	#if defined(_DEBUG) || defined(DEBUG)
+	else
+	{
+		std::cerr << "WARNING: worldViewProjectionLocation was not defined in a Technique subclass" << std::endl;
+	}
+	#endif
 }
 
 bool cgvkp::rendering::Technique::addShader(GLenum shaderType, char const* filename)
@@ -140,17 +154,4 @@ bool cgvkp::rendering::Technique::link()
 	shaders.clear();
 
 	return true;
-}
-
-void cgvkp::rendering::Technique::setProjectionView(glm::mat4x4 const& projectionView) const {
-    if (projectionViewLocation != -1)
-    {
-        glUniformMatrix4fv(projectionViewLocation, 1, GL_FALSE, &projectionView[0][0]);
-    }
-#if defined(_DEBUG) || defined(DEBUG)
-    else
-    {
-        std::cerr << "WARNING: projectionViewLocation was not defined in a Technique subclass!" << std::endl;
-    }
-#endif
 }

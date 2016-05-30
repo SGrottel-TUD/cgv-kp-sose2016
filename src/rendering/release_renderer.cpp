@@ -104,13 +104,14 @@ void cgvkp::rendering::release_renderer::render(const window& wnd) {
 
 void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projection) const
 {
-	glBindVertexArray(vao);
 
 	exampleTechnique.use();
-	exampleTechnique.setProjectionView(projection * view);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glm::mat4x4 world(1);
+	exampleTechnique.setWorldViewProjection(projection * view * world);
+	glBindVertexArray(vao);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -224,9 +225,9 @@ bool cgvkp::rendering::ExampleTechnique::init()
 		return false;
 	}
 
-	projectionViewLocation = getUniformLocation("projectionView");
+	worldViewProjectionLocation = getUniformLocation("worldViewProjection");
 
-	if (projectionViewLocation == -1)
+	if (worldViewProjectionLocation == -1)
 	{
 		return false;
 	}
