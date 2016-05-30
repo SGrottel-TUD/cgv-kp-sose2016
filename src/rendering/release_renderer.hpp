@@ -24,10 +24,6 @@ namespace rendering {
 	public:
 		ExampleTechnique();
 		virtual bool init();
-		void setProjectionView(glm::mat4x4 const& projectionView) const;
-
-	private:
-		GLint projectionViewLocation;
 	};
 
     class release_renderer : public abstract_renderer {

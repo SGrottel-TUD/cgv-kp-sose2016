@@ -201,7 +201,7 @@ bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 */
 
 cgvkp::rendering::ExampleTechnique::ExampleTechnique()
-	: projectionViewLocation(0)
+	: Technique()
 {
 }
 
@@ -232,9 +232,4 @@ bool cgvkp::rendering::ExampleTechnique::init()
 	}
 
 	return true;
-}
-
-void cgvkp::rendering::ExampleTechnique::setProjectionView(glm::mat4x4 const& projectionView) const
-{
-	glUniformMatrix4fv(projectionViewLocation, 1, GL_FALSE, &projectionView[0][0]);
 }
