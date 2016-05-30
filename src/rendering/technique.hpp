@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GL/glew.h>
+#include <glm/mat4x4.hpp>
 #include <list>
 
 namespace cgvkp
@@ -13,6 +14,7 @@ namespace cgvkp
 			virtual ~Technique();
 			virtual bool init();
 			void deinit();
+			void setWorldViewProjection(glm::mat4x4 const& worldViewProjection) const;
 			inline void use() const { glUseProgram(program); }
 
 		protected:
@@ -20,6 +22,8 @@ namespace cgvkp
 			bool addShader(GLenum shaderType, char const* filename);
 			GLint getUniformLocation(GLchar const* name) const;
 			bool link();
+
+			GLint worldViewProjectionLocation;
 
 		private:
 			GLuint program;

@@ -1,12 +1,12 @@
-#include "technique.hpp"
-#include "util/resource_file.hpp"
-#include <string>
 #if defined(_DEBUG) || defined(DEBUG)
 #include <iostream>
 #endif
+#include <string>
+#include "technique.hpp"
+#include "util/resource_file.hpp"
 
 cgvkp::rendering::Technique::Technique()
-	: program(0)
+	: program(0), worldViewProjectionLocation(-1)
 {
 }
 
@@ -43,6 +43,14 @@ void cgvkp::rendering::Technique::deinit()
 		glDeleteShader(shader);
 	}
 	shaders.clear();
+}
+
+void cgvkp::rendering::Technique::setWorldViewProjection(glm::mat4x4 const& worldViewProjection) const
+{
+	if (worldViewProjectionLocation != -1)
+	{
+		glUniformMatrix4fv(worldViewProjectionLocation, 1, GL_FALSE, &worldViewProjection[0][0]);
+	}
 }
 
 bool cgvkp::rendering::Technique::addShader(GLenum shaderType, char const* filename)
