@@ -17,6 +17,9 @@ namespace view {
         inline void set_model(model::model_base::weak_ptr m) {
             model = m;
         }
+        inline model::model_base::ptr get_model() const {
+            return model.lock();
+        }
 
         // Initializes the object (if not already initialized) and returns the initialization state
         bool init();

@@ -9,7 +9,8 @@
 
 cgvkp::rendering::release_renderer::release_renderer(const ::cgvkp::data::world& data)
     : cgvkp::rendering::abstract_renderer(data),
-	models(), views(), controllers(), vao(0), framebufferWidth(0), framebufferHeight(0), cameraMode(mono) {
+	models(), views(), controllers(), new_controllers(),
+    vao(0), framebufferWidth(0), framebufferHeight(0), cameraMode(mono) {
 }
 cgvkp::rendering::release_renderer::~release_renderer(){}
 
@@ -90,6 +91,8 @@ void cgvkp::rendering::release_renderer::render(const window& wnd) {
 		if (!controller->has_model()) continue;
 		controller->update(elapsed, wnd.get_user_input_object());
 	}
+    controllers.insert(controllers.end(), new_controllers.begin(), new_controllers.end());
+    new_controllers.clear();
 
 	if (cameraMode == stereo)
 	{
@@ -128,18 +131,12 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projecti
 
 	for (view::view_base::ptr view : views) {
 		if (!view->is_valid()) continue;
-        auto star_view = std::dynamic_pointer_cast<view::star_view>(view);
-        auto hand_view = std::dynamic_pointer_cast<view::hand_view>(view);
-        if (star_view != nullptr)
+        auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(view->get_model());
+        if (graphic_model != nullptr)
         {
-            exampleTechnique.setModelMatrix(star_view->get_model()->model_matrix);
-            star_view->render();
+            exampleTechnique.setModelMatrix(graphic_model->model_matrix);
         }
-        if (hand_view != nullptr)
-        {
-            exampleTechnique.setModelMatrix(hand_view->get_model()->model_matrix);
-            hand_view->render();
-        }
+        view->render();
 	}
 }
 
@@ -191,4 +188,7 @@ void cgvkp::rendering::release_renderer::add_model(model::model_base::ptr model)
 }
 void cgvkp::rendering::release_renderer::add_view(view::view_base::ptr view) {
     views.push_back(view);
+}
+void cgvkp::rendering::release_renderer::add_controller(controller::controller_base::ptr controller) {
+    new_controllers.push_back(controller);
 }

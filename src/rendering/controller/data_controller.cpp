@@ -2,6 +2,7 @@
 
 #include "rendering/view/star_view.hpp"
 #include "rendering/view/hand_view.hpp"
+#include "rendering/controller/periodic_rotation_controller.hpp"
 
 #include <glm/gtx/transform.hpp>
 
@@ -44,6 +45,11 @@ namespace controller {
                 starView->init();
                 renderer->add_view(starView);
 
+                // And its controller
+                auto starController = std::make_shared<controller::periodic_rotation_controller>();
+                starController->set_model(star);
+                renderer->add_controller(starController);
+
                 // And add it to the map
                 stars.insert(std::make_pair(data_star->id, star));
 #if defined(_DEBUG) || defined(DEBUG)
@@ -73,6 +79,11 @@ namespace controller {
                 handView->set_model(hand);
                 handView->init();
                 renderer->add_view(handView);
+
+                // And its controller
+                auto handController = std::make_shared<controller::periodic_rotation_controller>();
+                handController->set_model(hand);
+                renderer->add_controller(handController);
 
                 // And add it to the map
                 hands.insert(std::make_pair(data_hand->id, hand));
