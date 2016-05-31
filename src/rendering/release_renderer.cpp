@@ -9,7 +9,8 @@
 
 cgvkp::rendering::release_renderer::release_renderer(const ::cgvkp::data::world& data)
     : cgvkp::rendering::abstract_renderer(data),
-	models(), views(), controllers(), vao(0), framebufferWidth(0), framebufferHeight(0), cameraMode(mono) {
+	models(), views(), controllers(), new_controllers(),
+    vao(0), framebufferWidth(0), framebufferHeight(0), cameraMode(mono) {
 }
 cgvkp::rendering::release_renderer::~release_renderer(){}
 
@@ -90,6 +91,8 @@ void cgvkp::rendering::release_renderer::render(const window& wnd) {
 		if (!controller->has_model()) continue;
 		controller->update(elapsed, wnd.get_user_input_object());
 	}
+    controllers.insert(controllers.end(), new_controllers.begin(), new_controllers.end());
+    new_controllers.clear();
 
 	if (cameraMode == stereo)
 	{
@@ -185,4 +188,7 @@ void cgvkp::rendering::release_renderer::add_model(model::model_base::ptr model)
 }
 void cgvkp::rendering::release_renderer::add_view(view::view_base::ptr view) {
     views.push_back(view);
+}
+void cgvkp::rendering::release_renderer::add_controller(controller::controller_base::ptr controller) {
+    new_controllers.push_back(controller);
 }
