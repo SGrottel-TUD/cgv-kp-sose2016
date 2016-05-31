@@ -1,6 +1,6 @@
 #pragma once
 #include "abstract_renderer.hpp"
-#include "technique.hpp"
+#include "technique_normal_as_colour.hpp"
 #include "model/model_base.hpp"
 #include "view/view_base.hpp"
 #include "controller/controller_base.hpp"
@@ -18,14 +18,6 @@ namespace rendering {
 		stereo = 1
 	};
 
-	// This is only an example technique. (Thus no extra file.)
-	class ExampleTechnique : public Technique
-	{
-	public:
-		ExampleTechnique();
-		virtual bool init();
-	};
-
     class release_renderer : public abstract_renderer {
     public:
         release_renderer(const ::cgvkp::data::world& data);
@@ -38,6 +30,9 @@ namespace rendering {
 
 		virtual void lost_context();
 		virtual bool restore_context(window const& wnd);
+
+        void add_model(model::model_base::ptr model);
+        void add_view(view::view_base::ptr view);
 
     protected:
         virtual bool init_impl(const window& wnd);
@@ -56,7 +51,7 @@ namespace rendering {
 		float eyeSeparation;
 		float zZeroParallax;
 
-		ExampleTechnique exampleTechnique;
+		technique_normal_as_colour exampleTechnique;
 		unsigned int vao;
 
 		unsigned int vertexbuffer;

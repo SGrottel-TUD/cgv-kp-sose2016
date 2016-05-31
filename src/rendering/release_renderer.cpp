@@ -1,7 +1,11 @@
 #include "release_renderer.hpp"
 #include "data/world.hpp"
 #include "glm/gtx/transform.hpp"
+#include "view/star_view.hpp"
+#include "view/hand_view.hpp"
 #include <iostream>
+
+#include "controller/data_controller.hpp"
 
 cgvkp::rendering::release_renderer::release_renderer(const ::cgvkp::data::world& data)
     : cgvkp::rendering::abstract_renderer(data),
@@ -20,10 +24,20 @@ bool cgvkp::rendering::release_renderer::init_impl(const window& wnd) {
 	view = glm::lookAt(glm::vec3(w / 2, 1.8f, 5.5f), glm::vec3(w / 2, 1.8f, - h / 2), glm::vec3(0, 1, 0));
 	calculateProjection();
 
+	exampleTechnique.init();
+
+    // Create and add data controller
+    controllers.push_back(std::make_shared<controller::data_controller>(this, data));
+
 	return true;
 }
 void cgvkp::rendering::release_renderer::deinit_impl() {
 	lost_context();
+	exampleTechnique.deinit();
+    for (auto view : views)
+    {
+        view->deinit();
+    }
 }
 
 void cgvkp::rendering::release_renderer::calculateProjection()
@@ -111,13 +125,21 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projecti
 
 	glm::mat4x4 world(1);
 	exampleTechnique.setWorldViewProjection(projection * view * world);
-	glBindVertexArray(vao);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	for (view::view_base::ptr view : views) {
 		if (!view->is_valid()) continue;
-		view->render();
+        auto star_view = std::dynamic_pointer_cast<view::star_view>(view);
+        auto hand_view = std::dynamic_pointer_cast<view::hand_view>(view);
+        if (star_view != nullptr)
+        {
+            exampleTechnique.setModelMatrix(star_view->get_model()->model_matrix);
+            star_view->render();
+        }
+        if (hand_view != nullptr)
+        {
+            exampleTechnique.setModelMatrix(hand_view->get_model()->model_matrix);
+            hand_view->render();
+        }
 	}
 }
 
@@ -144,7 +166,6 @@ void cgvkp::rendering::release_renderer::set_framebuffer_size(int width, int hei
 void cgvkp::rendering::release_renderer::lost_context()
 {
 	::glBindVertexArray(0);
-	::glDeleteVertexArrays(1, &vao);
 	::glUseProgram(0);
 	exampleTechnique.deinit();
 }
@@ -163,74 +184,11 @@ bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 	{
 		return false;
 	}
-
-	::glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-
-	// vertex buffer
-	for (int i = 0; i < 2 * 3 * 3; ++i)
-	{
-		g_vertex_buffer_data[i] = 0;
-	}
-	float w = data.get_config().width();
-	float h = data.get_config().height();
-
-	g_vertex_buffer_data[3] = w;
-
-	g_vertex_buffer_data[6] = w;
-	g_vertex_buffer_data[8] = -h;
-
-	g_vertex_buffer_data[12] = w;
-	g_vertex_buffer_data[14] = -h;
-
-	g_vertex_buffer_data[17] = -h;
-
-	glGenBuffers(1, &vertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-
-	glEnableVertexAttribArray(0);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-	glBindVertexArray(0);
-
 	return true;
 }
-
-/*
- * Example technique. Should be deleted in the near future.
-*/
-
-cgvkp::rendering::ExampleTechnique::ExampleTechnique()
-	: Technique()
-{
+void cgvkp::rendering::release_renderer::add_model(model::model_base::ptr model) {
+    models.push_back(model);
 }
-
-bool cgvkp::rendering::ExampleTechnique::init()
-{
-	if (!Technique::init())
-	{
-		return false;
-	}
-	if (!addShader(GL_VERTEX_SHADER, "res/shaders/example.vs"))
-	{
-		return false;
-	}
-	if (!addShader(GL_FRAGMENT_SHADER, "res/shaders/example.fs"))
-	{
-		return false;
-	}
-	if (!link())
-	{
-		return false;
-	}
-
-	worldViewProjectionLocation = getUniformLocation("worldViewProjection");
-
-	if (worldViewProjectionLocation == -1)
-	{
-		return false;
-	}
-
-	return true;
+void cgvkp::rendering::release_renderer::add_view(view::view_base::ptr view) {
+    views.push_back(view);
 }
