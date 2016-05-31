@@ -1,6 +1,9 @@
 #pragma once
 #include "rendering/view/view_base.hpp"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <memory>
+#include <map>
 
 namespace cgvkp {
 namespace rendering {
@@ -26,18 +29,22 @@ namespace view {
 
     private:
 
-        static std::weak_ptr<geo_type> geo_cache;
+        static std::map<GLFWwindow*, std::weak_ptr<geo_type> > geo_cache;
 
     };
 
     template<class geo_type>
     bool view_geometry_base<geo_type>::init_impl() {
-        std::shared_ptr<geo_type> g = geo_cache.lock();
+        std::shared_ptr<geo_type> g;
+        auto context = glfwGetCurrentContext();
+        if (geo_cache.count(context) > 0) {
+            g = geo_cache[context].lock();
+        }
 
         if (!g) {
             g = std::make_shared<geo_type>();
             if (!g->init()) return false;
-            geo_cache = g;
+            geo_cache.insert(std::make_pair(context, g));
         }
         geo = g;
 
@@ -50,7 +57,7 @@ namespace view {
     }
 
     template<class geo_type>
-    std::weak_ptr<geo_type> view_geometry_base<geo_type>::geo_cache;
+    std::map<GLFWwindow*, std::weak_ptr<geo_type> > view_geometry_base<geo_type>::geo_cache;
 
 }
 }
