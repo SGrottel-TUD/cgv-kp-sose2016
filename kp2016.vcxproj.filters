@@ -159,6 +159,9 @@
     <ClCompile Include="src\rendering\technique_normal_as_colour.cpp">
       <Filter>rendering\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\rendering\model\graphic_model_base.cpp">
+      <Filter>rendering\model\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -253,6 +256,9 @@
     </ClInclude>
     <ClInclude Include="src\rendering\technique_normal_as_colour.hpp">
       <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\model\graphic_model_base.hpp">
+      <Filter>rendering\model\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

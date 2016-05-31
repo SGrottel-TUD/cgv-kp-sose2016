@@ -128,18 +128,12 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projecti
 
 	for (view::view_base::ptr view : views) {
 		if (!view->is_valid()) continue;
-        auto star_view = std::dynamic_pointer_cast<view::star_view>(view);
-        auto hand_view = std::dynamic_pointer_cast<view::hand_view>(view);
-        if (star_view != nullptr)
+        auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(view->get_model());
+        if (graphic_model != nullptr)
         {
-            exampleTechnique.setModelMatrix(star_view->get_model()->model_matrix);
-            star_view->render();
+            exampleTechnique.setModelMatrix(graphic_model->model_matrix);
         }
-        if (hand_view != nullptr)
-        {
-            exampleTechnique.setModelMatrix(hand_view->get_model()->model_matrix);
-            hand_view->render();
-        }
+        view->render();
 	}
 }
 
