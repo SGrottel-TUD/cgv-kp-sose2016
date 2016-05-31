@@ -162,6 +162,9 @@
     <ClCompile Include="src\rendering\model\graphic_model_base.cpp">
       <Filter>rendering\model\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\rendering\controller\periodic_rotation_controller.cpp">
+      <Filter>rendering\controller\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -259,6 +262,9 @@
     </ClInclude>
     <ClInclude Include="src\rendering\model\graphic_model_base.hpp">
       <Filter>rendering\model\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\controller\periodic_rotation_controller.hpp">
+      <Filter>rendering\controller\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
