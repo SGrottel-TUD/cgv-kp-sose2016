@@ -70,13 +70,13 @@ void cgvkp::rendering::release_renderer::calculateProjection()
 	else	// mono
 	{
 		float aspect = static_cast<float>(framebufferWidth) / framebufferHeight;
-
-		leftProjection = glm::perspective(fovy, aspect, zNear, zFar);
+        if (aspect > glm::epsilon<float>())
+		    leftProjection = glm::perspective(fovy, aspect, zNear, zFar);
 	}
 }
 
 void cgvkp::rendering::release_renderer::render(const window& wnd) {
-	if (framebufferWidth == 0 || framebufferHeight == 0)
+	if (framebufferWidth == 0 || framebufferHeight == 0 || !has_context)
 	{
 		return;
 	}
@@ -137,6 +137,8 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projecti
             exampleTechnique.setModelMatrix(graphic_model->model_matrix);
         }
         view->render();
+        // Rendering "Heartbeat"
+        //std::cout << ".";
 	}
 }
 
@@ -162,6 +164,12 @@ void cgvkp::rendering::release_renderer::set_framebuffer_size(int width, int hei
 
 void cgvkp::rendering::release_renderer::lost_context()
 {
+    std::cout << std::endl << "Lost context" << std::endl;
+    has_context = false;
+    for (auto view : views)
+    {
+        view->deinit();
+    }
 	::glBindVertexArray(0);
 	::glUseProgram(0);
 	exampleTechnique.deinit();
@@ -181,6 +189,12 @@ bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 	{
 		return false;
 	}
+    for (auto view : views)
+    {
+        view->init();
+    }
+    std::cout << std::endl << "Got context" << std::endl;
+    has_context = true;
 	return true;
 }
 void cgvkp::rendering::release_renderer::add_model(model::model_base::ptr model) {
