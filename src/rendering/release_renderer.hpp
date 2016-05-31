@@ -31,6 +31,9 @@ namespace rendering {
 		virtual void lost_context();
 		virtual bool restore_context(window const& wnd);
 
+        void add_model(model::model_base::ptr model);
+        void add_view(view::view_base::ptr view);
+
     protected:
         virtual bool init_impl(const window& wnd);
         virtual void deinit_impl();
