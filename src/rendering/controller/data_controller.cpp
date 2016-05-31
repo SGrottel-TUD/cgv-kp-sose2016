@@ -60,8 +60,12 @@ namespace controller {
             // Update its data
             std::shared_ptr<model::star_model> star = stars[data_star->id].lock();
             star->model_matrix[3][0] = data_star->x;
-            star->model_matrix[3][1] = data_star->y;
-            star->model_matrix[3][2] = data_star->height;
+            star->model_matrix[3][1] = data_star->height;
+            star->model_matrix[3][2] = -data_star->y + 1.0f;
+
+            // Check if it was caught
+            if (data_star->in_hand)
+                std::cout << "Hand " << data_star->id << " is in hand" << std::endl;
         }
         // Iterate through hands
         for (auto data_hand : data.get_hands())
@@ -95,8 +99,12 @@ namespace controller {
             // Update its data
             std::shared_ptr<model::hand_model> hand = hands[data_hand->id].lock();
             hand->model_matrix[3][0] = data_hand->x;
-            hand->model_matrix[3][1] = data_hand->y;
-            hand->model_matrix[3][2] = data_hand->height;
+            hand->model_matrix[3][1] = data_hand->height + 0.125f;
+            hand->model_matrix[3][2] = -data_hand->y + 1.1f;
+
+            // Check if it was caught
+            if (data_hand->star != nullptr)
+                std::cout << "Hand " << data_hand->id << " has star " << data_hand->star->id << std::endl;
         }
     }
 }

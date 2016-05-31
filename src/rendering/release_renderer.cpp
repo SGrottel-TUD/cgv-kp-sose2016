@@ -137,7 +137,8 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projecti
             exampleTechnique.setModelMatrix(graphic_model->model_matrix);
         }
         view->render();
-        std::cout << ".";
+        // Rendering "Heartbeat"
+        //std::cout << ".";
 	}
 }
 
