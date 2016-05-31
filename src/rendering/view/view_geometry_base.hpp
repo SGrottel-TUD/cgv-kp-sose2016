@@ -44,6 +44,9 @@ namespace view {
         if (!g) {
             g = std::make_shared<geo_type>();
             if (!g->init()) return false;
+            if (geo_cache.count(context) > 0) {
+                geo_cache.erase(context);
+            }
             geo_cache.insert(std::make_pair(context, g));
         }
         geo = g;
