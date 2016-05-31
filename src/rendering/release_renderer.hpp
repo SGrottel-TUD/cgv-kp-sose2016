@@ -40,6 +40,8 @@ namespace rendering {
         virtual void deinit_impl();
 
     private:
+        bool has_context = false;
+
 		void calculateProjection();
 		void renderScene(glm::mat4x4 const& projection) const;
 
