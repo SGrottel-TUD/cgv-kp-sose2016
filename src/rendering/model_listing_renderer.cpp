@@ -31,14 +31,14 @@ bool cgvkp::rendering::model_listing_renderer::init_impl(const window& wnd) {
 
     star_model->model_matrix =
         glm::translate(glm::vec3(-0.5f, 0.0f, 0.0f)) *
-        glm::scale(glm::vec3(0.5f)) *
+        glm::scale(glm::vec3(2.5f)) *
         star_model->model_matrix;
     star_view->set_model(star_model);
     star_view->init();
 
     hand_model->model_matrix =
         glm::translate(glm::vec3(0.5f, 0.0f, 0.0f)) *
-        glm::scale(glm::vec3(0.5f)) *
+        glm::scale(glm::vec3(2.0f)) *
         hand_model->model_matrix;
     hand_view->set_model(hand_model);
     hand_view->init();
