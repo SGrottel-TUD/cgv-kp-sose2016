@@ -23,6 +23,7 @@ namespace cgvkp
 			GLint getUniformLocation(GLchar const* name) const;
 			bool link();
 
+			static GLint const invalidLocation = -1;
 			GLint worldViewProjectionLocation;
 
 		private:

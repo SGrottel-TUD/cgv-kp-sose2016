@@ -19,8 +19,6 @@ namespace rendering {
         // Do render
         virtual void render(const window& wnd) = 0;
 
-		virtual void set_framebuffer_size(int width, int height) = 0;
-
 		virtual void lost_context() {}
 		virtual bool restore_context(window const& wnd) { return true; }
 

@@ -30,6 +30,8 @@
     <ClCompile Include="src\rendering\debug_renderer.cpp" />
     <ClCompile Include="src\rendering\abstract_user_input.cpp" />
     <ClCompile Include="src\rendering\debug_user_input.cpp" />
+    <ClCompile Include="src\rendering\geometryBuffer.cpp" />
+    <ClCompile Include="src\rendering\lights.cpp" />
     <ClCompile Include="src\rendering\model\model_base.cpp" />
     <ClCompile Include="src\rendering\model_listing_renderer.cpp" />
     <ClCompile Include="src\rendering\release_renderer.cpp" />
@@ -60,6 +62,8 @@
     <ClInclude Include="src\rendering\debug_renderer.hpp" />
     <ClInclude Include="src\rendering\abstract_user_input.hpp" />
     <ClInclude Include="src\rendering\debug_user_input.hpp" />
+    <ClInclude Include="src\rendering\geometryBuffer.hpp" />
+    <ClInclude Include="src\rendering\lights.hpp" />
     <ClInclude Include="src\rendering\model\hand_model.hpp" />
     <ClInclude Include="src\rendering\model\model_base.hpp" />
     <ClInclude Include="src\rendering\model\star_model.hpp" />

@@ -54,7 +54,6 @@ void application::run()
 			release_renderer->set_camera_mode(config.camera_mode);
 			release_renderer->set_stereo_parameters(config.eye_separation, config.zzero_parallax);
 
-			release_window->register_framebuffer_size_callback(std::bind(&rendering::abstract_renderer::set_framebuffer_size, release_renderer, std::placeholders::_1, std::placeholders::_2));
 			release_window->register_key_callback(GLFW_KEY_F, std::bind(&application::toggle_fullscreen, this), rendering::window::OnRelease);
 			release_window->register_key_callback(GLFW_KEY_DOWN, std::bind(&application::increase_zzero_parallax, this, -0.1f), rendering::window::OnPress | rendering::window::OnRepeat);
 			release_window->register_key_callback(GLFW_KEY_UP, std::bind(&application::increase_zzero_parallax, this, 0.1f), rendering::window::OnPress | rendering::window::OnRepeat);
@@ -89,10 +88,6 @@ void application::run()
             debug_renderer.reset();
             debug_window.reset();
         }
-		else
-		{
-			debug_window->register_framebuffer_size_callback(std::bind(&rendering::abstract_renderer::set_framebuffer_size, debug_renderer, std::placeholders::_1, std::placeholders::_2));
-		}
     }
 
 	std::shared_ptr<vision::abstract_vision> vision;

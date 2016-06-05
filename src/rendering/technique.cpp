@@ -6,7 +6,7 @@
 #include "util/resource_file.hpp"
 
 cgvkp::rendering::Technique::Technique()
-	: program(0), worldViewProjectionLocation(-1)
+	: program(0), worldViewProjectionLocation(invalidLocation)
 {
 }
 
@@ -47,7 +47,7 @@ void cgvkp::rendering::Technique::deinit()
 
 void cgvkp::rendering::Technique::setWorldViewProjection(glm::mat4x4 const& worldViewProjection) const
 {
-	if (worldViewProjectionLocation != -1)
+	if (worldViewProjectionLocation != invalidLocation)
 	{
 		glUniformMatrix4fv(worldViewProjectionLocation, 1, GL_FALSE, &worldViewProjection[0][0]);
 	}
@@ -71,7 +71,7 @@ bool cgvkp::rendering::Technique::addShader(GLenum shaderType, char const* filen
 	if (!shader)
 	{
 #if defined(_DEBUG) || defined(DEBUG)
-		std::cerr << "Could not create shader with type " << shaderType << '.' << std::endl;
+		std::cerr << "Could not create shader of type " << shaderType << '.' << std::endl;
 #endif
 		return false;
 	}
@@ -88,6 +88,15 @@ bool cgvkp::rendering::Technique::addShader(GLenum shaderType, char const* filen
 	{
 #if defined(_DEBUG) || defined(DEBUG)
 		std::cerr << "Could not compile shader \"" << filename << "\" (type: " << shaderType << ")." << std::endl;
+		int infoLogLength = 0;
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
+		if (infoLogLength > 0)
+		{
+			std::string infoLog;
+			infoLog.resize(infoLogLength);
+			glGetShaderInfoLog(shader, infoLogLength, nullptr, &infoLog[0]);
+			std::cerr << infoLog << std::endl;
+		}
 #endif
 		return false;
 	}
@@ -103,7 +112,7 @@ GLint cgvkp::rendering::Technique::getUniformLocation(GLchar const* name) const
 	GLint location = glGetUniformLocation(program, name);
 
 #if defined(_DEBUG) || defined(DEBUG)
-	if (location == -1)
+	if (location == invalidLocation)
 	{
 		std::cerr << "Could not find location for uniform \"" << name << "\"." << std::endl;
 	}
@@ -124,6 +133,15 @@ bool cgvkp::rendering::Technique::link()
 	{
 #if defined(_DEBUG) || defined(DEBUG)
 		std::cerr << "Could not link progam." << std::endl;
+		int infoLogLength = 0;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
+		if (infoLogLength > 0)
+		{
+			std::string infoLog;
+			infoLog.resize(infoLogLength);
+			glGetProgramInfoLog(program, infoLogLength, nullptr, &infoLog[0]);
+			std::cerr << infoLog << std::endl;
+		}
 #endif
 		return false;
 	}
@@ -136,6 +154,15 @@ bool cgvkp::rendering::Technique::link()
 	{
 #if defined(_DEBUG) || defined(DEBUG)
 		std::cerr << "Progam is not valid." << std::endl;
+		int infoLogLength = 0;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
+		if (infoLogLength > 0)
+		{
+			std::string infoLog;
+			infoLog.resize(infoLogLength);
+			glGetProgramInfoLog(program, infoLogLength, nullptr, &infoLog[0]);
+			std::cerr << infoLog << std::endl;
+		}
 #endif
 		return false;
 	}

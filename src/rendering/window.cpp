@@ -157,15 +157,6 @@ void rendering::window::mouse_scroll_callback(GLFWwindow* window, double xoffset
     if (that->user_input) that->user_input->mouse_wheel(window, xoffset, yoffset);
 }
 
-void rendering::window::framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-	rendering::window* w = static_cast<rendering::window*>(glfwGetWindowUserPointer(window));
-	if (w->framebuffer_size_cb)
-	{
-		w->framebuffer_size_cb(width, height);
-	}
-}
-
 void rendering::window::ctor_impl(GLFWmonitor* fullscreen, unsigned int w, unsigned int h, const char* title) {
     ::glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // ogl 3.3 core
     ::glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -238,10 +229,10 @@ bool rendering::window::create_window(int width, int height, char const* title, 
 
 	::glfwSetMouseButtonCallback(handle, window::mouse_button_callback);
 	::glfwSetScrollCallback(handle, window::mouse_scroll_callback);
-	::glfwSetFramebufferSizeCallback(handle, window::framebuffer_size_callback);
 	::glfwSetKeyCallback(handle, window::key_callback);
 
 	::glfwMakeContextCurrent(handle);
+	glfwSwapInterval(1);
 
 	return true;
 }

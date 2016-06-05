@@ -1,12 +1,16 @@
 #pragma once
+
+#include <chrono>
+#include <glm/mat4x4.hpp>
+#include <list>
+#include <vector>
 #include "abstract_renderer.hpp"
+#include "geometryBuffer.hpp"
+#include "lights.hpp"
 #include "technique.hpp"
 #include "model/model_base.hpp"
 #include "view/view_base.hpp"
 #include "controller/controller_base.hpp"
-#include "glm/mat4x4.hpp"
-#include <vector>
-#include <chrono>
 
 namespace cgvkp {
 namespace data {
@@ -18,14 +22,6 @@ namespace rendering {
 		stereo = 1
 	};
 
-	// This is only an example technique. (Thus no extra file.)
-	class ExampleTechnique : public Technique
-	{
-	public:
-		ExampleTechnique();
-		virtual bool init();
-	};
-
     class release_renderer : public abstract_renderer {
     public:
         release_renderer(const ::cgvkp::data::world& data);
@@ -34,7 +30,6 @@ namespace rendering {
 
 		void set_camera_mode(camera_mode mode);
 		void set_stereo_parameters(float eye_separation, float zzero_parallax);
-		virtual void set_framebuffer_size(int width, int height);
 
 		virtual void lost_context();
 		virtual bool restore_context(window const& wnd);
@@ -51,16 +46,24 @@ namespace rendering {
 		glm::mat4 leftProjection;	// Holds the projection matrix in mono mode.
 		glm::mat4 rightProjection;
 		camera_mode cameraMode;
-		int framebufferWidth;
-		int framebufferHeight;
+		GLsizei framebufferWidth;
+		GLsizei framebufferHeight;
 		float eyeSeparation;
 		float zZeroParallax;
 
-		ExampleTechnique exampleTechnique;
-		unsigned int vao;
+		GLuint areaVao;
+		GLuint sphereVao;
 
-		unsigned int vertexbuffer;
-		float g_vertex_buffer_data[2 * 3 * 3];
+		GLuint vertexBuffer;
+		GLuint indexBuffer;
+		GLuint sphereVertexBuffer;
+		GLuint sphereIndexBuffer;
+
+		std::list<PointLight> pointLights;
+		GeometryBuffer gbuffer;
+		GeometryTechnique geometryPass;
+		ShadowVolumeTechnique shadowVolumePass;
+		LightTechnique lightPass;
 
         std::chrono::high_resolution_clock::time_point last_time;
         std::vector<model::model_base::ptr> models;
