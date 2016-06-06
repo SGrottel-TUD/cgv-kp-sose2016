@@ -28,9 +28,9 @@ bool cgvkp::rendering::release_renderer::init_impl(const window& wnd) {
 
 	exampleTechnique.init();
 
-    // Create and add data controller
+    // Create and add data, cloud controller
     controllers.push_back(std::make_shared<controller::data_controller>(this, data));
-	controllers.push_back(std::make_shared<controller::cloud_controller>(this));
+	controllers.push_back(std::make_shared<controller::cloud_controller>(this, data));
 
 	return true;
 }
