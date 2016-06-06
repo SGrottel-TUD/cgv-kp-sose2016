@@ -63,6 +63,8 @@ namespace rendering {
         std::chrono::high_resolution_clock::time_point last_time;
         std::vector<model::model_base::ptr> models;
         std::vector<view::view_base::ptr> views;
+        std::vector<view::view_base::ptr> cached_views;
+
         std::vector<controller::controller_base::ptr> controllers, new_controllers;
     };
 }
