@@ -26,6 +26,7 @@
     <ClCompile Include="src\data\world.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\rendering\abstract_renderer.cpp" />
+    <ClCompile Include="src\rendering\controller\cloud_controller.cpp" />
     <ClCompile Include="src\rendering\controller\controller_base.cpp" />
     <ClCompile Include="src\rendering\controller\data_controller.cpp" />
     <ClCompile Include="src\rendering\controller\periodic_rotation_controller.cpp" />
@@ -37,6 +38,8 @@
     <ClCompile Include="src\rendering\model_listing_renderer.cpp" />
     <ClCompile Include="src\rendering\release_renderer.cpp" />
     <ClCompile Include="src\rendering\technique.cpp" />
+    <ClCompile Include="src\rendering\view\cloud_geometry.cpp" />
+    <ClCompile Include="src\rendering\view\cloud_view.cpp" />
     <ClCompile Include="src\rendering\view\hand_geometry.cpp" />
     <ClCompile Include="src\rendering\view\hand_view.cpp" />
     <ClCompile Include="src\rendering\view\star_geometry.cpp" />
@@ -60,12 +63,14 @@
     <ClInclude Include="src\data\world_config.hpp" />
     <ClInclude Include="src\data\world.hpp" />
     <ClInclude Include="src\rendering\abstract_renderer.hpp" />
+    <ClInclude Include="src\rendering\controller\cloud_controller.hpp" />
     <ClInclude Include="src\rendering\controller\controller_base.hpp" />
     <ClInclude Include="src\rendering\controller\data_controller.hpp" />
     <ClInclude Include="src\rendering\controller\periodic_rotation_controller.hpp" />
     <ClInclude Include="src\rendering\debug_renderer.hpp" />
     <ClInclude Include="src\rendering\abstract_user_input.hpp" />
     <ClInclude Include="src\rendering\debug_user_input.hpp" />
+    <ClInclude Include="src\rendering\model\cloud_model.hpp" />
     <ClInclude Include="src\rendering\model\graphic_model_base.hpp" />
     <ClInclude Include="src\rendering\model\hand_model.hpp" />
     <ClInclude Include="src\rendering\model\model_base.hpp" />
@@ -74,6 +79,8 @@
     <ClInclude Include="src\rendering\release_renderer.hpp" />
     <ClInclude Include="src\rendering\technique.hpp" />
     <ClInclude Include="src\rendering\technique_normal_as_colour.hpp" />
+    <ClInclude Include="src\rendering\view\cloud_geometry.hpp" />
+    <ClInclude Include="src\rendering\view\cloud_view.hpp" />
     <ClInclude Include="src\rendering\view\hand_geometry.hpp" />
     <ClInclude Include="src\rendering\view\hand_view.hpp" />
     <ClInclude Include="src\rendering\view\star_geometry.hpp" />

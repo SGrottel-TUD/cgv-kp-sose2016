@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "controller/data_controller.hpp"
+#include "controller/cloud_controller.hpp"
 
 cgvkp::rendering::release_renderer::release_renderer(const ::cgvkp::data::world& data)
     : cgvkp::rendering::abstract_renderer(data),
@@ -29,6 +30,7 @@ bool cgvkp::rendering::release_renderer::init_impl(const window& wnd) {
 
     // Create and add data controller
     controllers.push_back(std::make_shared<controller::data_controller>(this, data));
+	controllers.push_back(std::make_shared<controller::cloud_controller>(this));
 
 	return true;
 }
