@@ -52,7 +52,7 @@ void cgvkp::rendering::release_renderer::calculateProjection()
 		float aspect = static_cast<float>(framebufferWidth / 2) / framebufferHeight;
 
 		float tanHalfFovy = tan(fovy / 2);
-		glm::vec3 translation = glm::vec3(-eyeSeparation * tanHalfFovy * zZeroParallax * aspect, 0.0f, 0.0f);
+		glm::vec3 translation = glm::vec3(eyeSeparation * tanHalfFovy * zZeroParallax * aspect, 0.0f, 0.0f);
 
 		float top = zNear * tanHalfFovy;
 		float bottom = -top;
