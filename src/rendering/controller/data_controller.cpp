@@ -14,9 +14,10 @@ namespace cgvkp {
 namespace rendering {
 namespace controller {
     data_controller::data_controller(release_renderer* renderer, const data::world &data) :
-        controller_base(), renderer(renderer), data(data), stars(), hands()
+        controller_base(), renderer(renderer), data(data), stars(), hands(),
+        caught_star_controller(std::make_shared<controller::caught_star_controller>())
     {
-        // intentionally empty
+        renderer->add_controller(caught_star_controller);
     }
 
     data_controller::~data_controller() {
@@ -67,7 +68,6 @@ namespace controller {
 
             // Check if it was caught
             if (data_star->in_hand) {
-                std::cout << "Star" << data_star->id << " is in hand" << std::endl;
                 star->may_rotate = false;
             }
         }
@@ -125,8 +125,10 @@ namespace controller {
             // Check if it was caught
             if (data_hand->star != nullptr)
             {
-                std::cout << "Hand " << data_hand->id << " has star " << data_hand->star->id << std::endl;
                 hand->may_rotate = false;
+                auto star = stars[data_hand->star->id].lock();
+                if (star)
+                    caught_star_controller->caught_pair(hand, star);
             }
         }
         // Deactivate models of disappeared hands

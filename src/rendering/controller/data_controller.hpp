@@ -6,6 +6,7 @@
 #include "data/world.hpp"
 #include "rendering/model/star_model.hpp"
 #include "rendering/model/hand_model.hpp"
+#include "rendering/controller/caught_star_controller.hpp"
 #include <memory>
 #include <map>
 
@@ -29,6 +30,7 @@ namespace controller {
         const ::cgvkp::data::world& data;
         std::map<unsigned int, std::weak_ptr<model::star_model> > stars;
         std::map<unsigned int, std::weak_ptr<model::hand_model> > hands;
+        std::shared_ptr<caught_star_controller> caught_star_controller;
         release_renderer* renderer;
     };
 
