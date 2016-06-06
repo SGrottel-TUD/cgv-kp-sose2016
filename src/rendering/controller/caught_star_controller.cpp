@@ -30,18 +30,20 @@ namespace controller {
             if (!hand || !star)
             {
                 data_pair = data.erase(data_pair);
-                std::cout << "Removed some star" << std::endl;
                 continue;
             }
             if (data_pair->elapsed <= data_pair->anim_duration)
             {
                 // Linear interpolation from one matrix to another.
                 float t = (float)(std::fmin(data_pair->anim_duration, data_pair->elapsed) / data_pair->anim_duration);
-                std::cout << t << "\t";
+                glm::vec3 hand_pos = glm::vec3(hand->model_matrix[3][0], hand->model_matrix[3][1], hand->model_matrix[3][2]);
                 hand->model_matrix = data_pair->hand_start +
                     (data_pair->hand_target - data_pair->hand_start) * t;
+                hand->model_matrix[3] = glm::vec4(hand_pos, 1.0f);
+                glm::vec3 star_pos = glm::vec3(star->model_matrix[3][0], star->model_matrix[3][1], star->model_matrix[3][2]);
                 star->model_matrix = data_pair->star_start +
                     (data_pair->star_target - data_pair->star_start) * t;
+                star->model_matrix[3] = glm::vec4(star_pos, 1.0f);
                 data_pair->elapsed += seconds;
             }
             // Continue with next data pair
@@ -54,7 +56,18 @@ namespace controller {
         std::shared_ptr<model::star_model> star) :
         hand(hand), star(star), hand_start(hand->model_matrix), star_start(star->model_matrix)
     {
-        // TODO set target matrixes
+        hand_target =
+            glm::rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
+            glm::rotate(glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f)) *
+            glm::rotate(glm::radians(40.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
+            glm::rotate(glm::radians(-40.0f), glm::vec3(0.0f, 0.0f, 1.0f)) *
+            glm::scale(glm::vec3(0.25f));
+        star_target =
+            glm::scale(
+                glm::rotate(glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+                glm::vec3(0.2f)) *
+            glm::rotate(glm::radians(-40.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
+            glm::rotate(glm::radians(40.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     }
 }
 }

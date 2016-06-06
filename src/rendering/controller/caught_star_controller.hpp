@@ -31,7 +31,7 @@ namespace cgvkp {
                     double elapsed = 0.0f;
                     std::weak_ptr<model::hand_model> hand;
                     std::weak_ptr<model::star_model> star;
-                    double anim_duration = 3.0;
+                    double anim_duration = 1.0;
                     glm::mat4 hand_start, star_start;
                     glm::mat4 hand_target = glm::mat4(1.0f);
                     glm::mat4 star_target = glm::mat4(1.0f);
