@@ -32,6 +32,7 @@ namespace rendering {
 		virtual bool restore_context(window const& wnd);
 
         void add_model(model::model_base::ptr model);
+        void remove_model(model::model_base::ptr model);
         void add_view(view::view_base::ptr view);
         void add_controller(controller::controller_base::ptr controller);
 

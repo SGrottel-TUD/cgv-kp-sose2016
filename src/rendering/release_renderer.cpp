@@ -102,7 +102,30 @@ void cgvkp::rendering::release_renderer::render(const window& wnd) {
 	}
     controllers.insert(controllers.end(), new_controllers.begin(), new_controllers.end());
     new_controllers.clear();
-
+    // Remove views and controllers without model
+    for (auto it = views.begin(); it != views.end();)
+    {
+        if (!it->get()->has_model())
+        {
+            it->get()->deinit();
+            it = views.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+    for (auto it = controllers.begin(); it != controllers.end();)
+    {
+        if (!it->get()->has_model())
+        {
+            it = controllers.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
 	if (cameraMode == stereo)
 	{
 		glEnable(GL_SCISSOR_TEST);
@@ -139,7 +162,7 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projecti
 	exampleTechnique.setWorldViewProjection(projection * view * world);
 
 	for (view::view_base::ptr view : views) {
-		if (!view->is_valid()) continue;
+		if (!view->is_valid() || !view->has_model()) continue;
         auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(view->get_model());
         if (graphic_model != nullptr)
         {
@@ -216,6 +239,13 @@ bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 }
 void cgvkp::rendering::release_renderer::add_model(model::model_base::ptr model) {
     models.push_back(model);
+}
+void cgvkp::rendering::release_renderer::remove_model(model::model_base::ptr model) {
+    auto it = std::find(models.begin(), models.end(), model);
+    if (it != models.end())
+    {
+        models.erase(it);
+    }
 }
 void cgvkp::rendering::release_renderer::add_view(view::view_base::ptr view) {
     views.push_back(view);
