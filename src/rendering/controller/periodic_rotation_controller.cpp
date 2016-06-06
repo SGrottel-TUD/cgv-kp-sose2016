@@ -30,10 +30,10 @@ namespace cgvkp {
             void periodic_rotation_controller::update(double seconds, std::shared_ptr<abstract_user_input> input)
             {
                 auto m = std::dynamic_pointer_cast<model::graphic_model_base>(model.lock());
-                if (!m) return;
+                if (!m || !m->may_rotate) return;
 
                 elapsed += seconds;
-                float new_value = glm::sin(glm::two_pi<float>() * elapsed / period) * amplitude;
+                float new_value = glm::sin(glm::two_pi<float>() * (float)elapsed / period) * amplitude;
                 float rotation_angle = new_value - previous;
 
                 glm::vec3 position = glm::vec3(m->model_matrix[3][0], m->model_matrix[3][1], m->model_matrix[3][2]);

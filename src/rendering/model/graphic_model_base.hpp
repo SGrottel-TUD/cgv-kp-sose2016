@@ -12,6 +12,7 @@ namespace cgvkp {
                 graphic_model_base(glm::mat4 model_matrix);
                 virtual ~graphic_model_base();
                 glm::mat4 model_matrix;
+                bool may_rotate;
             };
         }
     }
