@@ -29,8 +29,10 @@ namespace controller {
     void data_controller::update(double seconds, std::shared_ptr<abstract_user_input> input)
     {
         // Iterate through stars
+        auto active_models = std::vector<int>();
         for (auto data_star : data.get_stars())
         {
+            active_models.push_back(data_star->id);
             if (stars.count(data_star->id) == 0) {
 #if defined(_DEBUG) || defined(DEBUG)
                 std::cout << "Creating star " << data_star->id << std::endl;
@@ -67,9 +69,25 @@ namespace controller {
             if (data_star->in_hand)
                 std::cout << "Hand " << data_star->id << " is in hand" << std::endl;
         }
+        // Deactivate models of disappeared stars
+        for (auto it = stars.begin(), ite = stars.end(); it != ite;)
+        {
+            if (std::find(active_models.begin(), active_models.end(), it->first) == active_models.end())
+            {
+                // Model is not active, deactivate it
+                renderer->remove_model(it->second.lock());
+                it = stars.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+        active_models.clear();
         // Iterate through hands
         for (auto data_hand : data.get_hands())
         {
+            active_models.push_back(data_hand->id);
             if (hands.count(data_hand->id) == 0) {
 #if defined(_DEBUG) || defined(DEBUG)
                 std::cout << "Creating hand " << data_hand->id << std::endl;
@@ -105,6 +123,20 @@ namespace controller {
             // Check if it was caught
             if (data_hand->star != nullptr)
                 std::cout << "Hand " << data_hand->id << " has star " << data_hand->star->id << std::endl;
+        }
+        // Deactivate models of disappeared hands
+        for (auto it = hands.begin(), ite = hands.end(); it != ite;)
+        {
+            if (std::find(active_models.begin(), active_models.end(), it->first) == active_models.end())
+            {
+                // Model is not active, deactivate it
+                renderer->remove_model(it->second.lock());
+                it = hands.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
         }
     }
 }
