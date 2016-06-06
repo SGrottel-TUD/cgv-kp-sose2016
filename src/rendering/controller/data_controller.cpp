@@ -63,11 +63,13 @@ namespace controller {
             std::shared_ptr<model::star_model> star = stars[data_star->id].lock();
             star->model_matrix[3][0] = data_star->x;
             star->model_matrix[3][1] = data_star->height * 10.0f - 3.0f;
-            star->model_matrix[3][2] = -data_star->y + 1.0f;
+            star->model_matrix[3][2] = -data_star->y * 2.0f + 1.0f;
 
             // Check if it was caught
-            if (data_star->in_hand)
-                std::cout << "Hand " << data_star->id << " is in hand" << std::endl;
+            if (data_star->in_hand) {
+                std::cout << "Star" << data_star->id << " is in hand" << std::endl;
+                star->may_rotate = false;
+            }
         }
         // Deactivate models of disappeared stars
         for (auto it = stars.begin(), ite = stars.end(); it != ite;)
@@ -118,11 +120,14 @@ namespace controller {
             std::shared_ptr<model::hand_model> hand = hands[data_hand->id].lock();
             hand->model_matrix[3][0] = data_hand->x;
             hand->model_matrix[3][1] = (data_hand->height) * 10.0f - 3.0f;
-            hand->model_matrix[3][2] = -data_hand->y + 1.1f;
+            hand->model_matrix[3][2] = -data_hand->y * 2.0f + 1.0f;
 
             // Check if it was caught
             if (data_hand->star != nullptr)
+            {
                 std::cout << "Hand " << data_hand->id << " has star " << data_hand->star->id << std::endl;
+                hand->may_rotate = false;
+            }
         }
         // Deactivate models of disappeared hands
         for (auto it = hands.begin(), ite = hands.end(); it != ite;)
