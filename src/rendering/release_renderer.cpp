@@ -9,7 +9,7 @@
 
 cgvkp::rendering::release_renderer::release_renderer(const ::cgvkp::data::world& data)
     : cgvkp::rendering::abstract_renderer(data),
-	models(), views(), controllers(), new_controllers(),
+    models(), views(), cached_views(), controllers(), new_controllers(),
     vao(0), framebufferWidth(0), framebufferHeight(0), cameraMode(mono) {
 }
 cgvkp::rendering::release_renderer::~release_renderer(){}
@@ -30,12 +30,21 @@ bool cgvkp::rendering::release_renderer::init_impl(const window& wnd) {
     // Create and add data controller
     controllers.push_back(std::make_shared<controller::data_controller>(this, data));
 
+    // Create a cached hand view to avoid delay on first hand appearance.
+    auto hand_view = std::make_shared<view::hand_view>();
+    hand_view->init();
+    cached_views.push_back(hand_view);
+
 	return true;
 }
 void cgvkp::rendering::release_renderer::deinit_impl() {
 	lost_context();
 	exampleTechnique.deinit();
     for (auto view : views)
+    {
+        view->deinit();
+    }
+    for (auto view : cached_views)
     {
         view->deinit();
     }
@@ -93,7 +102,30 @@ void cgvkp::rendering::release_renderer::render(const window& wnd) {
 	}
     controllers.insert(controllers.end(), new_controllers.begin(), new_controllers.end());
     new_controllers.clear();
-
+    // Remove views and controllers without model
+    for (auto it = views.begin(); it != views.end();)
+    {
+        if (!it->get()->has_model())
+        {
+            it->get()->deinit();
+            it = views.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+    for (auto it = controllers.begin(); it != controllers.end();)
+    {
+        if (!it->get()->has_model())
+        {
+            it = controllers.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
 	if (cameraMode == stereo)
 	{
 		glEnable(GL_SCISSOR_TEST);
@@ -130,7 +162,7 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projecti
 	exampleTechnique.setWorldViewProjection(projection * view * world);
 
 	for (view::view_base::ptr view : views) {
-		if (!view->is_valid()) continue;
+		if (!view->is_valid() || !view->has_model()) continue;
         auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(view->get_model());
         if (graphic_model != nullptr)
         {
@@ -170,6 +202,10 @@ void cgvkp::rendering::release_renderer::lost_context()
     {
         view->deinit();
     }
+    for (auto view : cached_views)
+    {
+        view->deinit();
+    }
 	::glBindVertexArray(0);
 	::glUseProgram(0);
 	exampleTechnique.deinit();
@@ -189,6 +225,10 @@ bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 	{
 		return false;
 	}
+    for (auto view : cached_views)
+    {
+        view->init();
+    }
     for (auto view : views)
     {
         view->init();
@@ -199,6 +239,13 @@ bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 }
 void cgvkp::rendering::release_renderer::add_model(model::model_base::ptr model) {
     models.push_back(model);
+}
+void cgvkp::rendering::release_renderer::remove_model(model::model_base::ptr model) {
+    auto it = std::find(models.begin(), models.end(), model);
+    if (it != models.end())
+    {
+        models.erase(it);
+    }
 }
 void cgvkp::rendering::release_renderer::add_view(view::view_base::ptr view) {
     views.push_back(view);
