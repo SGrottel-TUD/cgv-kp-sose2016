@@ -168,6 +168,9 @@
     <ClCompile Include="src\rendering\controller\caught_star_controller.cpp">
       <Filter>rendering\controller\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\objImporter.cpp">
+      <Filter>util\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -271,6 +274,9 @@
     </ClInclude>
     <ClInclude Include="src\rendering\controller\caught_star_controller.hpp">
       <Filter>rendering\controller\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\objImporter.hpp">
+      <Filter>util\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
