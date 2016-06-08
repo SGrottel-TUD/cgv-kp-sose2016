@@ -31,7 +31,7 @@ std::string cgvkp::util::resource_file::find_resource_file(const char *name) {
     return "";
 }
 
-bool cgvkp::util::resource_file::read_file_as_text(char const* filename, std::string& string)
+bool cgvkp::util::resource_file::read_file_as_text(std::string const& filename, std::string& string)
 {
     std::ifstream file(filename, std::ios::binary);
 	if (file)

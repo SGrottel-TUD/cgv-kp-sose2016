@@ -1,7 +1,6 @@
 #if defined(_DEBUG) || defined(DEBUG)
 #include <iostream>
 #endif
-#include <string>
 #include "technique.hpp"
 #include "util/resource_file.hpp"
 
@@ -59,7 +58,7 @@ void cgvkp::rendering::Technique::setWorldViewProjection(glm::mat4x4 const& worl
 	#endif
 }
 
-bool cgvkp::rendering::Technique::addShader(GLenum shaderType, char const* filename)
+bool cgvkp::rendering::Technique::addShader(GLenum shaderType, std::string const& filename)
 {
 	// Get shader source.
 	std::string source;

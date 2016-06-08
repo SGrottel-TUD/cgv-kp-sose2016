@@ -12,8 +12,8 @@ cgvkp::rendering::release_renderer::release_renderer(const ::cgvkp::data::world&
 }
 cgvkp::rendering::release_renderer::~release_renderer(){}
 
-bool cgvkp::rendering::release_renderer::init_impl(const window& wnd) {
-	if (!restore_context(wnd))
+bool cgvkp::rendering::release_renderer::init_impl(const window& wnd, std::string const& resourcesBasePath) {
+	if (!restore_context(wnd, resourcesBasePath))
 	{
 		return false;
 	}
@@ -293,7 +293,7 @@ void cgvkp::rendering::release_renderer::lost_context()
 	gbuffer.deinit();
 }
 
-bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
+bool cgvkp::rendering::release_renderer::restore_context(window const& wnd, std::string const& resourcesBasePath)
 {
 	wnd.get_size(framebufferWidth, framebufferHeight);
 	wnd.make_current();
@@ -303,20 +303,20 @@ bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 		return false;
 	}
 
-	if (!geometryPass.init())
+	if (!geometryPass.init(resourcesBasePath))
 	{
 		return false;
 	}
-	if (!shadowVolumePass.init())
+	if (!shadowVolumePass.init(resourcesBasePath))
 	{
 		return false;
 	}
-	if (!lightPass.init())
+	if (!lightPass.init(resourcesBasePath))
 	{
 		return false;
 	}
 
-	if (!lightingSphere.init("res/obj/lightingSphere.obj"))
+	if (!lightingSphere.init(resourcesBasePath + "/meshes/lightingSphere.obj"))
 	{
 		return false;
 	}

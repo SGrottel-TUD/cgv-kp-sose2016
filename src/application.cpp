@@ -10,7 +10,7 @@
 
 using namespace cgvkp;
 
-application::application() : debug_window(nullptr), config(application_config()) {
+application::application() : debug_window(nullptr) {
 }
 
 application::~application() {
@@ -35,7 +35,7 @@ bool application::init() {
 void application::run()
 {
 	// create release window
-	release_window = std::make_shared<rendering::window>(config.window_width, config.window_height);
+	release_window = std::make_shared<rendering::window>(config.windowWidth, config.windowHeight);
 	if (!release_window || !release_window->is_alive())
 	{
 		release_window.reset();
@@ -43,7 +43,7 @@ void application::run()
 	else
 	{
 		release_renderer = std::make_shared<rendering::release_renderer>(data);
-		if (!release_renderer || !release_renderer->init(*release_window))
+		if (!release_renderer || !release_renderer->init(*release_window, config.resourcesBasePath))
 		{
 			std::cout << "Failed to create Release renderer" << std::endl;
 			release_renderer.reset();
@@ -51,8 +51,8 @@ void application::run()
 		}
 		else
 		{
-			release_renderer->set_camera_mode(config.camera_mode);
-			release_renderer->set_stereo_parameters(config.eye_separation, config.zzero_parallax);
+			release_renderer->set_camera_mode(config.cameraMode);
+			release_renderer->set_stereo_parameters(config.eyeSeparation, config.zZeroParallax);
 
 			release_window->register_key_callback(GLFW_KEY_F, std::bind(&application::toggle_fullscreen, this), rendering::window::OnRelease);
 			release_window->register_key_callback(GLFW_KEY_DOWN, std::bind(&application::increase_zzero_parallax, this, -0.1f), rendering::window::OnPress | rendering::window::OnRepeat);
@@ -66,29 +66,30 @@ void application::run()
 
 
     // create debug window
-    debug_window = std::make_shared<rendering::window>(1280, 720, "CGV KP SoSe2016 - Debug");
-    if (!debug_window || !debug_window->is_alive()) {
-        debug_window.reset();
-    } else {
-        // init renderer selected in Project Property Sheet
-        switch (config.active_renderer) {
-        case application_config::renderers::release:
-            debug_renderer = std::make_shared<rendering::release_renderer>(data);
-            break;
-        case application_config::renderers::models:
-            debug_renderer = std::make_shared<rendering::model_listing_renderer>(data);
-            break;
-        default:
-            debug_renderer = std::make_shared<rendering::debug_renderer>(data);
-            break;
-        }
+	if (config.debug)
+	{
+		debug_window = std::make_shared<rendering::window>(1280, 720, "CGV KP SoSe2016 - Debug");
+		if (!debug_window || !debug_window->is_alive()) {
+			debug_window.reset();
+		}
+		else {
+			// init renderer selected in Project Property Sheet
+			switch (config.active_renderer) {
+			case application_config::renderers::models:
+				debug_renderer = std::make_shared<rendering::model_listing_renderer>(data);
+				break;
+			default:
+				debug_renderer = std::make_shared<rendering::debug_renderer>(data);
+				break;
+			}
 
-        if (!debug_renderer || !debug_renderer->init(*debug_window)) {
-            std::cout << "Failed to create Debug renderer" << std::endl;
-            debug_renderer.reset();
-            debug_window.reset();
-        }
-    }
+			if (!debug_renderer || !debug_renderer->init(*debug_window, config.resourcesBasePath)) {
+				std::cout << "Failed to create Debug renderer" << std::endl;
+				debug_renderer.reset();
+				debug_window.reset();
+			}
+		}
+	}
 
 	std::shared_ptr<vision::abstract_vision> vision;
 	if (debug_window)
@@ -106,7 +107,10 @@ void application::run()
     default:
         auto debug_vision = std::make_shared<rendering::debug_user_input>(data.get_input_layer());
         vision = debug_vision;
-        debug_window->set_user_input_object(debug_vision);
+		if (debug_window)
+		{
+			debug_window->set_user_input_object(debug_vision);
+		}
         break;
     }
 
@@ -205,13 +209,13 @@ void application::toggle_fullscreen()
 		release_renderer->lost_context();
 		release_window->toggle_fullscreen();
 		config.fullscreen = !config.fullscreen;
-		release_renderer->restore_context(*release_window);
+		release_renderer->restore_context(*release_window, config.resourcesBasePath);
 	}
 }
 
 void application::increase_eye_separation(float val)
 {
-	config.eye_separation += val;
+	config.eyeSeparation += val;
 	/*if (config.eye_separation < 0)
 	{
 		config.eye_separation = 0;
@@ -219,30 +223,30 @@ void application::increase_eye_separation(float val)
 	
 	if(release_renderer)
 	{
-		release_renderer->set_stereo_parameters(config.eye_separation, config.zzero_parallax);
+		release_renderer->set_stereo_parameters(config.eyeSeparation, config.zZeroParallax);
 	}
 }
 
 void application::increase_zzero_parallax(float val)
 {
-	config.zzero_parallax += val;
-	if (config.zzero_parallax < 0)
+	config.zZeroParallax += val;
+	if (config.zZeroParallax < 0)
 	{
-		config.zzero_parallax = 0;
+		config.zZeroParallax = 0;
 	}
 
 	if (release_renderer)
 	{
-		release_renderer->set_stereo_parameters(config.eye_separation, config.zzero_parallax);
+		release_renderer->set_stereo_parameters(config.eyeSeparation, config.zZeroParallax);
 	}
 }
 
 void application::set_camera_mode(rendering::camera_mode mode)
 {
-	config.camera_mode = mode;
+	config.cameraMode = mode;
 
 	if (release_renderer)
 	{
-		release_renderer->set_camera_mode(config.camera_mode);
+		release_renderer->set_camera_mode(config.cameraMode);
 	}
 }

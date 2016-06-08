@@ -44,7 +44,7 @@ struct Face
 	unsigned int vertices[3];
 };
 
-cgvkp::util::ObjImporter::ObjImporter(char const* filename, bool withAdjacencies /* = false */)
+cgvkp::util::ObjImporter::ObjImporter(std::string const& filename, bool withAdjacencies /* = false */)
 	: verticesCount(0), positions(nullptr), normals(nullptr), textureCoords(nullptr), indices(nullptr), indicesMode(GL_NONE), indicesCount(0), indicesType(GL_NONE), indicesSize(0)
 {
 	load(filename, withAdjacencies);
@@ -72,12 +72,15 @@ cgvkp::util::ObjImporter::~ObjImporter()
 	}
 }
 
-bool cgvkp::util::ObjImporter::load(char const* filename, bool withAdjacencies)
+bool cgvkp::util::ObjImporter::load(std::string const& filename, bool withAdjacencies)
 {
 	std::ifstream file(filename);
 
 	if (!file.good())
 	{
+#if defined(_DEBUG) || defined(DEBUG)
+		std::cerr << "Could not open mesh file \"" << filename << "\"." << std::endl;
+#endif
 		return false;
 	}
 

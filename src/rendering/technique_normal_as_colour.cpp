@@ -1,21 +1,21 @@
 #include "technique_normal_as_colour.hpp"
 
 cgvkp::rendering::technique_normal_as_colour::technique_normal_as_colour()
-	: Technique()
+	: modelMatrixLocation(invalidLocation)
 {
 }
 
-bool cgvkp::rendering::technique_normal_as_colour::init()
+bool cgvkp::rendering::technique_normal_as_colour::init(std::string const& resourcesBasePath)
 {
 	if (!Technique::init())
 	{
 		return false;
 	}
-	if (!addShader(GL_VERTEX_SHADER, "res/shaders/normal_as_colour.vs"))
+	if (!addShader(GL_VERTEX_SHADER, resourcesBasePath + "/shaders/normal_as_colour.vs"))
 	{
 		return false;
 	}
-	if (!addShader(GL_FRAGMENT_SHADER, "res/shaders/normal_as_colour.fs"))
+	if (!addShader(GL_FRAGMENT_SHADER, resourcesBasePath + "/shaders/normal_as_colour.fs"))
 	{
 		return false;
 	}
@@ -26,13 +26,13 @@ bool cgvkp::rendering::technique_normal_as_colour::init()
 
 	worldViewProjectionLocation = getUniformLocation("worldViewProjection");
 
-	if (worldViewProjectionLocation == -1)
+	if (worldViewProjectionLocation == invalidLocation)
 	{
 		return false;
 	}
     modelMatrixLocation = getUniformLocation("modelMatrix");
 
-    if (modelMatrixLocation == -1)
+    if (modelMatrixLocation == invalidLocation)
     {
         return false;
     }
@@ -41,8 +41,5 @@ bool cgvkp::rendering::technique_normal_as_colour::init()
 }
 void cgvkp::rendering::technique_normal_as_colour::setModelMatrix(glm::mat4x4 const& modelMatrix) const
 {
-	if (modelMatrixLocation != -1)
-	{
-		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &modelMatrix[0][0]);
-	}
+	glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &modelMatrix[0][0]);
 }

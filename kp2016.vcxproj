@@ -56,6 +56,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="src\resources\meshes\hand.mtl" />
+    <None Include="src\resources\shaders\geometry.fs" />
+    <None Include="src\resources\shaders\geometry.vs" />
+    <None Include="src\resources\shaders\light.fs" />
+    <None Include="src\resources\shaders\light.vs" />
+    <None Include="src\resources\shaders\normal_as_colour.fs" />
+    <None Include="src\resources\shaders\normal_as_colour.vs" />
+    <None Include="src\resources\shaders\shadowVolume.fs" />
+    <None Include="src\resources\shaders\shadowVolume.gs" />
+    <None Include="src\resources\shaders\shadowVolume.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\application.hpp" />
@@ -95,6 +105,17 @@
     <ClInclude Include="src\util\resource_file.hpp" />
     <ClInclude Include="src\vision\abstract_vision.hpp" />
     <ClInclude Include="src\vision\dummy_vision.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="src\resources\meshes\hand.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="src\resources\meshes\lightingSphere.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="src\resources\meshes\star.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Object>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D212F91F-5F4A-4757-9EBA-CA3EA546B69A}</ProjectGuid>
