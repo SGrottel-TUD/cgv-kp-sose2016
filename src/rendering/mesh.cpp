@@ -15,7 +15,7 @@ cgvkp::rendering::Mesh::~Mesh()
 	deinit();
 }
 
-bool cgvkp::rendering::Mesh::init(char const* filename, bool withAdjacencies /* = false */)
+bool cgvkp::rendering::Mesh::init(std::string const& filename, bool withAdjacencies /* = false */)
 {
 	util::ObjImporter mesh(filename, withAdjacencies);
 	if (!mesh.isValid())

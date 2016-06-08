@@ -17,7 +17,7 @@ cgvkp::rendering::model_listing_renderer::model_listing_renderer(const ::cgvkp::
 }
 cgvkp::rendering::model_listing_renderer::~model_listing_renderer() {}
 
-bool cgvkp::rendering::model_listing_renderer::init_impl(const window& wnd) {
+bool cgvkp::rendering::model_listing_renderer::init_impl(const window& wnd, std::string const& resourcesBasePath) {
     wnd.make_current();
 
 	::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -27,7 +27,7 @@ bool cgvkp::rendering::model_listing_renderer::init_impl(const window& wnd) {
 	::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	::glDepthMask(GL_TRUE);
 
-    technique1.init();
+    technique1.init(resourcesBasePath);
 
     star_model->model_matrix =
         glm::translate(glm::vec3(-0.5f, 0.0f, 0.0f)) *

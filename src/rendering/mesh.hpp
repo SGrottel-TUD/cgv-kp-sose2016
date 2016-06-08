@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GL/glew.h>
+#include <string>
 
 namespace cgvkp
 {
@@ -11,7 +12,7 @@ namespace cgvkp
 		public:
 			Mesh();
 			~Mesh();
-			bool init(char const* filename, bool withAdjacencies = false);
+			bool init(std::string const& filename, bool withAdjacencies = false);
 			void deinit();
 			void render() const;
 

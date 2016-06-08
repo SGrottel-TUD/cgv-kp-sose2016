@@ -76,6 +76,14 @@
     <Filter Include="rendering\view\Header Files">
       <UniqueIdentifier>{f122605c-8f64-48fa-9f49-86153c5f07d5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\shaders">
+      <UniqueIdentifier>{ccd51729-f27c-4abd-8423-c9ba5bc69442}</UniqueIdentifier>
+      <Extensions>fs;gs;vs</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\meshes">
+      <UniqueIdentifier>{1b7de7a3-8bb9-4290-b56b-46ffeaf6ebf1}</UniqueIdentifier>
+      <Extensions>obj;mtl</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -183,6 +191,36 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="src\resources\meshes\hand.mtl">
+      <Filter>Resource Files\meshes</Filter>
+    </None>
+    <None Include="src\resources\shaders\light.vs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\normal_as_colour.fs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\normal_as_colour.vs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\shadowVolume.fs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\shadowVolume.gs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\shadowVolume.vs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\geometry.fs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\geometry.vs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\light.fs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\data\input_layer.hpp">
@@ -296,5 +334,16 @@
     <ClInclude Include="src\rendering\mesh.hpp">
       <Filter>rendering\Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="src\resources\meshes\lightingSphere.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="src\resources\meshes\star.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="src\resources\meshes\hand.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
   </ItemGroup>
 </Project>

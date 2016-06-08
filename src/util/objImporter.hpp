@@ -2,6 +2,7 @@
 
 #include <gl/glew.h>
 #include <glm/common.hpp>
+#include <string>
 
 namespace cgvkp
 {
@@ -10,26 +11,26 @@ namespace cgvkp
 		class ObjImporter
 		{
 		public:
-			ObjImporter(char const* filename, bool withAdjacencies = false);
+			ObjImporter(std::string const& filename, bool withAdjacencies = false);
 			~ObjImporter();
-			inline glm::vec3 const* getPositions() { return positions; }
-			inline glm::vec3 const* getNormals() { return normals; }
-			inline glm::vec2 const* getTextureCoords() { return textureCoords; }
-			inline void const* getIndices() { return indices; }
-			inline GLsizei getVerticesCount() { return verticesCount; }
-			inline GLenum getIndicesMode() { return indicesMode; }
-			inline GLsizei getIndicesCount() { return indicesCount; }
-			inline GLenum getIndicesType() { return indicesType; }
-			inline GLsizeiptr getPositionsSize() { return verticesCount * sizeof(glm::vec3); }
-			inline GLsizeiptr getNormalsSize() { return verticesCount * sizeof(glm::vec3); }
-			inline GLsizeiptr getTextureCoordsSize() { return verticesCount * sizeof(glm::vec2); }
-			inline GLsizeiptr getIndicesSize() { return indicesSize; }
-			inline bool hasNormals() { return normals != nullptr; }
-			inline bool hasTextureCoords() { return textureCoords != nullptr; }
-			inline bool isValid() { return indices != nullptr; }
+			inline glm::vec3 const* getPositions() const { return positions; }
+			inline glm::vec3 const* getNormals() const { return normals; }
+			inline glm::vec2 const* getTextureCoords() const { return textureCoords; }
+			inline void const* getIndices() const { return indices; }
+			inline GLsizei getVerticesCount() const { return verticesCount; }
+			inline GLenum getIndicesMode() const { return indicesMode; }
+			inline GLsizei getIndicesCount() const { return indicesCount; }
+			inline GLenum getIndicesType() const { return indicesType; }
+			inline GLsizeiptr getPositionsSize() const { return verticesCount * sizeof(glm::vec3); }
+			inline GLsizeiptr getNormalsSize() const { return verticesCount * sizeof(glm::vec3); }
+			inline GLsizeiptr getTextureCoordsSize() const { return verticesCount * sizeof(glm::vec2); }
+			inline GLsizeiptr getIndicesSize() const { return indicesSize; }
+			inline bool hasNormals() const { return normals != nullptr; }
+			inline bool hasTextureCoords() const { return textureCoords != nullptr; }
+			inline bool isValid() const { return indices != nullptr; }
 
 		private:
-			bool load(char const* filename, bool withAdjacencies);
+			bool load(std::string const& filename, bool withAdjacencies);
 
 			GLsizei verticesCount;
 			glm::vec3* positions;
