@@ -44,13 +44,13 @@ struct Face
 	unsigned int vertices[3];
 };
 
-cgvkp::util::ObjLoader::ObjLoader(char const* filename, bool withAdjacencies /* = false */)
+cgvkp::util::ObjImporter::ObjImporter(char const* filename, bool withAdjacencies /* = false */)
 	: verticesCount(0), positions(nullptr), normals(nullptr), textureCoords(nullptr), indices(nullptr), indicesMode(GL_NONE), indicesCount(0), indicesType(GL_NONE), indicesSize(0)
 {
 	load(filename, withAdjacencies);
 }
 
-cgvkp::util::ObjLoader::~ObjLoader()
+cgvkp::util::ObjImporter::~ObjImporter()
 {
 	delete[] positions;
 	delete[] normals;
@@ -72,7 +72,7 @@ cgvkp::util::ObjLoader::~ObjLoader()
 	}
 }
 
-bool cgvkp::util::ObjLoader::load(char const* filename, bool withAdjacencies)
+bool cgvkp::util::ObjImporter::load(char const* filename, bool withAdjacencies)
 {
 	std::ifstream file(filename);
 

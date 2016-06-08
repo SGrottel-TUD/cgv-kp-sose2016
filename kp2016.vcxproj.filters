@@ -171,6 +171,15 @@
     <ClCompile Include="src\util\objImporter.cpp">
       <Filter>util\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\rendering\lights.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\geometryBuffer.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\mesh.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -277,6 +286,15 @@
     </ClInclude>
     <ClInclude Include="src\util\objImporter.hpp">
       <Filter>util\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\lights.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\geometryBuffer.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\mesh.hpp">
+      <Filter>rendering\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

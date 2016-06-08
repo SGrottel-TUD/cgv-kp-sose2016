@@ -1,0 +1,355 @@
+#if defined(_DEBUG) || defined(DEBUG)
+#include <iostream>
+#endif
+#include "geometrybuffer.hpp"
+#include "lights.hpp"
+
+/*
+	GBuffer
+*/
+
+cgvkp::rendering::GeometryBuffer::GeometryBuffer()
+	: framebuffer(0), depthStencilTexture(0)
+{
+	for (int i = 0; i < numTextures; ++i)
+	{
+		textures[i] = 0;
+	}
+}
+
+cgvkp::rendering::GeometryBuffer::~GeometryBuffer()
+{
+	deinit();
+}
+
+bool cgvkp::rendering::GeometryBuffer::init(GLsizei width, GLsizei height)
+{
+	// Create the GBuffer textures.
+	glGenTextures(numTextures, textures);
+	glGenTextures(1, &depthStencilTexture);
+	resize(width, height);
+
+	// Create the framebuffer.
+	glGenFramebuffers(1, &framebuffer);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
+	for (int i = 0; i < final; ++i)
+	{
+		glBindTexture(GL_TEXTURE_2D, textures[i]);
+		glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, textures[i], 0);
+
+		// There is a 1:1 mapping between a screen pixel and G Buffer texel. Setting the filtering type to GL_NEAREST prevents unnecessary interpolation.
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
+
+	// Final image.
+	glBindTexture(GL_TEXTURE_2D, textures[final]);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + final, GL_TEXTURE_2D, textures[final], 0);
+
+	// Depth/Stencil buffer.
+	glBindTexture(GL_TEXTURE_2D, depthStencilTexture);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthStencilTexture, 0);
+
+	// Check framebuffer.
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+	{
+#if defined(_DEBUG) || defined(DEBUG)
+		std::cerr << "Framebuffer not complete (status: " << status << ")." << std::endl;
+#endif
+		return false;
+	}
+
+	// Restore default framebuffer.
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	return true;
+}
+
+void cgvkp::rendering::GeometryBuffer::deinit()
+{
+	if (textures[0])
+	{
+		glDeleteTextures(numTextures, textures);
+		for (int i = 0; i < numTextures; ++i)
+		{
+			textures[i] = 0;
+		}
+	}
+
+	if (depthStencilTexture)
+	{
+		glDeleteTextures(1, &depthStencilTexture);
+		depthStencilTexture = 0;
+	}
+
+	if (framebuffer)
+	{
+		glDeleteFramebuffers(1, &framebuffer);
+	}
+}
+
+void cgvkp::rendering::GeometryBuffer::bindForGeometryPass() const
+{
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
+	GLenum DrawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5, GL_COLOR_ATTACHMENT6, GL_COLOR_ATTACHMENT7 };
+	glDrawBuffers(numTextures, DrawBuffers);
+}
+
+void cgvkp::rendering::GeometryBuffer::bindForLightPass() const
+{
+	glDrawBuffer(GL_COLOR_ATTACHMENT0 + final);
+
+	for (int i = 0; i < final; ++i)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, textures[i]);
+	}
+}
+
+void cgvkp::rendering::GeometryBuffer::bindForFinalPass() const
+{
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer);
+	glReadBuffer(GL_COLOR_ATTACHMENT0 + final);
+}
+
+void cgvkp::rendering::GeometryBuffer::resize(GLsizei width, GLsizei height) const
+{
+	glDrawBuffer(GL_BACK);
+	glReadBuffer(GL_NONE);
+	for (int i = 0; i < GeometryBuffer::final; ++i)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	}
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, GL_NONE);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, GL_NONE);
+
+	for (int i = 0; i < final; ++i)
+	{
+		glBindTexture(GL_TEXTURE_2D, textures[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, nullptr);
+	}
+
+	// Final image.
+	glBindTexture(GL_TEXTURE_2D, textures[final]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_FLOAT, nullptr);
+
+	// Depth/Stencil buffer.
+	glBindTexture(GL_TEXTURE_2D, depthStencilTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH32F_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_FLOAT_32_UNSIGNED_INT_24_8_REV, nullptr);
+}
+
+
+
+/*
+	Geometry pass technique
+*/
+
+cgvkp::rendering::GeometryTechnique::GeometryTechnique()
+	: ambientLightLocation(invalidLocation), materialLocation(invalidLocation), worldLocation(invalidLocation)
+{
+}
+
+bool cgvkp::rendering::GeometryTechnique::init()
+{
+	if (!Technique::init())
+	{
+		return false;
+	}
+	if (!addShader(GL_VERTEX_SHADER, "res/shaders/geometry.vs"))
+	{
+		return false;
+	}
+	if (!addShader(GL_FRAGMENT_SHADER, "res/shaders/geometry.fs"))
+	{
+		return false;
+	}
+	if (!link())
+	{
+		return false;
+	}
+
+	ambientLightLocation = getUniformLocation("ambientLight");
+	materialLocation = getUniformLocation("material");
+	worldViewProjectionLocation = getUniformLocation("worldViewProjection");
+	worldLocation = getUniformLocation("world");
+
+	if (ambientLightLocation == invalidLocation ||
+		materialLocation == invalidLocation ||
+		worldViewProjectionLocation == invalidLocation ||
+		worldLocation == invalidLocation)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void cgvkp::rendering::GeometryTechnique::setAmbientLight(glm::vec3 const& color) const
+{
+	glUniform3f(ambientLightLocation, color.r, color.g, color.b);
+}
+
+void cgvkp::rendering::GeometryTechnique::setMaterial() const
+{
+	float specularPower = 1;
+	float specularIntensity = 0;
+	glUniform2f(materialLocation, specularPower, specularIntensity);
+}
+
+void cgvkp::rendering::GeometryTechnique::setWorld(glm::mat4x4 const& world) const
+{
+	glUniformMatrix4fv(worldLocation, 1, GL_FALSE, &world[0][0]);
+}
+
+
+
+/*
+	Stencil pass technique
+*/
+
+cgvkp::rendering::ShadowVolumeTechnique::ShadowVolumeTechnique()
+	: lightPositionLocation(invalidLocation), viewProjectionLocation(invalidLocation), worldLocation(invalidLocation)
+{
+}
+
+bool cgvkp::rendering::ShadowVolumeTechnique::init()
+{
+	if (!Technique::init())
+	{
+		return false;
+	}
+	if (!addShader(GL_VERTEX_SHADER, "res/shaders/shadowVolume.vs"))
+	{
+		return false;
+	}
+	if (!addShader(GL_GEOMETRY_SHADER, "res/shaders/shadowVolume.gs"))
+	{
+		return false;
+	}
+	if (!addShader(GL_FRAGMENT_SHADER, "res/shaders/shadowVolume.fs"))
+	{
+		return false;
+	}
+	if (!link())
+	{
+		return false;
+	}
+
+	lightPositionLocation = getUniformLocation("lightPosition");
+	viewProjectionLocation = getUniformLocation("viewProjection");
+	worldLocation = getUniformLocation("world");
+
+	if (lightPositionLocation == invalidLocation ||
+		viewProjectionLocation == invalidLocation ||
+		worldLocation == invalidLocation)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void cgvkp::rendering::ShadowVolumeTechnique::setLightPosition(glm::vec3 const& lightPosition) const
+{
+	glUniform3f(lightPositionLocation, lightPosition.x, lightPosition.y, lightPosition.z);
+}
+
+void cgvkp::rendering::ShadowVolumeTechnique::setViewProjection(glm::mat4x4 const& viewProjection) const
+{
+	glUniformMatrix4fv(viewProjectionLocation, 1, GL_FALSE, &viewProjection[0][0]);
+}
+
+void cgvkp::rendering::ShadowVolumeTechnique::setWorld(glm::mat4x4 const& world) const
+{
+	glUniformMatrix4fv(worldLocation, 1, GL_FALSE, &world[0][0]);
+}
+
+
+
+/*
+	Light pass technique
+*/
+
+cgvkp::rendering::LightTechnique::LightTechnique()
+	: mapLocation{ invalidLocation, invalidLocation, invalidLocation, invalidLocation }, lightLocation{ invalidLocation, invalidLocation, invalidLocation },
+	eyePositionLocation(invalidLocation), screenSizeLocation(invalidLocation)
+{
+}
+
+bool cgvkp::rendering::LightTechnique::init()
+{
+	if (!Technique::init())
+	{
+		return false;
+	}
+	if (!addShader(GL_VERTEX_SHADER, "res/shaders/light.vs"))
+	{
+		return false;
+	}
+	if (!addShader(GL_FRAGMENT_SHADER, "res/shaders/light.fs"))
+	{
+		return false;
+	}
+	if (!link())
+	{
+		return false;
+	}
+
+	mapLocation.position = getUniformLocation("maps.position");
+	mapLocation.normal = getUniformLocation("maps.normal");
+	mapLocation.diffuseColor = getUniformLocation("maps.diffuseColor");
+	mapLocation.material = getUniformLocation("maps.material");
+
+	lightLocation.position = getUniformLocation("light.position");
+	lightLocation.diffuseColor = getUniformLocation("light.diffuseColor");
+	lightLocation.attenuation = getUniformLocation("light.attenuation");
+
+	eyePositionLocation = getUniformLocation("eyePosition");
+	screenSizeLocation = getUniformLocation("screenSize");
+	worldViewProjectionLocation = getUniformLocation("worldViewProjection");
+
+	if (mapLocation.position == invalidLocation ||
+		mapLocation.normal == invalidLocation ||
+		mapLocation.diffuseColor == invalidLocation ||
+		mapLocation.material == invalidLocation ||
+
+		lightLocation.position == invalidLocation ||
+		lightLocation.diffuseColor == invalidLocation ||
+		lightLocation.attenuation == invalidLocation ||
+
+		eyePositionLocation == invalidLocation ||
+		screenSizeLocation == invalidLocation ||
+		worldViewProjectionLocation == invalidLocation)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void cgvkp::rendering::LightTechnique::setEyePosition(GLfloat x, GLfloat y, GLfloat z) const
+{
+	glUniform3f(eyePositionLocation, x, y, z);
+}
+
+void cgvkp::rendering::LightTechnique::setLight(PointLight const& light) const
+{
+	glUniform3f(lightLocation.position, light.position.x, light.position.y, light.position.z);
+	glUniform3f(lightLocation.diffuseColor, light.color.r * light.diffuseIntensity, light.color.g * light.diffuseIntensity, light.color.b * light.diffuseIntensity);
+	glUniform3f(lightLocation.attenuation, light.constantAttenuation, light.linearAttenuation, light.exponentialAttenuation);
+}
+
+void cgvkp::rendering::LightTechnique::setMaps() const
+{
+	glUniform1i(mapLocation.position, GeometryBuffer::position);
+	glUniform1i(mapLocation.normal, GeometryBuffer::normal);
+	glUniform1i(mapLocation.diffuseColor, GeometryBuffer::diffuseColor);
+	glUniform1i(mapLocation.material, GeometryBuffer::material);
+}
+
+void cgvkp::rendering::LightTechnique::setScreenSize(GLsizei width, GLsizei height) const
+{
+	glUniform2i(screenSizeLocation, width, height);
+}

@@ -7,11 +7,11 @@ namespace cgvkp
 {
 	namespace util
 	{
-		class ObjLoader
+		class ObjImporter
 		{
 		public:
-			ObjLoader(char const* filename, bool withAdjacencies = false);
-			~ObjLoader();
+			ObjImporter(char const* filename, bool withAdjacencies = false);
+			~ObjImporter();
 			inline glm::vec3 const* getPositions() { return positions; }
 			inline glm::vec3 const* getNormals() { return normals; }
 			inline glm::vec2 const* getTextureCoords() { return textureCoords; }
