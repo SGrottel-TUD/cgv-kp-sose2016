@@ -35,6 +35,8 @@ namespace controller {
 			uniform = std::uniform_real_distribution<float>(-w, w*2);
 			cloud->model_matrix[3][0] = uniform(random_engine);
 
+			cloud->model_matrix[3][2] = i * -0.3f;
+
 			clouds.insert(std::make_pair(i, cloud));
 
 		}
@@ -58,7 +60,6 @@ namespace controller {
 
 			cloud->model_matrix[3][0] += cloud->speed;
 			cloud->model_matrix[3][1] = 0.5f;
-			cloud->model_matrix[3][2] = i * -0.3f;
 		}
 	}
 
