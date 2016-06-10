@@ -32,6 +32,7 @@ namespace rendering {
 		virtual bool restore_context(window const& wnd);
 
         void add_model(model::model_base::ptr model);
+        void remove_model(model::model_base::ptr model);
         void add_view(view::view_base::ptr view);
         void add_controller(controller::controller_base::ptr controller);
 
@@ -63,6 +64,8 @@ namespace rendering {
         std::chrono::high_resolution_clock::time_point last_time;
         std::vector<model::model_base::ptr> models;
         std::vector<view::view_base::ptr> views;
+        std::vector<view::view_base::ptr> cached_views;
+
         std::vector<controller::controller_base::ptr> controllers, new_controllers;
     };
 }
