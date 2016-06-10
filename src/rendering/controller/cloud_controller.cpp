@@ -1,5 +1,5 @@
 #include "rendering/controller/cloud_controller.hpp"
-
+#include "rendering/controller/sub_cloud_controller.hpp"
 #include "rendering/view/cloud_view.hpp"
 
 
@@ -12,16 +12,17 @@ namespace controller {
 	{
 		std::random_device r;
 		random_engine = std::default_random_engine(std::seed_seq{ r(), r(), r() });
-		uniform = std::uniform_real_distribution<float>(0.0f, 1.0f);
 
-		float w = data.get_config().width();
-		float h = data.get_config().height();
+		w = data.get_config().width();
+		h = data.get_config().height();
 
 		int max_clouds = static_cast<int>(h*w)*5;
+		int max_sub_clouds = 5;
 
 		for (int i = 0; i < max_clouds; i++) {
 
-			auto cloud = std::make_shared<model::cloud_model>();
+			uniform = std::uniform_real_distribution<float>(0.19f, 0.25f);
+			auto cloud = std::make_shared<model::cloud_model>(0.22f);
 			renderer->add_model(cloud);
 
 			auto cloudView = std::make_shared<view::cloud_view>();
@@ -36,6 +37,12 @@ namespace controller {
 			cloud->model_matrix[3][0] = uniform(random_engine);
 
 			cloud->model_matrix[3][2] = i * -0.3f;
+
+			for (int j = 0; j < max_sub_clouds; j++) {
+				auto subCloud = std::make_shared<controller::sub_cloud_controller>(renderer, data, cloud);
+				renderer->add_controller(subCloud);
+			}
+			
 
 			clouds.insert(std::make_pair(i, cloud));
 
@@ -55,7 +62,14 @@ namespace controller {
 		for (int i = 0; i < clouds.size(); i++) {
 			std::shared_ptr<model::cloud_model> cloud = clouds[i].lock();
 
-			uniform = std::uniform_real_distribution<float>(-0.0001f, 0.0001);
+			if (cloud->model_matrix[3][0] > w*2) {
+				uniform = std::uniform_real_distribution<float>(-0.0001f, 0.0f);
+			} else if (cloud->model_matrix[3][0] < -w) {
+				uniform = std::uniform_real_distribution<float>(0.0f, 0.0001f);
+			} else {
+				uniform = std::uniform_real_distribution<float>(-0.0001f, 0.0001f);
+			}
+			
 			cloud->speed += uniform(random_engine);
 
 			cloud->model_matrix[3][0] += cloud->speed;

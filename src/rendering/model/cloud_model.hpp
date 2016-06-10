@@ -8,8 +8,9 @@ namespace cgvkp {
 		namespace model {
 			class cloud_model : public graphic_model_base {
 			public:
-				cloud_model() : graphic_model_base(
-					glm::scale(glm::vec3(0.2f))
+				cloud_model() : graphic_model_base(glm::scale(glm::vec3(0.2f))){}
+				cloud_model(float scale) : graphic_model_base(
+					glm::scale(glm::vec3(scale))
 				) {}
 
 				virtual ~cloud_model() {}

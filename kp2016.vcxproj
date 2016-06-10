@@ -31,6 +31,7 @@
     <ClCompile Include="src\rendering\controller\controller_base.cpp" />
     <ClCompile Include="src\rendering\controller\data_controller.cpp" />
     <ClCompile Include="src\rendering\controller\periodic_rotation_controller.cpp" />
+    <ClCompile Include="src\rendering\controller\sub_cloud_controller.cpp" />
     <ClCompile Include="src\rendering\debug_renderer.cpp" />
     <ClCompile Include="src\rendering\abstract_user_input.cpp" />
     <ClCompile Include="src\rendering\debug_user_input.cpp" />
@@ -69,6 +70,7 @@
     <ClInclude Include="src\rendering\controller\controller_base.hpp" />
     <ClInclude Include="src\rendering\controller\data_controller.hpp" />
     <ClInclude Include="src\rendering\controller\periodic_rotation_controller.hpp" />
+    <ClInclude Include="src\rendering\controller\sub_cloud_controller.hpp" />
     <ClInclude Include="src\rendering\debug_renderer.hpp" />
     <ClInclude Include="src\rendering\abstract_user_input.hpp" />
     <ClInclude Include="src\rendering\debug_user_input.hpp" />

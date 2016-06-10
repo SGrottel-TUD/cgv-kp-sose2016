@@ -27,6 +27,7 @@ namespace controller {
          */
         virtual void update(double seconds, std::shared_ptr<abstract_user_input> input);
     private:
+		float w, h;
 		const ::cgvkp::data::world& data;
         std::map<unsigned int, std::weak_ptr<model::cloud_model> > clouds;
         release_renderer* renderer;
