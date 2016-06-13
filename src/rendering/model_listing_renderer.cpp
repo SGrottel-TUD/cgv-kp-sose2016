@@ -1,7 +1,6 @@
 #include "model_listing_renderer.hpp"
 #include "data/world.hpp"
 #include "rendering/window.hpp"
-#include "util/resource_file.hpp"
 #include "GL/glew.h"
 #include <iostream>
 #include <glm/glm.hpp>

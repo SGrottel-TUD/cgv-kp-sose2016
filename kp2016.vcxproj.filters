@@ -76,6 +76,14 @@
     <Filter Include="rendering\view\Header Files">
       <UniqueIdentifier>{f122605c-8f64-48fa-9f49-86153c5f07d5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\shaders">
+      <UniqueIdentifier>{ccd51729-f27c-4abd-8423-c9ba5bc69442}</UniqueIdentifier>
+      <Extensions>fs;gs;vs</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\meshes">
+      <UniqueIdentifier>{1b7de7a3-8bb9-4290-b56b-46ffeaf6ebf1}</UniqueIdentifier>
+      <Extensions>obj;mtl</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -126,9 +134,6 @@
     <ClCompile Include="src\util\resource_file.cpp">
       <Filter>util\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\util\obj_parser.cpp">
-      <Filter>util\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\rendering\view\view_base.cpp">
       <Filter>rendering\view\Source Files</Filter>
     </ClCompile>
@@ -168,9 +173,51 @@
     <ClCompile Include="src\rendering\controller\caught_star_controller.cpp">
       <Filter>rendering\controller\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\objImporter.cpp">
+      <Filter>util\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\lights.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\geometryBuffer.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\mesh.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="src\resources\meshes\hand.mtl">
+      <Filter>Resource Files\meshes</Filter>
+    </None>
+    <None Include="src\resources\shaders\light.vs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\normal_as_colour.fs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\normal_as_colour.vs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\shadowVolume.fs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\shadowVolume.gs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\shadowVolume.vs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\geometry.fs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\geometry.vs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\light.fs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\data\input_layer.hpp">
@@ -221,9 +268,6 @@
     <ClInclude Include="src\util\resource_file.hpp">
       <Filter>util\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\util\obj_parser.hpp">
-      <Filter>util\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\rendering\view\view_base.hpp">
       <Filter>rendering\view\Header Files</Filter>
     </ClInclude>
@@ -272,5 +316,28 @@
     <ClInclude Include="src\rendering\controller\caught_star_controller.hpp">
       <Filter>rendering\controller\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\util\objImporter.hpp">
+      <Filter>util\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\lights.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\geometryBuffer.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\mesh.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="src\resources\meshes\lightingSphere.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="src\resources\meshes\star.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="src\resources\meshes\hand.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
   </ItemGroup>
 </Project>
