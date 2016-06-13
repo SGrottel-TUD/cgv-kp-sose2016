@@ -6,6 +6,7 @@
 #include <vector>
 #include "abstract_renderer.hpp"
 #include "technique/geometryBuffer.hpp"
+#include "technique/ShadowVolume.hpp"
 #include "lights.hpp"
 #include "mesh.hpp"
 #include "model/model_base.hpp"
