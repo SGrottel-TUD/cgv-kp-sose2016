@@ -50,9 +50,7 @@ namespace cgvkp {
 			void sub_cloud_controller::update(double seconds, std::shared_ptr<abstract_user_input> input) {
 				parent_x = parent_cloud->model_matrix[3][0];
 				float diff = parent_x + parent_distance - sub_cloud->model_matrix[3][0];
-				sub_cloud->model_matrix[3][0] += std::pow(diff,1)*0.1;
-
-
+				sub_cloud->model_matrix[3][0] += std::pow(diff,1)*0.1f;
 			}
 
 
