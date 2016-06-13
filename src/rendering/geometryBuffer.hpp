@@ -51,6 +51,8 @@ namespace cgvkp
 			void setAmbientLight(glm::vec3 const& color) const;
 			void setMaterial() const;
 			void setWorld(glm::mat4x4 const& world) const;
+            static std::string get_id() { return "Geometry"; }
+            bool renderView(view::view_base::ptr const view, glm::mat4x4 const& projectionViewMatrix) const;
 
 		private:
 			GLint ambientLightLocation;
@@ -71,6 +73,8 @@ namespace cgvkp
 			void setLightPosition(glm::vec3 const& lightPosition) const;
 			void setViewProjection(glm::mat4x4 const& viewProjection) const;
 			void setWorld(glm::mat4x4 const& world) const;
+            static std::string get_id() { return "ShadowVolume"; }
+            bool renderView(view::view_base::ptr const view) const;
 
 		private:
 			GLint lightPositionLocation;
@@ -91,6 +95,7 @@ namespace cgvkp
 			void setLight(PointLight const& light) const;
 			void setMaps() const;
 			void setScreenSize(GLsizei width, GLsizei height) const;
+            static std::string get_id() { return "Light"; }
 
 		private:
 			struct
