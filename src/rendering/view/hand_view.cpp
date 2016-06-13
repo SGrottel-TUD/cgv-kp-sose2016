@@ -3,6 +3,7 @@
 namespace cgvkp {
 namespace rendering {
 namespace view {
+    std::vector<std::string> hand_view::_techniques({ "Geometry", "Light" });
 	hand_view::hand_view() : view_geometry_base<hand_geometry>() {
 	}
 	hand_view::~hand_view() {

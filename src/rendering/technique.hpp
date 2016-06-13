@@ -4,6 +4,7 @@
 #include <glm/mat4x4.hpp>
 #include <list>
 #include <string>
+#include "view/view_base.hpp"
 
 namespace cgvkp
 {

@@ -1,6 +1,7 @@
 #pragma once
 #include "rendering/model/model_base.hpp"
 #include <memory>
+#include <vector>
 
 namespace cgvkp {
 namespace rendering {
@@ -34,10 +35,18 @@ namespace view {
         // deinitializes the object (if initialized)
         void deinit();
 
+        bool has_technique(std::string const technique_id) {
+            auto t = techniques();
+            return (std::find(t.begin(), t.end(), technique_id) != t.end());
+        }
+
     protected:
         // return true on success
         virtual bool init_impl() = 0;
         virtual void deinit_impl() = 0;
+
+        /** Set of ids for techniques that are allowed to run on this view */
+        virtual std::vector<std::string> techniques() = 0;
 
         /** The main model used by this view */
         model::model_base::weak_ptr model;
