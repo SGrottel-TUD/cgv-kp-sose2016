@@ -16,13 +16,16 @@ namespace controller {
 		w = data.get_config().width();
 		h = data.get_config().height();
 
-		int max_clouds = static_cast<int>(h*w)*5;
-		int max_sub_clouds = 5;
+		int max_clouds = static_cast<int>(h*w)*10;
+		int min_sub_clouds = 2;
 
 		for (int i = 0; i < max_clouds; i++) {
 
+
 			uniform = std::uniform_real_distribution<float>(0.19f, 0.25f);
-			auto cloud = std::make_shared<model::cloud_model>(0.22f);
+			float scale = uniform(random_engine);
+			auto cloud = std::make_shared<model::cloud_model>(scale);
+			cloud->model_matrix[3][1] = 0.5f+scale;
 			renderer->add_model(cloud);
 
 			auto cloudView = std::make_shared<view::cloud_view>();
@@ -36,13 +39,35 @@ namespace controller {
 			uniform = std::uniform_real_distribution<float>(-w, w*2);
 			cloud->model_matrix[3][0] = uniform(random_engine);
 
-			cloud->model_matrix[3][2] = i * -0.3f;
+			cloud->speed = uniform(random_engine)/800;
 
-			for (int j = 0; j < max_sub_clouds; j++) {
-				auto subCloud = std::make_shared<controller::sub_cloud_controller>(renderer, data, cloud);
-				renderer->add_controller(subCloud);
-			}
-			
+			cloud->model_matrix[3][2] = 1 + i * -0.15f;
+
+			int add_sub_clouds = rand() % 3;
+
+
+			float parent_distance_pos = 0;
+			float parent_distance_neg = 0;
+			for (int j = 0; j < min_sub_clouds+add_sub_clouds; j++) {
+
+				uniform = std::uniform_real_distribution<float>(scale * 0.7, scale * 0.85);
+				scale = uniform(random_engine);
+				
+				if ((rand() % 2) == 0) {
+					parent_distance_pos += scale*1.3;
+					auto subCloud = std::make_shared<controller::sub_cloud_controller>(renderer, data, cloud, scale, parent_distance_pos);
+					renderer->add_controller(subCloud);
+				}
+				else {
+					parent_distance_neg += -scale*1.3;
+					auto subCloud = std::make_shared<controller::sub_cloud_controller>(renderer, data, cloud, scale, parent_distance_neg);
+					renderer->add_controller(subCloud);
+				}
+
+				
+				
+				
+			}			
 
 			clouds.insert(std::make_pair(i, cloud));
 
@@ -72,8 +97,9 @@ namespace controller {
 			
 			cloud->speed += uniform(random_engine);
 
+			cloud->speed = glm::clamp(cloud->speed, -0.001f, 0.001f);
+
 			cloud->model_matrix[3][0] += cloud->speed;
-			cloud->model_matrix[3][1] = 0.5f;
 		}
 	}
 
