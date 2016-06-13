@@ -1,5 +1,4 @@
 #include "rendering/view/hand_geometry.hpp"
-#include "rendering/technique.hpp"
 #include "util/objImporter.hpp"
 
 namespace cgvkp {

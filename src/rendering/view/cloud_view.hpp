@@ -11,10 +11,6 @@ namespace cgvkp {
 				virtual ~cloud_view();
 				virtual void render();
 				std::shared_ptr<model::cloud_model> get_model() const;
-			protected:
-				virtual inline std::vector<std::string> techniques() { return _techniques; }
-			private:
-				static std::vector<std::string> _techniques;
 			};
 		}
 	}
