@@ -22,7 +22,7 @@ namespace view {
     }
 
     bool star_geometry::init() {
-		util::ObjImporter mesh("src/resources/meshes/star.obj", true);
+		util::ObjImporter mesh("meshes/star.obj", true);
 		if (!mesh.isValid())
 		{
 			return false;
