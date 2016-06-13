@@ -1,4 +1,5 @@
 #include "objImporter.hpp"
+#include "util/resource_file.hpp"
 #include <fstream>
 #if defined(_DEBUG) || defined(DEBUG)
 #include <iostream>
@@ -74,7 +75,7 @@ cgvkp::util::ObjImporter::~ObjImporter()
 
 bool cgvkp::util::ObjImporter::load(std::string const& filename, bool withAdjacencies)
 {
-	std::ifstream file(filename);
+	std::ifstream file(resource_file::find_resource_file(filename));
 
 	if (!file.good())
 	{

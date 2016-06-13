@@ -11,7 +11,7 @@ namespace cgvkp
         public:
             technique_normal_as_colour();
 			void setModelMatrix(glm::mat4x4 const& modelMatrix) const;
-            virtual bool init(std::string const& resourcesBasePath);
+            virtual bool init();
         private:
             GLint modelMatrixLocation;
         };

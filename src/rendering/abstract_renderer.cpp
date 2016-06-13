@@ -13,9 +13,9 @@ rendering::abstract_renderer::abstract_renderer(const ::cgvkp::data::world& data
 rendering::abstract_renderer::~abstract_renderer() {
     assert(!initialized);
 }
-bool rendering::abstract_renderer::init(const window& wnd, std::string const& resourcesBasePath) {
+bool rendering::abstract_renderer::init(const window& wnd) {
     if (!initialized) {
-        initialized = init_impl(wnd, resourcesBasePath);
+        initialized = init_impl(wnd);
     }
     return initialized;
 }

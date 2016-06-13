@@ -12,7 +12,7 @@ namespace rendering {
         abstract_renderer(const ::cgvkp::data::world& data);
         virtual ~abstract_renderer();
         // Initializes the object (if not already initialized) and returns the initialization state
-        bool init(const window& wnd, std::string const& resourcesBasePath);
+        bool init(const window& wnd);
         // deinitializes the object (if initialized)
         void deinit();
 
@@ -20,11 +20,11 @@ namespace rendering {
         virtual void render(const window& wnd) = 0;
 
 		virtual void lost_context() {}
-		virtual bool restore_context(window const& wnd, std::string const& resourcesBasePath) { return true; }
+		virtual bool restore_context(window const& wnd) { return true; }
 
     protected:
         // return true on success
-        virtual bool init_impl(const window& wnd, std::string const& resourcesBasePath) = 0;
+        virtual bool init_impl(const window& wnd) = 0;
         virtual void deinit_impl() = 0;
 
         const ::cgvkp::data::world& data;

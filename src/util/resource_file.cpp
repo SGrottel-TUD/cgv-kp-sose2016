@@ -2,7 +2,7 @@
 #include <fstream>
 #include <vector>
 
-std::string cgvkp::util::resource_file::find_resource_file(const char *name) {
+std::string cgvkp::util::resource_file::find_resource_file(std::string const& name) {
     std::string rel_dir;
     std::string path;
 
@@ -16,7 +16,8 @@ std::string cgvkp::util::resource_file::find_resource_file(const char *name) {
             return path;
         }
 
-        path = rel_dir + "res/" + name;
+        // TODO: Get subdir from application::config
+        path = rel_dir + "src/resources/" + name;
 
         test.open(path.c_str());
         if (test.is_open()) {

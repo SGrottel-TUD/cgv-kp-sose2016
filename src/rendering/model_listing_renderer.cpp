@@ -1,7 +1,6 @@
 #include "model_listing_renderer.hpp"
 #include "data/world.hpp"
 #include "rendering/window.hpp"
-#include "util/resource_file.hpp"
 #include "GL/glew.h"
 #include <iostream>
 #include <glm/glm.hpp>
@@ -17,7 +16,7 @@ cgvkp::rendering::model_listing_renderer::model_listing_renderer(const ::cgvkp::
 }
 cgvkp::rendering::model_listing_renderer::~model_listing_renderer() {}
 
-bool cgvkp::rendering::model_listing_renderer::init_impl(const window& wnd, std::string const& resourcesBasePath) {
+bool cgvkp::rendering::model_listing_renderer::init_impl(const window& wnd) {
     wnd.make_current();
 
 	::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -27,7 +26,7 @@ bool cgvkp::rendering::model_listing_renderer::init_impl(const window& wnd, std:
 	::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	::glDepthMask(GL_TRUE);
 
-    technique1.init(resourcesBasePath);
+    technique1.init();
 
     star_model->model_matrix =
         glm::translate(glm::vec3(-0.5f, 0.0f, 0.0f)) *
