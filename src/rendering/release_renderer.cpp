@@ -5,6 +5,7 @@
 #include "view/hand_view.hpp"
 #include <iostream>
 #include "controller/data_controller.hpp"
+#include "controller/cloud_controller.hpp"
 
 cgvkp::rendering::release_renderer::release_renderer(const ::cgvkp::data::world& data)
     : cgvkp::rendering::abstract_renderer(data),
@@ -23,8 +24,10 @@ bool cgvkp::rendering::release_renderer::init_impl(const window& wnd) {
 	viewMatrix = glm::lookAt(glm::vec3(w / 2, 1.8f, 5.5f), glm::vec3(w / 2, 1.8f, - h / 2), glm::vec3(0, 1, 0));
 	calculateProjection();
 
-    // Create and add data controller
+	exampleTechnique.init();
+    // Create and add data, cloud controller
     controllers.push_back(std::make_shared<controller::data_controller>(this, data));
+	controllers.push_back(std::make_shared<controller::cloud_controller>(this, data));
 
     // Create a cached hand view to avoid delay on first hand appearance.
     auto hand_view = std::make_shared<view::hand_view>();
