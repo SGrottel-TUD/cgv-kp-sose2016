@@ -5,6 +5,7 @@
 #include "rendering/model_listing_renderer.hpp"
 #include "rendering/debug_user_input.hpp"
 #include "vision/dummy_vision.hpp"
+#include "util/resource_file.hpp"
 #include <cassert>
 #include <iostream>
 
@@ -28,6 +29,9 @@ bool application::init() {
     data.get_config().set_positional_epsilon(0.1f); // 10cm positional precision (used for hand matching)
 
     start_time = std::chrono::high_resolution_clock::now();
+
+    // Set the path for the resource_file class
+    util::resource_file::resources_path = config.resourcesBasePath;
 
     return true;
 }

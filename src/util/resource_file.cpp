@@ -2,6 +2,9 @@
 #include <fstream>
 #include <vector>
 
+// Default value
+std::string cgvkp::util::resource_file::resources_path = "src/resources";
+
 std::string cgvkp::util::resource_file::find_resource_file(std::string const& name) {
     std::string rel_dir;
     std::string path;
@@ -16,8 +19,8 @@ std::string cgvkp::util::resource_file::find_resource_file(std::string const& na
             return path;
         }
 
-        // TODO: Get subdir from application::config
-        path = rel_dir + "src/resources/" + name;
+        // The resources_path field may have been overriden
+        path = rel_dir + resources_path + "/" + name;
 
         test.open(path.c_str());
         if (test.is_open()) {
