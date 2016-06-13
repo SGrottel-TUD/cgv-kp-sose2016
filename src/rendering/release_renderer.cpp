@@ -185,17 +185,18 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projecti
 	geometryPass.setAmbientLight(ambientLight);
 	for (view::view_base::ptr v : views)
 	{
-		if (!v->is_valid() || !v->has_model()) continue;
-		auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(v->get_model());
-		if (graphic_model != nullptr)
-		{
-			geometryPass.setWorld(graphic_model->model_matrix);
-			geometryPass.setWorldViewProjection(projection * viewMatrix * graphic_model->model_matrix);
-		}
-		v->render();
+        geometryPass.renderView(v, projection * viewMatrix);
 	}
 	glDepthMask(GL_FALSE);
 
+    // Render lights
+    renderLights(projection);
+
+	// Copy final image into default framebuffer
+	gbuffer.bindForFinalPass();
+	glBlitFramebuffer(0, 0, framebufferWidth, framebufferHeight, 0, 0, framebufferWidth, framebufferHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+}
+void cgvkp::rendering::release_renderer::renderLights(glm::mat4x4 const& projection) const {
 	// Render lights
 	glEnable(GL_STENCIL_TEST);
 	glCullFace(GL_FRONT);
@@ -220,13 +221,7 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projecti
 		shadowVolumePass.setViewProjection(projection * viewMatrix);
 		for (view::view_base::ptr v : views)
 		{
-			if (!v->is_valid() || !v->has_model()) continue;
-			auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(v->get_model());
-			if (graphic_model != nullptr)
-			{
-				shadowVolumePass.setWorld(graphic_model->model_matrix);
-			}
-			v->render();
+            shadowVolumePass.renderView(v);
 		}
 
 		glEnable(GL_CULL_FACE);
@@ -251,10 +246,6 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projecti
 	glDisable(GL_BLEND);
 	glCullFace(GL_BACK);
 	glDisable(GL_STENCIL_TEST);
-
-	// Copy final image into default framebuffer
-	gbuffer.bindForFinalPass();
-	glBlitFramebuffer(0, 0, framebufferWidth, framebufferHeight, 0, 0, framebufferWidth, framebufferHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 }
 
 void cgvkp::rendering::release_renderer::set_camera_mode(cgvkp::rendering::camera_mode mode)
