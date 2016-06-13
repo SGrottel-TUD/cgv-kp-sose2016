@@ -1,7 +1,6 @@
 #include "rendering/view/cloud_geometry.hpp"
 #include "util/resource_file.hpp"
 #include "util/objImporter.hpp"
-#include "rendering/technique.hpp"
 #include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
