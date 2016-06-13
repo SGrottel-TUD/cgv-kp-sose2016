@@ -4,7 +4,7 @@
 #include "rendering/view/star_view.hpp"
 #include "rendering/model/hand_model.hpp"
 #include "rendering/view/hand_view.hpp"
-#include "rendering/technique_normal_as_colour.hpp"
+#include "rendering/technique/technique_normal_as_colour.hpp"
 #include <glm/glm.hpp>
 #include <chrono>
 

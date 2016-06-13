@@ -2,8 +2,8 @@
 #include <iostream>
 #endif
 #include "geometrybuffer.hpp"
-#include "lights.hpp"
-#include "model/graphic_model_base.hpp"
+#include "rendering/lights.hpp"
+#include "rendering/model/graphic_model_base.hpp"
 #include <memory>
 
 /*

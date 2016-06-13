@@ -5,7 +5,7 @@
 #include <list>
 #include <vector>
 #include "abstract_renderer.hpp"
-#include "geometryBuffer.hpp"
+#include "technique/geometryBuffer.hpp"
 #include "lights.hpp"
 #include "mesh.hpp"
 #include "model/model_base.hpp"

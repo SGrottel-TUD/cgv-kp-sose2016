@@ -84,6 +84,15 @@
       <UniqueIdentifier>{1b7de7a3-8bb9-4290-b56b-46ffeaf6ebf1}</UniqueIdentifier>
       <Extensions>obj;mtl</Extensions>
     </Filter>
+    <Filter Include="rendering\technique">
+      <UniqueIdentifier>{b0f321cd-9534-4fa9-bf1f-c5276ca5764b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\technique\Header Files">
+      <UniqueIdentifier>{185dd639-3e60-4226-995a-457e893906b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\technique\Source Files">
+      <UniqueIdentifier>{6f40e07e-2aba-48c1-af70-cb4ffeaf9a79}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -155,14 +164,8 @@
     <ClCompile Include="src\rendering\view\hand_view.cpp">
       <Filter>rendering\view\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\technique.cpp">
-      <Filter>rendering\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\rendering\controller\data_controller.cpp">
       <Filter>rendering\controller\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\technique_normal_as_colour.cpp">
-      <Filter>rendering\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\model\graphic_model_base.cpp">
       <Filter>rendering\model\Source Files</Filter>
@@ -191,11 +194,17 @@
     <ClCompile Include="src\rendering\lights.cpp">
       <Filter>rendering\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\geometryBuffer.cpp">
-      <Filter>rendering\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\rendering\mesh.cpp">
       <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\technique_normal_as_colour.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\technique.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\geometryBuffer.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -310,14 +319,8 @@
     <ClInclude Include="src\rendering\model\hand_model.hpp">
       <Filter>rendering\model\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\rendering\technique.hpp">
-      <Filter>rendering\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\rendering\controller\data_controller.hpp">
       <Filter>rendering\controller\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\technique_normal_as_colour.hpp">
-      <Filter>rendering\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\model\graphic_model_base.hpp">
       <Filter>rendering\model\Header Files</Filter>
@@ -349,11 +352,17 @@
     <ClInclude Include="src\rendering\lights.hpp">
       <Filter>rendering\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\rendering\geometryBuffer.hpp">
-      <Filter>rendering\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\rendering\mesh.hpp">
       <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\technique.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\technique_normal_as_colour.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\geometryBuffer.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
