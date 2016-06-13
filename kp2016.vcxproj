@@ -49,7 +49,6 @@
     <ClCompile Include="src\rendering\window.cpp" />
     <ClCompile Include="src\rendering\technique_normal_as_colour.cpp" />
     <ClCompile Include="src\util\objImporter.cpp" />
-    <ClCompile Include="src\util\obj_parser.cpp" />
     <ClCompile Include="src\util\resource_file.cpp" />
     <ClCompile Include="src\vision\abstract_vision.cpp" />
     <ClCompile Include="src\vision\dummy_vision.cpp" />
@@ -101,7 +100,6 @@
     <ClInclude Include="src\rendering\view\view_geometry_base.hpp" />
     <ClInclude Include="src\rendering\window.hpp" />
     <ClInclude Include="src\util\objImporter.hpp" />
-    <ClInclude Include="src\util\obj_parser.hpp" />
     <ClInclude Include="src\util\resource_file.hpp" />
     <ClInclude Include="src\vision\abstract_vision.hpp" />
     <ClInclude Include="src\vision\dummy_vision.hpp" />

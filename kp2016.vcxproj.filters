@@ -134,9 +134,6 @@
     <ClCompile Include="src\util\resource_file.cpp">
       <Filter>util\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\util\obj_parser.cpp">
-      <Filter>util\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\rendering\view\view_base.cpp">
       <Filter>rendering\view\Source Files</Filter>
     </ClCompile>
@@ -269,9 +266,6 @@
       <Filter>rendering\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\util\resource_file.hpp">
-      <Filter>util\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\util\obj_parser.hpp">
       <Filter>util\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\view\view_base.hpp">
