@@ -22,7 +22,7 @@ namespace view {
 	}
 
 	bool hand_geometry::init() {
-		util::ObjImporter mesh("src/resources/meshes/hand.obj", true);
+		util::ObjImporter mesh("meshes/hand.obj", true);
 		if (!mesh.isValid())
 		{
 			return false;

@@ -22,11 +22,12 @@ int main(int argc, char **argv) {
     try {
 
         retval = -1;
+
+		app.config = cgvkp::application_config(argc, argv, "config.ini");
+
         if (!app.init()) {
             throw std::runtime_error("application::init returned false");
         }
-
-        app.config = cgvkp::application_config(argc, argv, "config.ini");
 
         retval = -2;
         app.run();
