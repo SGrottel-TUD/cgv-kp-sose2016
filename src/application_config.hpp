@@ -18,34 +18,32 @@ namespace cgvkp {
 
         // enum classes
         enum class renderers : unsigned int {
-            debug = 0u,
-            release = 1u,
-            models = 2u
+            debug = 0,
+            models
         };
         enum class vision_inputs : unsigned int {
-            debug = 0u,
-            release = 1u,
-            dummy = 2u
+            debug = 0,
+            release,
+            dummy
         };
 
         // Properties
         renderers active_renderer;
         vision_inputs active_vision;
-		std::string data_path;
 
-		int window_width;
-		int window_height;
+		bool debug;
+		std::string resourcesBasePath;
+		int windowWidth;
+		int windowHeight;
 		bool fullscreen;
-		rendering::camera_mode camera_mode;
-		float eye_separation;
-		float zzero_parallax;
+		rendering::camera_mode cameraMode;
+		float eyeSeparation;
+		float zZeroParallax;
 
 	private:
 		void interpret_arguments(int argc, char** argv);
     };
 
 	std::ostream& operator<<(std::ostream& lhs, application_config const& rhs);
-
 	std::istream& operator>>(std::istream& lhs, application_config& rhs);
-
 }

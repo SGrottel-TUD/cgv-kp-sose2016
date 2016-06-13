@@ -1,12 +1,9 @@
 #pragma once
 
-#include "glm/mat4x4.hpp"
 #include <GL/glew.h>
 #include <glm/mat4x4.hpp>
 #include <list>
-
-#define IN_LOC_POSITION 0
-#define IN_LOC_NORMAL 1
+#include <string>
 
 namespace cgvkp
 {
@@ -16,17 +13,18 @@ namespace cgvkp
 		{
 		public:
 			virtual ~Technique();
-			virtual bool init();
 			void deinit();
 			void setWorldViewProjection(glm::mat4x4 const& worldViewProjection) const;
 			inline void use() const { glUseProgram(program); }
 
 		protected:
 			Technique();
-			bool addShader(GLenum shaderType, char const* filename);
+			bool addShader(GLenum shaderType, std::string const& filename);
 			GLint getUniformLocation(GLchar const* name) const;
+			bool init();
 			bool link();
 
+			static GLint const invalidLocation = -1;
 			GLint worldViewProjectionLocation;
 
 		private:

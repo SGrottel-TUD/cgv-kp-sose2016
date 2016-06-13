@@ -1,12 +1,16 @@
 #pragma once
+
+#include <chrono>
+#include <glm/mat4x4.hpp>
+#include <list>
+#include <vector>
 #include "abstract_renderer.hpp"
-#include "technique_normal_as_colour.hpp"
+#include "geometryBuffer.hpp"
+#include "lights.hpp"
+#include "mesh.hpp"
 #include "model/model_base.hpp"
 #include "view/view_base.hpp"
 #include "controller/controller_base.hpp"
-#include "glm/mat4x4.hpp"
-#include <vector>
-#include <chrono>
 
 namespace cgvkp {
 namespace data {
@@ -26,7 +30,6 @@ namespace rendering {
 
 		void set_camera_mode(camera_mode mode);
 		void set_stereo_parameters(float eye_separation, float zzero_parallax);
-		virtual void set_framebuffer_size(int width, int height);
 
 		virtual void lost_context();
 		virtual bool restore_context(window const& wnd);
@@ -50,16 +53,17 @@ namespace rendering {
 		glm::mat4 leftProjection;	// Holds the projection matrix in mono mode.
 		glm::mat4 rightProjection;
 		camera_mode cameraMode;
-		int framebufferWidth;
-		int framebufferHeight;
+		GLsizei framebufferWidth;
+		GLsizei framebufferHeight;
 		float eyeSeparation;
 		float zZeroParallax;
 
-		technique_normal_as_colour exampleTechnique;
-		unsigned int vao;
-
-		unsigned int vertexbuffer;
-		float g_vertex_buffer_data[2 * 3 * 3];
+		std::list<PointLight> pointLights;
+		GeometryBuffer gbuffer;
+		GeometryTechnique geometryPass;
+		ShadowVolumeTechnique shadowVolumePass;
+		LightTechnique lightPass;
+		Mesh lightingSphere;
 
         std::chrono::high_resolution_clock::time_point last_time;
         std::vector<model::model_base::ptr> models;

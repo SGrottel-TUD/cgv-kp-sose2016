@@ -4,16 +4,20 @@
 #include <iostream>
 #include <sstream>
 
+const cgvkp::application_config defaultConfig;
+
 cgvkp::application_config::application_config()
 	: active_vision(vision_inputs::debug),
 	active_renderer(renderers::debug),
-	window_width(1280),
-	window_height(720),
-	camera_mode(rendering::camera_mode::mono),
-	eye_separation(0),
-	zzero_parallax(0),
-	fullscreen(false),
-	data_path("config.ini") {
+	debug(true),	// Should be changed for shipping.
+	resourcesBasePath("src/resources"),
+	windowWidth(1280),
+	windowHeight(720),
+	cameraMode(rendering::camera_mode::mono),
+	eyeSeparation(0),
+	zZeroParallax(0),
+	fullscreen(false)
+{
     // Intentionally empty
 }
 
@@ -40,9 +44,6 @@ cgvkp::application_config::application_config(int argc, char **argv, std::string
 void cgvkp::application_config::interpret_arguments(int argc, char** argv)
 {
 	for (int i = 0; i < argc; ++i) {
-		if (strncmp(argv[i], "-rR", 3) == 0) {
-			active_renderer = renderers::release;
-		}
 		if (strncmp(argv[i], "-rM", 3) == 0) {
 			active_renderer = renderers::models;
 		}
@@ -74,13 +75,14 @@ void cgvkp::application_config::save_file(std::string const& path)
 
 std::ostream& cgvkp::operator<<(std::ostream& lhs, application_config const& rhs)
 {
-	lhs << "fullscreen = " << (rhs.fullscreen ? 1 : 0) << std::endl;
-	lhs << "width = " << rhs.window_width << std::endl;
-	lhs << "heigth = " << rhs.window_height << std::endl;
-	lhs << "data_path = \"" << rhs.data_path << "\"" << std::endl;
-	lhs << "camera_mode = " << rhs.camera_mode << std::endl;
-	lhs << "eye_separation = " << rhs.eye_separation << std::endl;
-	lhs << "zzero_parallax = " << rhs.camera_mode << std::endl;
+	lhs << (rhs.debug == defaultConfig.debug ? "#" : "") << "debug = " << (rhs.debug ? 1 : 0) << std::endl;
+	lhs << (rhs.resourcesBasePath == defaultConfig.resourcesBasePath ? "#" : "") << "resourcesBasePath = \"" << rhs.resourcesBasePath << "\"" << std::endl;
+	lhs << (rhs.fullscreen == defaultConfig.fullscreen ? "#" : "") << "fullscreen = " << (rhs.fullscreen ? 1 : 0) << std::endl;
+	lhs << (rhs.windowWidth == defaultConfig.windowWidth ? "#" : "") << "windowWidth = " << rhs.windowWidth << std::endl;
+	lhs << (rhs.windowHeight == defaultConfig.windowHeight ? "#" : "") << "windowHeigth = " << rhs.windowHeight << std::endl;
+	lhs << (rhs.cameraMode == defaultConfig.cameraMode ? "#" : "") << "cameraMode = " << rhs.cameraMode << std::endl;
+	lhs << (rhs.eyeSeparation == defaultConfig.eyeSeparation ? "#" : "") << "eyeSeparation = " << rhs.eyeSeparation << std::endl;
+	lhs << (rhs.cameraMode == defaultConfig.cameraMode ? "#" : "") << "zZeroParallax = " << rhs.cameraMode << std::endl;
 	
 	return lhs;
 }
@@ -92,41 +94,51 @@ std::istream& cgvkp::operator>>(std::istream& lhs, application_config& rhs)
 
 	while (std::getline(lhs, key, '='))
 	{
+		if (key[0] == '#')	// Comment
+		{
+			std::getline(lhs, key);	// key will be overwritten in the next iteration.
+			continue;
+		}
+
 		std::getline(lhs, value);
 		std::stringstream ss;
 		ss << value;
 
-		if (key.find("fullscreen") != std::string::npos)
+		if (key.find("debug") != std::string::npos)
+		{
+			ss >> rhs.debug;
+		}
+		else if (key.find("resourcesBasePath") != std::string::npos)
+		{
+			std::string ignore;
+			std::getline(ss, ignore, '"');
+			std::getline(ss, rhs.resourcesBasePath, '"');
+		}
+		else if (key.find("fullscreen") != std::string::npos)
 		{
 			ss >> rhs.fullscreen;
 		}
-		else if (key.find("width") != std::string::npos)
+		else if (key.find("windoWidth") != std::string::npos)
 		{
-			ss >> rhs.window_width;
+			ss >> rhs.windowWidth;
 		}
-		else if (key.find("height") != std::string::npos)
+		else if (key.find("windowHeight") != std::string::npos)
 		{
-			ss >> rhs.window_height;
+			ss >> rhs.windowHeight;
 		}
-		else if (key.find("data_path") != std::string::npos)
-		{
-			std::string idc;
-			std::getline(ss, idc, '"');
-			std::getline(ss, rhs.data_path, '"');
-		}
-		else if (key.find("camera_mode") != std::string::npos)
+		else if (key.find("cameraMode") != std::string::npos)
 		{
 			int mode = 0;
 			ss >> mode;
-			rhs.camera_mode = static_cast<rendering::camera_mode>(mode);
+			rhs.cameraMode = static_cast<rendering::camera_mode>(mode);
 		}
-		else if (key.find("eye_separation") != std::string::npos)
+		else if (key.find("eyeSeparation") != std::string::npos)
 		{
-			ss >> rhs.eye_separation;
+			ss >> rhs.eyeSeparation;
 		}
-		else if (key.find("zzero_parallax") != std::string::npos)
+		else if (key.find("zZeroParallax") != std::string::npos)
 		{
-			ss >> rhs.zzero_parallax;
+			ss >> rhs.zZeroParallax;
 		}
 	}
 

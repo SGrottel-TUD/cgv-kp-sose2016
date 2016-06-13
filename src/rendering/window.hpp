@@ -33,7 +33,6 @@ namespace rendering {
         bool get_size(int &out_width, int &out_height) const;
 
 		bool register_key_callback(int key, std::function<void()> callback, on_event ev = OnPress);
-		inline void register_framebuffer_size_callback(std::function<void(int, int)> callback) { framebuffer_size_cb = callback; }
 
         inline const std::shared_ptr<abstract_user_input> get_user_input_object(void) const {
             return user_input;
@@ -53,7 +52,6 @@ namespace rendering {
 		static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
         static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
         static void mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-		static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
         void ctor_impl(GLFWmonitor* fullscreen, unsigned int w, unsigned int h, const char* title);
         void dtor_impl();
@@ -68,7 +66,6 @@ namespace rendering {
 		int windowed_height;
 		key_events keys[GLFW_KEY_LAST + 1];
         std::shared_ptr<abstract_user_input> user_input;
-		std::function<void(int, int)> framebuffer_size_cb;
     };
 
 
