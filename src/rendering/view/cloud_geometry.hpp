@@ -12,8 +12,11 @@ namespace cgvkp {
 				cloud_geometry();
 				bool init();
 				GLuint vao;
-				GLuint buffers[2];
-				GLuint element_count;
+				GLuint vertexBuffers[numAttributes];
+				GLuint indexBuffer;
+				GLenum indicesMode;
+				GLsizei indicesCount;
+				GLenum indicesType;
 			};
 		}
 	}

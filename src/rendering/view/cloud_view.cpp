@@ -4,6 +4,7 @@
 namespace cgvkp {
 	namespace rendering {
 		namespace view {
+			std::vector<std::string> cloud_view::_techniques({ "Geometry", "Light" });
 			cloud_view::cloud_view() : view_geometry_base<cloud_geometry>() {
 			}
 			cloud_view::~cloud_view() {
@@ -12,18 +13,8 @@ namespace cgvkp {
 				return std::dynamic_pointer_cast<model::cloud_model>(model.lock());
 			}
 			void cloud_view::render() {
-				auto m = get_model();
-				::glDisable(GL_CULL_FACE);
-				::glEnable(GL_DEPTH_TEST);
-				::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-				::glDepthMask(GL_TRUE);;
-
-				::glBindVertexArray(geo->vao);
-
-				glm::mat4 view_matrix = glm::mat4(1.0f);
-				glm::mat4 projection_matrix = glm::mat4(1.0f);
-
-				::glDrawArrays(GL_TRIANGLES, 0, geo->element_count);
+				glBindVertexArray(geo->vao);
+				glDrawElements(geo->indicesMode, geo->indicesCount, geo->indicesType, nullptr);
 			}
 		}
 	}

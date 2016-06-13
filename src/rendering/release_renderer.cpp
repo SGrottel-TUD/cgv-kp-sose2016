@@ -24,7 +24,7 @@ bool cgvkp::rendering::release_renderer::init_impl(const window& wnd) {
 	viewMatrix = glm::lookAt(glm::vec3(w / 2, 1.8f, 5.5f), glm::vec3(w / 2, 1.8f, - h / 2), glm::vec3(0, 1, 0));
 	calculateProjection();
 
-	exampleTechnique.init();
+	//exampleTechnique.init();
     // Create and add data, cloud controller
     controllers.push_back(std::make_shared<controller::data_controller>(this, data));
 	controllers.push_back(std::make_shared<controller::cloud_controller>(this, data));
