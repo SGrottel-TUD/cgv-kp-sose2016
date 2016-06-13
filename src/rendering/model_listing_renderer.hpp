@@ -20,7 +20,7 @@ namespace rendering {
         virtual void render(const window& wnd);
 
     protected:
-        virtual bool init_impl(const window& wnd, std::string const& resourcesBasePath);
+        virtual bool init_impl(const window& wnd);
         virtual void deinit_impl();
     private:
         technique_normal_as_colour technique1;

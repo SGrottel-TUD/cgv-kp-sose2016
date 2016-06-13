@@ -5,6 +5,7 @@
 #include "rendering/model_listing_renderer.hpp"
 #include "rendering/debug_user_input.hpp"
 #include "vision/dummy_vision.hpp"
+#include "util/resource_file.hpp"
 #include <cassert>
 #include <iostream>
 
@@ -29,6 +30,9 @@ bool application::init() {
 
     start_time = std::chrono::high_resolution_clock::now();
 
+    // Set the path for the resource_file class
+    util::resource_file::resources_path = config.resourcesBasePath;
+
     return true;
 }
 
@@ -43,7 +47,7 @@ void application::run()
 	else
 	{
 		release_renderer = std::make_shared<rendering::release_renderer>(data);
-		if (!release_renderer || !release_renderer->init(*release_window, config.resourcesBasePath))
+		if (!release_renderer || !release_renderer->init(*release_window))
 		{
 			std::cout << "Failed to create Release renderer" << std::endl;
 			release_renderer.reset();
@@ -83,7 +87,7 @@ void application::run()
 				break;
 			}
 
-			if (!debug_renderer || !debug_renderer->init(*debug_window, config.resourcesBasePath)) {
+			if (!debug_renderer || !debug_renderer->init(*debug_window)) {
 				std::cout << "Failed to create Debug renderer" << std::endl;
 				debug_renderer.reset();
 				debug_window.reset();
@@ -209,7 +213,7 @@ void application::toggle_fullscreen()
 		release_renderer->lost_context();
 		release_window->toggle_fullscreen();
 		config.fullscreen = !config.fullscreen;
-		release_renderer->restore_context(*release_window, config.resourcesBasePath);
+		release_renderer->restore_context(*release_window);
 	}
 }
 

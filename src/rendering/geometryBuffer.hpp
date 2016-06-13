@@ -47,7 +47,7 @@ namespace cgvkp
 		{
 		public:
 			GeometryTechnique();
-			virtual bool init(std::string const& resourcesBasePath);
+			virtual bool init();
 			void setAmbientLight(glm::vec3 const& color) const;
 			void setMaterial() const;
 			void setWorld(glm::mat4x4 const& world) const;
@@ -66,7 +66,7 @@ namespace cgvkp
 		{
 		public:
 			ShadowVolumeTechnique();
-			virtual bool init(std::string const& resourcesBasePath);
+			virtual bool init();
 
 			void setLightPosition(glm::vec3 const& lightPosition) const;
 			void setViewProjection(glm::mat4x4 const& viewProjection) const;
@@ -86,7 +86,7 @@ namespace cgvkp
 		{
 		public:
 			LightTechnique();
-			virtual bool init(std::string const& resourcesBasePath);
+			virtual bool init();
 			void setEyePosition(GLfloat x, GLfloat y, GLfloat z) const;
 			void setLight(PointLight const& light) const;
 			void setMaps() const;

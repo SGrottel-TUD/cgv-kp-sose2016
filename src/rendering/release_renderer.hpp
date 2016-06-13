@@ -32,7 +32,7 @@ namespace rendering {
 		void set_stereo_parameters(float eye_separation, float zzero_parallax);
 
 		virtual void lost_context();
-		virtual bool restore_context(window const& wnd, std::string const& resourcesBasePath);
+		virtual bool restore_context(window const& wnd);
 
         void add_model(model::model_base::ptr model);
         void remove_model(model::model_base::ptr model);
@@ -40,7 +40,7 @@ namespace rendering {
         void add_controller(controller::controller_base::ptr controller);
 
     protected:
-        virtual bool init_impl(const window& wnd, std::string const& resourcesBasePath);
+        virtual bool init_impl(const window& wnd);
         virtual void deinit_impl();
 
     private:

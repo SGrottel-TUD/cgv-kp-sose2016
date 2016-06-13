@@ -2,7 +2,10 @@
 #include <fstream>
 #include <vector>
 
-std::string cgvkp::util::resource_file::find_resource_file(const char *name) {
+// Default value
+std::string cgvkp::util::resource_file::resources_path = "src/resources";
+
+std::string cgvkp::util::resource_file::find_resource_file(std::string const& name) {
     std::string rel_dir;
     std::string path;
 
@@ -16,7 +19,8 @@ std::string cgvkp::util::resource_file::find_resource_file(const char *name) {
             return path;
         }
 
-        path = rel_dir + "res/" + name;
+        // The resources_path field may have been overriden
+        path = rel_dir + resources_path + "/" + name;
 
         test.open(path.c_str());
         if (test.is_open()) {

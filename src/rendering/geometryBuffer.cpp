@@ -151,17 +151,17 @@ cgvkp::rendering::GeometryTechnique::GeometryTechnique()
 {
 }
 
-bool cgvkp::rendering::GeometryTechnique::init(std::string const& resourcesBasePath)
+bool cgvkp::rendering::GeometryTechnique::init()
 {
 	if (!Technique::init())
 	{
 		return false;
 	}
-	if (!addShader(GL_VERTEX_SHADER, resourcesBasePath + "/shaders/geometry.vs"))
+	if (!addShader(GL_VERTEX_SHADER, "shaders/geometry.vs"))
 	{
 		return false;
 	}
-	if (!addShader(GL_FRAGMENT_SHADER, resourcesBasePath + "/shaders/geometry.fs"))
+	if (!addShader(GL_FRAGMENT_SHADER, "shaders/geometry.fs"))
 	{
 		return false;
 	}
@@ -214,21 +214,21 @@ cgvkp::rendering::ShadowVolumeTechnique::ShadowVolumeTechnique()
 {
 }
 
-bool cgvkp::rendering::ShadowVolumeTechnique::init(std::string const& resourcesBasePath)
+bool cgvkp::rendering::ShadowVolumeTechnique::init()
 {
 	if (!Technique::init())
 	{
 		return false;
 	}
-	if (!addShader(GL_VERTEX_SHADER, resourcesBasePath + "/shaders/shadowVolume.vs"))
+	if (!addShader(GL_VERTEX_SHADER, "shaders/shadowVolume.vs"))
 	{
 		return false;
 	}
-	if (!addShader(GL_GEOMETRY_SHADER, resourcesBasePath + "/shaders/shadowVolume.gs"))
+	if (!addShader(GL_GEOMETRY_SHADER, "shaders/shadowVolume.gs"))
 	{
 		return false;
 	}
-	if (!addShader(GL_FRAGMENT_SHADER, resourcesBasePath + "/shaders/shadowVolume.fs"))
+	if (!addShader(GL_FRAGMENT_SHADER, "shaders/shadowVolume.fs"))
 	{
 		return false;
 	}
@@ -278,17 +278,17 @@ cgvkp::rendering::LightTechnique::LightTechnique()
 {
 }
 
-bool cgvkp::rendering::LightTechnique::init(std::string const& resourcesBasePath)
+bool cgvkp::rendering::LightTechnique::init()
 {
 	if (!Technique::init())
 	{
 		return false;
 	}
-	if (!addShader(GL_VERTEX_SHADER, resourcesBasePath + "/shaders/light.vs"))
+	if (!addShader(GL_VERTEX_SHADER, "shaders/light.vs"))
 	{
 		return false;
 	}
-	if (!addShader(GL_FRAGMENT_SHADER, resourcesBasePath + "/shaders/light.fs"))
+	if (!addShader(GL_FRAGMENT_SHADER, "shaders/light.fs"))
 	{
 		return false;
 	}

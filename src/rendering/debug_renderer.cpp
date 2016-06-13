@@ -48,7 +48,7 @@ rendering::debug_renderer::~debug_renderer() {
 
 }
 
-bool rendering::debug_renderer::init_impl(const window& wnd, std::string const& resourcesBasePath) {
+bool rendering::debug_renderer::init_impl(const window& wnd) {
     wnd.make_current();
 	if (wnd.get_size(win_w, win_h)) {
 		::glViewport(0, 0, win_w, win_h);
