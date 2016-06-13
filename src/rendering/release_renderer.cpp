@@ -24,7 +24,6 @@ bool cgvkp::rendering::release_renderer::init_impl(const window& wnd) {
 	viewMatrix = glm::lookAt(glm::vec3(w / 2, 1.8f, 5.5f), glm::vec3(w / 2, 1.8f, - h / 2), glm::vec3(0, 1, 0));
 	calculateProjection();
 
-	//exampleTechnique.init();
     // Create and add data, cloud controller
     controllers.push_back(std::make_shared<controller::data_controller>(this, data));
 	controllers.push_back(std::make_shared<controller::cloud_controller>(this, data));
@@ -209,46 +208,67 @@ void cgvkp::rendering::release_renderer::renderLights(glm::mat4x4 const& project
 	glEnable(GL_DEPTH_CLAMP);
 	for (auto const& pointLight : pointLights)
 	{
-		// Render shadow volumes.
-		glDrawBuffer(GL_NONE);
-		glClear(GL_STENCIL_BUFFER_BIT);
-		glEnable(GL_DEPTH_TEST);
-		glDisable(GL_CULL_FACE);
-
-		glStencilFunc(GL_ALWAYS, 0, 0xff);
-		glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
-		glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
-
-		shadowVolumePass.use();
-		shadowVolumePass.setLightPosition(pointLight.position);
-		shadowVolumePass.setViewProjection(projection * viewMatrix);
-		for (view::view_base::ptr v : views)
-		{
-            shadowVolumePass.renderView(v);
-		}
-
-		glEnable(GL_CULL_FACE);
-
-		// Render objects not in shadow.
-		gbuffer.bindForLightPass();
-		lightPass.use();
-		lightPass.setScreenSize(framebufferWidth, framebufferHeight);
-		lightPass.setEyePosition(viewMatrix[3].x, viewMatrix[3].y, viewMatrix[3].z);
-		lightPass.setMaps();
-
-		glDisable(GL_DEPTH_TEST);
-
-		glStencilFunc(GL_EQUAL, 0x0, 0xff);
-		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
-		lightPass.setWorldViewProjection(projection * viewMatrix * pointLight.world);
-		lightPass.setLight(pointLight);
-		lightingSphere.render();
+        renderPointLight(pointLight, projection);
 	}
+    PointLight p2;
+    p2.color = glm::vec3(1, 1, 0.6f);
+    p2.ambientIntensity = 0.25f;
+    p2.diffuseIntensity = 0.2f;
+    p2.constantAttenuation = 0;
+    p2.linearAttenuation = 0;
+    p2.exponentialAttenuation = 0.3f;
+    for (auto const& view : views)
+    {
+        if (!view->is_valid() || !view->has_model() || !view->light_source()) continue;
+        auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(view->get_model());
+        if (graphic_model == nullptr) continue;
+        p2.position = glm::vec3(graphic_model->model_matrix[3]);
+        p2.calculateWorld();
+        renderPointLight(p2, projection);
+    }
 	glDisable(GL_DEPTH_CLAMP);
 	glDisable(GL_BLEND);
 	glCullFace(GL_BACK);
 	glDisable(GL_STENCIL_TEST);
+}
+
+void cgvkp::rendering::release_renderer::renderPointLight(PointLight const& pointLight, glm::mat4x4 const& projection) const
+{
+    // Render shadow volumes.
+    glDrawBuffer(GL_NONE);
+    glClear(GL_STENCIL_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+
+    glStencilFunc(GL_ALWAYS, 0, 0xff);
+    glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
+    glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
+
+    shadowVolumePass.use();
+    shadowVolumePass.setLightPosition(pointLight.position);
+    shadowVolumePass.setViewProjection(projection * viewMatrix);
+    for (view::view_base::ptr v : views)
+    {
+        shadowVolumePass.renderView(v);
+    }
+
+    glEnable(GL_CULL_FACE);
+
+    // Render objects not in shadow.
+    gbuffer.bindForLightPass();
+    lightPass.use();
+    lightPass.setScreenSize(framebufferWidth, framebufferHeight);
+    lightPass.setEyePosition(viewMatrix[3].x, viewMatrix[3].y, viewMatrix[3].z);
+    lightPass.setMaps();
+
+    glDisable(GL_DEPTH_TEST);
+
+    glStencilFunc(GL_EQUAL, 0x0, 0xff);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+    lightPass.setWorldViewProjection(projection * viewMatrix * pointLight.world);
+    lightPass.setLight(pointLight);
+    lightingSphere.render();
 }
 
 void cgvkp::rendering::release_renderer::set_camera_mode(cgvkp::rendering::camera_mode mode)

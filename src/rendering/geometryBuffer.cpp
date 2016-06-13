@@ -206,7 +206,7 @@ void cgvkp::rendering::GeometryTechnique::setWorld(glm::mat4x4 const& world) con
 }
 bool cgvkp::rendering::GeometryTechnique::renderView(view::view_base::ptr const view, glm::mat4x4 const& projectionViewMatrix) const
 {
-    if (!view->is_valid() || !view->has_model() || !view->has_technique(get_id())) return false;
+    if (!view->is_valid() || !view->has_model()) return false;
     auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(view->get_model());
     if (graphic_model == nullptr) return false;
     setWorld(graphic_model->model_matrix);
@@ -278,7 +278,7 @@ void cgvkp::rendering::ShadowVolumeTechnique::setWorld(glm::mat4x4 const& world)
 	glUniformMatrix4fv(worldLocation, 1, GL_FALSE, &world[0][0]);
 }
 bool cgvkp::rendering::ShadowVolumeTechnique::renderView(view::view_base::ptr const view) const {
-    if (!view->is_valid() || !view->has_model() || !view->has_technique(get_id())) return false;
+    if (!view->is_valid() || !view->has_model() || !view->casts_shadows()) return false;
     auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(view->get_model());
     if (graphic_model == nullptr) return false;
     setWorld(graphic_model->model_matrix);

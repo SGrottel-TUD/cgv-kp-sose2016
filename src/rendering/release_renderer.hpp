@@ -49,6 +49,7 @@ namespace rendering {
 		void calculateProjection();
 		void renderScene(glm::mat4x4 const& projection) const;
         void renderLights(glm::mat4x4 const& projection) const;
+        void renderPointLight(PointLight const& pointLight, glm::mat4x4 const& projection) const;
 
 		glm::mat4 viewMatrix;
 		glm::mat4 leftProjection;	// Holds the projection matrix in mono mode.
