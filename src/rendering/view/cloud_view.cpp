@@ -4,7 +4,7 @@
 namespace cgvkp {
 	namespace rendering {
 		namespace view {
-			std::vector<std::string> cloud_view::_techniques({ "Geometry", "Light" });
+			std::vector<std::string> cloud_view::_techniques({ "Geometry", "ShadowVolume" });
 			cloud_view::cloud_view() : view_geometry_base<cloud_geometry>() {
 			}
 			cloud_view::~cloud_view() {

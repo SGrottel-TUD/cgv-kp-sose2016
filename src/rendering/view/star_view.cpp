@@ -3,7 +3,7 @@
 namespace cgvkp {
 namespace rendering {
 namespace view {
-    std::vector<std::string> star_view::_techniques({ "Geometry", "Light" });
+    std::vector<std::string> star_view::_techniques({ "Geometry", "Light", "ShadowVolume" });
 	star_view::star_view() : view_geometry_base<star_geometry>() {
 	}
 	star_view::~star_view() {
