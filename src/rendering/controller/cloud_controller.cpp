@@ -50,16 +50,16 @@ namespace controller {
 			float parent_distance_neg = 0;
 			for (int j = 0; j < min_sub_clouds+add_sub_clouds; j++) {
 
-				uniform = std::uniform_real_distribution<float>(scale * 0.7, scale * 0.85);
+				uniform = std::uniform_real_distribution<float>(scale * 0.7f, scale * 0.85f);
 				scale = uniform(random_engine);
 				
 				if ((rand() % 2) == 0) {
-					parent_distance_pos += scale*1.3;
+					parent_distance_pos += scale * 1.3f;
 					auto subCloud = std::make_shared<controller::sub_cloud_controller>(renderer, data, cloud, scale, parent_distance_pos);
 					renderer->add_controller(subCloud);
 				}
 				else {
-					parent_distance_neg += -scale*1.3;
+					parent_distance_neg += -scale * 1.3f;
 					auto subCloud = std::make_shared<controller::sub_cloud_controller>(renderer, data, cloud, scale, parent_distance_neg);
 					renderer->add_controller(subCloud);
 				}
