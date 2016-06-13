@@ -7,6 +7,7 @@
 #include "abstract_renderer.hpp"
 #include "technique/geometryBuffer.hpp"
 #include "technique/ShadowVolume.hpp"
+#include "technique/LightTechnique.hpp"
 #include "lights.hpp"
 #include "mesh.hpp"
 #include "model/model_base.hpp"

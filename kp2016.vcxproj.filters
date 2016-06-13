@@ -209,6 +209,9 @@
     <ClCompile Include="src\rendering\technique\ShadowVolume.cpp">
       <Filter>rendering\technique\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\rendering\technique\LightTechnique.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -368,6 +371,9 @@
       <Filter>rendering\technique\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\technique\ShadowVolume.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\LightTechnique.hpp">
       <Filter>rendering\technique\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

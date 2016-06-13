@@ -8,8 +8,6 @@ namespace cgvkp
 {
 	namespace rendering
 	{
-		// forward declaration
-		struct PointLight;
 
 		class GeometryBuffer
 		{
@@ -57,36 +55,6 @@ namespace cgvkp
 			GLint ambientLightLocation;
 			GLint materialLocation;
 			GLint worldLocation;
-		};
-
-		/* Light technique */
-
-		class LightTechnique : public Technique
-		{
-		public:
-			LightTechnique();
-			virtual bool init();
-			void setEyePosition(GLfloat x, GLfloat y, GLfloat z) const;
-			void setLight(PointLight const& light) const;
-			void setMaps() const;
-			void setScreenSize(GLsizei width, GLsizei height) const;
-
-		private:
-			struct
-			{
-				GLint position;
-				GLint diffuseColor;
-				GLint attenuation;
-			} lightLocation;
-			struct
-			{
-				GLint position;
-				GLint normal;
-				GLint diffuseColor;
-				GLint material;
-			} mapLocation;
-			GLint eyePositionLocation;
-			GLint screenSizeLocation;
 		};
 	}
 }
