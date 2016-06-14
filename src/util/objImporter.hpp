@@ -28,9 +28,11 @@ namespace cgvkp
 			inline bool hasNormals() const { return normals != nullptr; }
 			inline bool hasTextureCoords() const { return textureCoords != nullptr; }
 			inline bool isValid() const { return indices != nullptr; }
+            inline std::string getTexturePath() const { return texturePath; }
 
 		private:
 			bool load(std::string const& filename, bool withAdjacencies);
+            bool readTexturePathFromMtl(std::string const& filename);
 
 			GLsizei verticesCount;
 			glm::vec3* positions;
@@ -41,6 +43,7 @@ namespace cgvkp
 			GLsizei indicesCount;
 			GLenum indicesType;
 			GLsizeiptr indicesSize;
+            std::string texturePath;
 		};
 	}
 }
