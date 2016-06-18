@@ -25,7 +25,7 @@ namespace controller {
 			uniform = std::uniform_real_distribution<float>(0.19f, 0.25f);
 			float scale = uniform(random_engine);
 			auto cloud = std::make_shared<model::cloud_model>(scale);
-			cloud->model_matrix[3][1] = 0.5f+scale;
+			cloud->model_matrix[3].y = scale;
 			renderer->add_model(cloud);
 
 			auto cloudView = std::make_shared<view::cloud_view>();
@@ -37,11 +37,11 @@ namespace controller {
 			cloud->speed = 0;//uniform(random_engine);
 
 			uniform = std::uniform_real_distribution<float>(-w, w*2);
-			cloud->model_matrix[3][0] = uniform(random_engine);
+			cloud->model_matrix[3].x = uniform(random_engine);
 
 			cloud->speed = uniform(random_engine)/800;
 
-			cloud->model_matrix[3][2] = 1 + i * -0.15f;
+			cloud->model_matrix[3].z = -i * h / max_clouds;
 
 			int add_sub_clouds = rand() % 3;
 
@@ -87,9 +87,9 @@ namespace controller {
 		for (int i = 0; i < clouds.size(); i++) {
 			std::shared_ptr<model::cloud_model> cloud = clouds[i].lock();
 
-			if (cloud->model_matrix[3][0] > w*2) {
+			if (cloud->model_matrix[3].x > w*2) {
 				uniform = std::uniform_real_distribution<float>(-0.0001f, 0.0f);
-			} else if (cloud->model_matrix[3][0] < -w) {
+			} else if (cloud->model_matrix[3].x < -w) {
 				uniform = std::uniform_real_distribution<float>(0.0f, 0.0001f);
 			} else {
 				uniform = std::uniform_real_distribution<float>(-0.0001f, 0.0001f);
@@ -99,7 +99,7 @@ namespace controller {
 
 			cloud->speed = glm::clamp(cloud->speed, -0.001f, 0.001f);
 
-			cloud->model_matrix[3][0] += cloud->speed;
+			cloud->model_matrix[3].x += cloud->speed;
 		}
 	}
 

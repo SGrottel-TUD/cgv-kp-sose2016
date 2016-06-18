@@ -19,12 +19,6 @@ bool cgvkp::rendering::release_renderer::init_impl(const window& wnd) {
 		return false;
 	}
 
-	float w = data.get_config().width();
-	float h = data.get_config().height();
-	viewMatrix = glm::lookAt(glm::vec3(w / 2, 1.8f, 5.5f), glm::vec3(w / 2, 1.8f, - h / 2), glm::vec3(0, 1, 0));
-	calculateProjection();
-
-	//exampleTechnique.init();
     // Create and add data, cloud controller
     controllers.push_back(std::make_shared<controller::data_controller>(this, data));
 	controllers.push_back(std::make_shared<controller::cloud_controller>(this, data));
@@ -64,17 +58,46 @@ void cgvkp::rendering::release_renderer::deinit_impl()
 	lost_context();
 }
 
-void cgvkp::rendering::release_renderer::calculateProjection()
+void cgvkp::rendering::release_renderer::calculateViewProjection()
 {
 	float fovy = glm::quarter_pi<float>();
-	float zNear = 0.01f;
-	float zFar = 100;
 
+	float tanHalfFovy = tan(fovy / 2);
+	float aspect = static_cast<float>(framebufferWidth / (cameraMode == stereo ? 2 : 1)) / framebufferHeight;
+
+	// View
+	float w = data.get_config().width();
+	float h = data.get_config().height();
+	float k = 1.0f / 3;
+
+	float distance = (w + 0.5f) / (2 * aspect * tanHalfFovy);	// Distance to the front of the game area. 0.5f is a bias.
+
+	float a = 2 * k * distance * sin(fovy / 2);	// projected h
+	float cotTau = (1 - 2 * k) * tanHalfFovy;
+	float tau = atan(1 / cotTau);	// tau: angle at a in direction of h
+	float epsilon = a < h ? asin(a / h * sin(tau)) : tau;	// epsilon: angle at h in direction of a
+	float beta = fovy / 2 + tau + epsilon - glm::half_pi<float>();	// beta: angle used for projection
+
+	glm::vec3 position(0, sin(beta) * distance, cos(beta) * distance);
+
+	glm::vec4 temp = glm::rotate(fovy / 2, glm::vec3(1, 0, 0)) * glm::vec4(-position, 1);
+	glm::vec3 lookAt(temp.x, temp.y, temp.z);
+	lookAt += position;
+
+	position.x = w / 2;
+	lookAt.x = w / 2;
+
+	viewMatrix = glm::lookAt(position, lookAt, glm::vec3(0, 1, 0));
+
+	// Projection
+	float zNear = distance * cos(fovy / 2) - 1;	// Estimated minimum depth.
+	if (zNear < 0.01f)
+	{
+		zNear = 0.01f;
+	}
+	float zFar = distance + h + 2;	// Estimated maximum depth.
 	if (cameraMode == stereo)
 	{
-		float aspect = static_cast<float>(framebufferWidth / 2) / framebufferHeight;
-
-		float tanHalfFovy = tan(fovy / 2);
 		glm::vec3 translation = glm::vec3(eyeSeparation * tanHalfFovy * zZeroParallax * aspect, 0.0f, 0.0f);
 
 		float top = zNear * tanHalfFovy;
@@ -92,9 +115,7 @@ void cgvkp::rendering::release_renderer::calculateProjection()
 	}
 	else	// mono
 	{
-		float aspect = static_cast<float>(framebufferWidth) / framebufferHeight;
-        if (aspect > glm::epsilon<float>())
-		    leftProjection = glm::perspective(fovy, aspect, zNear, zFar);
+		leftProjection = glm::perspective(fovy, aspect, zNear, zFar);
 	}
 }
 
@@ -104,7 +125,7 @@ void cgvkp::rendering::release_renderer::render(const window& wnd)
 	if (wnd.get_size(framebufferWidth, framebufferHeight))
 	{
 		gbuffer.resize(framebufferWidth, framebufferHeight);
-		calculateProjection();
+		calculateViewProjection();
 	}
 	if (framebufferWidth == 0 || framebufferHeight == 0 || !has_context)
 	{
@@ -160,7 +181,6 @@ void cgvkp::rendering::release_renderer::render(const window& wnd)
 		renderScene(rightProjection);
 
 		// reset
-		glViewport(0, 0, framebufferWidth, framebufferHeight);
 		glDisable(GL_SCISSOR_TEST);
 	}
 	else	// mono
@@ -254,14 +274,14 @@ void cgvkp::rendering::release_renderer::renderLights(glm::mat4x4 const& project
 void cgvkp::rendering::release_renderer::set_camera_mode(cgvkp::rendering::camera_mode mode)
 {
 	cameraMode = mode;
-	calculateProjection();
+	calculateViewProjection();
 }
 
 void cgvkp::rendering::release_renderer::set_stereo_parameters(float eye_separation, float zzero_parallax)
 {
 	eyeSeparation = eye_separation;
 	zZeroParallax = zzero_parallax;
-	calculateProjection();
+	calculateViewProjection();
 }
 
 void cgvkp::rendering::release_renderer::lost_context()
@@ -324,7 +344,7 @@ bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 		view->init();
 	}
 
-	calculateProjection();
+	calculateViewProjection();
 	has_context = true;
 	return true;
 }
