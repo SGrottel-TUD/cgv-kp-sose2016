@@ -220,10 +220,10 @@ void application::toggle_fullscreen()
 void application::increase_eye_separation(float val)
 {
 	config.eyeSeparation += val;
-	/*if (config.eye_separation < 0)
+	if (config.eyeSeparation < 0)
 	{
-		config.eye_separation = 0;
-	}*/
+		config.eyeSeparation = 0;
+	}
 	
 	if(release_renderer)
 	{
