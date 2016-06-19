@@ -1,7 +1,7 @@
 #pragma once
 #include "rendering/view/view_geometry_base.hpp"
-#include "GL/glew.h"
 #include "util/texture.hpp"
+#include <GL/glew.h>
 
 namespace cgvkp {
 namespace rendering {
