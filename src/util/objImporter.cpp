@@ -35,10 +35,9 @@ namespace std
 	};
 	template<> struct hash<Edge>
 	{
-		std::size_t operator()(const Edge& k) const { return hash<int>()(k.v2 << 16) + k.v1;}	// could be better. Generates 16502 comparisions which will return false in case of the hand model.
+		std::size_t operator()(const Edge& k) const { return hash<int>()(k.v2 << 16) + k.v1; }	// could be better. Generates 16502 comparisions which will return false in case of the hand model.
 	};
 }
-int b = sizeof(size_t) * 4;
 
 struct Face
 {
@@ -84,6 +83,10 @@ bool cgvkp::util::ObjImporter::load(std::string const& filename, bool withAdjace
 #endif
 		return false;
 	}
+
+	// Initialize the aabb with values which will be definetely overwritten.
+	aabb.min.x = aabb.min.y = aabb.min.z = std::numeric_limits<float>::max();
+	aabb.max.x = aabb.max.y = aabb.max.z = std::numeric_limits<float>::min();
 
 	std::vector<glm::vec3> objPositions;
 	std::vector<glm::vec3> objNormals;
@@ -178,8 +181,6 @@ bool cgvkp::util::ObjImporter::load(std::string const& filename, bool withAdjace
 					f.vertices[i] = pair.first->second;
 				}
 			}
-
-			size_t a = faces.size();
 			faces.push_back(f);
 
 			// Save the adjacent Vertex for each edge (remember only positional index as edges)
@@ -197,6 +198,13 @@ bool cgvkp::util::ObjImporter::load(std::string const& filename, bool withAdjace
 			ss >> v.y;
 			ss >> v.z;
 			objPositions.push_back(v);
+
+			if (v.x < aabb.min.x) { aabb.min.x = v.x; }
+			if (v.y < aabb.min.y) { aabb.min.y = v.y; }
+			if (v.z < aabb.min.z) { aabb.min.z = v.z; }
+			if (v.x > aabb.max.x) { aabb.max.x = v.x; }
+			if (v.y > aabb.max.y) { aabb.max.y = v.y; }
+			if (v.z > aabb.max.z) { aabb.max.z = v.z; }
 		}
 		else if (type == "vt")
 		{

@@ -8,11 +8,18 @@ namespace cgvkp
 {
 	namespace util
 	{
+		struct AABB
+		{
+			glm::vec3 min;
+			glm::vec3 max;
+		};
+
 		class ObjImporter
 		{
 		public:
 			ObjImporter(std::string const& filename, bool withAdjacencies = false);
 			~ObjImporter();
+			inline AABB const& getAABB() { return aabb; }
 			inline glm::vec3 const* getPositions() const { return positions; }
 			inline glm::vec3 const* getNormals() const { return normals; }
 			inline glm::vec2 const* getTextureCoords() const { return textureCoords; }
@@ -44,6 +51,7 @@ namespace cgvkp
 			GLenum indicesType;
 			GLsizeiptr indicesSize;
             std::string texturePath;
+			AABB aabb;
 		};
 	}
 }
