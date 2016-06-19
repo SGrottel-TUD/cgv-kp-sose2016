@@ -1,4 +1,5 @@
 #include "texture.hpp"
+#include "util/resource_file.hpp"
 #include <stdlib.h>
 #include <png.h>
 #include <iostream>
@@ -22,6 +23,7 @@ namespace util
         GLubyte **data,
         GLsizei width,
         GLsizei height,
+        bool has_alpha,
         GLint wrap_s,
         GLint wrap_t,
         GLint mag_filter,
@@ -33,7 +35,7 @@ namespace util
 
         glBindTexture(GL_TEXTURE_2D, id);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, (has_alpha) ? GL_RGBA : GL_RGB, width, height, 0, (has_alpha) ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, *data);
 
         if (min_filter == 0) min_filter = genMipMaps ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR;
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_s);
@@ -61,8 +63,12 @@ namespace util
         FILE *fp;
         if (fopen_s(&fp, filename.data(), "rb") != 0)
         {
-            std::cerr << "Could not open texture: '" << filename << "'" << std::endl;
-            return tex;
+            // Open failed, try again using resource_file
+            if (fopen_s(&fp, resource_file::find_resource_file(filename).data(), "rb") != 0)
+            {
+                std::cerr << "Could not open texture: '" << filename << "'" << std::endl;
+                return tex;
+            }
         }
         // TODO: Maybe cleaner function add callbacks for error / warning handling in libpng
         png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
@@ -119,11 +125,12 @@ namespace util
         tex._height = h;
         tex._has_alpha = ((color_type & PNG_COLOR_MASK_ALPHA) != 0);
         // Finally upload texture
-        tex._id = texture::upload_and_get_id(&data, (GLsizei)tex.width(), (GLsizei)tex.height());
+        tex._id = texture::upload_and_get_id(&data, (GLsizei)tex.width(), (GLsizei)tex.height(), tex._has_alpha);
         tex._uploaded = true;
         // Release memory
         free(data);
         // Return texture
+        std::cout << "texture '" << filename << "' uploaded" << std::endl;
         return tex;
     }
 }

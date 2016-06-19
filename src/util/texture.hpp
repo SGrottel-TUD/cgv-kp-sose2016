@@ -33,6 +33,7 @@ namespace cgvkp {
                 GLubyte **data,
                 GLsizei width,
                 GLsizei height,
+                bool has_alpha = false,
                 GLint wrap_s = GL_REPEAT,
                 GLint wrap_t = GL_REPEAT,
                 GLint mag_filter = GL_LINEAR,
