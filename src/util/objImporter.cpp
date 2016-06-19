@@ -45,7 +45,7 @@ struct Face
 };
 
 cgvkp::util::ObjImporter::ObjImporter(std::string const& filename, bool withAdjacencies /* = false */)
-	: verticesCount(0), positions(nullptr), normals(nullptr), textureCoords(nullptr), indices(nullptr), indicesMode(GL_NONE), indicesCount(0), indicesType(GL_NONE), indicesSize(0)
+	: verticesCount(0), positions(nullptr), normals(nullptr), textureCoords(nullptr), indices(nullptr), indicesMode(GL_NONE), indicesCount(0), indicesType(GL_NONE), indicesSize(0), texturePath()
 {
 	load(filename, withAdjacencies);
 }
@@ -221,8 +221,17 @@ bool cgvkp::util::ObjImporter::load(std::string const& filename, bool withAdjace
 			ss >> vn.z;
 			objNormals.push_back(vn);
 		}
-		else if (type == "mtllib")	// Materials not supported.
+		else if (type == "mtllib")	// Materials not (fully) supported.
 		{
+            // Do a quick scan for the texture file name in the mtl file
+            std::string mtlFile;
+            ss >> mtlFile;
+            // Adapt directory
+            size_t sep = filename.find_last_of("\\/");
+            if (sep != std::string::npos)
+                mtlFile = filename.substr(0, sep) + filename[sep] + mtlFile;
+
+            readTexturePathFromMtl(mtlFile);
 		}
 		else if (type == "usemtl")
 		{
@@ -269,6 +278,7 @@ bool cgvkp::util::ObjImporter::load(std::string const& filename, bool withAdjace
 			return false;
 		}
 	}
+    file.close();
 	
 
 	try {
@@ -438,4 +448,40 @@ bool cgvkp::util::ObjImporter::load(std::string const& filename, bool withAdjace
 	}
 
 	return true;
+}
+bool cgvkp::util::ObjImporter::readTexturePathFromMtl(std::string const& filename) {
+    std::ifstream file(resource_file::find_resource_file(filename));
+
+    if (!file.good())
+    {
+#if defined(_DEBUG) || defined(DEBUG)
+        std::cerr << "Could not open mtl file \"" << filename << "\"." << std::endl;
+#endif
+        return false;
+    }
+
+    // Read the data.
+    std::string line;
+    bool pathRead = false;
+    while (!pathRead && std::getline(file, line))
+    {
+        std::stringstream ss;
+        ss << line;
+        std::string type;
+        ss >> type;
+
+        if (type == "map_Kd")
+        {
+            ss >> texturePath;
+            // Adapt directory
+            size_t sep = filename.find_last_of("\\/");
+            if (sep != std::string::npos)
+                texturePath = filename.substr(0, sep) + filename[sep] + texturePath;
+            std::cout << "Got texture path: " << texturePath << std::endl;
+            pathRead = true;
+        }
+    }
+    file.close();
+
+    return pathRead;
 }

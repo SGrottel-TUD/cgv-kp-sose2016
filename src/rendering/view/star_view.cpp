@@ -12,6 +12,7 @@ namespace view {
 	}
 	void star_view::render() {
 		glBindVertexArray(geo->vao);
+        geo->texture->bind_texture();
 		glDrawElements(geo->indicesMode, geo->indicesCount, geo->indicesType, nullptr);
 	}
 }

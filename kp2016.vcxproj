@@ -56,6 +56,7 @@
     <ClCompile Include="src\rendering\technique\technique_normal_as_colour.cpp" />
     <ClCompile Include="src\util\objImporter.cpp" />
     <ClCompile Include="src\util\resource_file.cpp" />
+    <ClCompile Include="src\util\texture.cpp" />
     <ClCompile Include="src\vision\abstract_vision.cpp" />
     <ClCompile Include="src\vision\dummy_vision.cpp" />
   </ItemGroup>
@@ -114,6 +115,7 @@
     <ClInclude Include="src\rendering\window.hpp" />
     <ClInclude Include="src\util\objImporter.hpp" />
     <ClInclude Include="src\util\resource_file.hpp" />
+    <ClInclude Include="src\util\texture.hpp" />
     <ClInclude Include="src\vision\abstract_vision.hpp" />
     <ClInclude Include="src\vision\dummy_vision.hpp" />
   </ItemGroup>
@@ -272,6 +274,10 @@
     <Import Project="packages\glfw.redist.3.1.2\build\native\glfw.redist.targets" Condition="Exists('packages\glfw.redist.3.1.2\build\native\glfw.redist.targets')" />
     <Import Project="packages\glfw.3.1.2\build\native\glfw.targets" Condition="Exists('packages\glfw.3.1.2\build\native\glfw.targets')" />
     <Import Project="packages\glew.v140.1.12.0\build\native\glew.v140.targets" Condition="Exists('packages\glew.v140.1.12.0\build\native\glew.v140.targets')" />
+    <Import Project="packages\libpng.redist.1.6.20.1\build\native\libpng.redist.targets" Condition="Exists('packages\libpng.redist.1.6.20.1\build\native\libpng.redist.targets')" />
+    <Import Project="packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets" Condition="Exists('packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets')" />
+    <Import Project="packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets" Condition="Exists('packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets')" />
+    <Import Project="packages\libpng.1.6.20.1\build\native\libpng.targets" Condition="Exists('packages\libpng.1.6.20.1\build\native\libpng.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -281,5 +287,9 @@
     <Error Condition="!Exists('packages\glfw.redist.3.1.2\build\native\glfw.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glfw.redist.3.1.2\build\native\glfw.redist.targets'))" />
     <Error Condition="!Exists('packages\glfw.3.1.2\build\native\glfw.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glfw.3.1.2\build\native\glfw.targets'))" />
     <Error Condition="!Exists('packages\glew.v140.1.12.0\build\native\glew.v140.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glew.v140.1.12.0\build\native\glew.v140.targets'))" />
+    <Error Condition="!Exists('packages\libpng.redist.1.6.20.1\build\native\libpng.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\libpng.redist.1.6.20.1\build\native\libpng.redist.targets'))" />
+    <Error Condition="!Exists('packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets'))" />
+    <Error Condition="!Exists('packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets'))" />
+    <Error Condition="!Exists('packages\libpng.1.6.20.1\build\native\libpng.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\libpng.1.6.20.1\build\native\libpng.targets'))" />
   </Target>
 </Project>

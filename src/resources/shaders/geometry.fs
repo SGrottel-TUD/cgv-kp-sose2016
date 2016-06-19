@@ -2,6 +2,7 @@
 
 uniform vec3 ambientLight;
 uniform vec2 material;
+uniform sampler2D textureSampler;
 
 in vec3 vsPositionWorld;
 in vec3 vsNormalWorld;
@@ -17,7 +18,9 @@ void main()
 {
 	fsPositionWorld = vsPositionWorld;
 	fsNormalWorld = vsNormalWorld;
-	fsDiffuse = vec3(vsTextureCoord, 1);
+	vec4 tex = texture(textureSampler, vsTextureCoord);
+	fsDiffuse = vec3(tex) * tex.a;
+	//fsDiffuse = vec3(vsTextureCoord, 1);
 	fsMaterial = material;
 	fsAmbient = fsDiffuse * ambientLight;
 }

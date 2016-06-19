@@ -10,7 +10,7 @@ namespace cgvkp {
 	namespace rendering {
 		namespace view {
 			cloud_geometry::cloud_geometry()
-				: vao(0), indexBuffer(0), indicesMode(GL_NONE), indicesCount(0), indicesType(GL_NONE)
+				: vao(0), indexBuffer(0), indicesMode(GL_NONE), indicesCount(0), indicesType(GL_NONE), texture()
 			{
 				for (int i = 0; i < numAttributes; ++i)
 				{
@@ -54,6 +54,10 @@ namespace cgvkp {
 					glBufferData(GL_ARRAY_BUFFER, mesh.getTextureCoordsSize(), mesh.getTextureCoords(), GL_STATIC_DRAW);
 					glEnableVertexAttribArray(textureCoord);
 					glVertexAttribPointer(textureCoord, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+                    if (!mesh.getTexturePath().empty())
+                    {
+                        texture = util::texture::from_png(mesh.getTexturePath());
+                    }
 				}
 
 				glGenBuffers(1, &indexBuffer);
