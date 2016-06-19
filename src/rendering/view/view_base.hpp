@@ -5,6 +5,13 @@
 namespace cgvkp {
 namespace rendering {
 namespace view {
+    enum VertexAttributeLocation
+    {
+        position = 0,
+        normal,
+        textureCoord,
+        numAttributes
+    };
 
     class view_base {
     public:
