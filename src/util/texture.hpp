@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <memory>
 #include <GL/glew.h>
 
 namespace cgvkp {
@@ -10,13 +11,14 @@ namespace cgvkp {
             texture();
             virtual ~texture();
 
-
             inline size_t width() { return _width; }
             inline size_t height() { return _height; }
             inline GLuint id() { return _id; }
             inline bool uploaded() { return _uploaded; }
+
+            void bind_texture();
             // Static members
-            static texture from_png(std::string const& filename,
+            static std::shared_ptr<texture> from_png(std::string const& filename,
                 GLint wrap_s = GL_REPEAT,
                 GLint wrap_t = GL_REPEAT,
                 GLint mag_filter = GL_LINEAR,

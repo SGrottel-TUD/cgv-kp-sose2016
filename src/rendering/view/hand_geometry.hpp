@@ -11,7 +11,7 @@ namespace view {
 		~hand_geometry();
 		hand_geometry();
 		bool init();
-        util::texture texture;
+        std::shared_ptr<util::texture> texture;
 		GLuint vao;
 		GLuint vertexBuffers[numAttributes];
 		GLuint indexBuffer;

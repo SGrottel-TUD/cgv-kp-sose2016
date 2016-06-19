@@ -19,6 +19,10 @@ namespace util
             ::glDeleteTextures(1, &_id);
         }
     }
+    void texture::bind_texture() {
+        ::glActiveTexture(GL_TEXTURE0);
+        ::glBindTexture(GL_TEXTURE_2D, id());
+    }
     GLuint texture::upload_and_get_id(
         GLubyte **data,
         GLsizei width,
@@ -50,11 +54,11 @@ namespace util
         return id;
     }
     // Tons of C-Like code needed by libpng
-    texture texture::from_png(std::string const& filename,
+    std::shared_ptr<texture> texture::from_png(std::string const& filename,
         GLint wrap_s, GLint wrap_t, GLint mag_filter, GLint min_filter, bool genMipMaps)
     {
         // Uninitialised texture object to return if something fails
-        texture tex;
+        std::shared_ptr<texture> tex = std::make_shared<texture>();
         // Read stuff
         png_structp png_ptr;
         png_infop info_ptr;
@@ -121,12 +125,12 @@ namespace util
         fclose(fp);
 
         // Set texture values
-        tex._width = w;
-        tex._height = h;
-        tex._has_alpha = ((color_type & PNG_COLOR_MASK_ALPHA) != 0);
+        tex->_width = w;
+        tex->_height = h;
+        tex->_has_alpha = ((color_type & PNG_COLOR_MASK_ALPHA) != 0);
         // Finally upload texture
-        tex._id = texture::upload_and_get_id(&data, (GLsizei)tex.width(), (GLsizei)tex.height(), tex._has_alpha);
-        tex._uploaded = true;
+        tex->_id = texture::upload_and_get_id(&data, (GLsizei)tex->width(), (GLsizei)tex->height(), tex->_has_alpha);
+        tex->_uploaded = true;
         // Release memory
         free(data);
         // Return texture
