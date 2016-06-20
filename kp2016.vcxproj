@@ -115,6 +115,7 @@
     <ClInclude Include="src\rendering\view\view_base.hpp" />
     <ClInclude Include="src\rendering\view\view_geometry_base.hpp" />
     <ClInclude Include="src\rendering\window.hpp" />
+    <ClInclude Include="src\util\bezier.hpp" />
     <ClInclude Include="src\util\objImporter.hpp" />
     <ClInclude Include="src\util\resource_file.hpp" />
     <ClInclude Include="src\util\texture.hpp" />
