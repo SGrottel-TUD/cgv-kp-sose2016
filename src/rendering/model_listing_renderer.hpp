@@ -5,6 +5,7 @@
 #include "rendering/model/hand_model.hpp"
 #include "rendering/view/hand_view.hpp"
 #include "rendering/technique/technique_normal_as_colour.hpp"
+#include "rendering/technique/background_technique.hpp"
 #include <glm/glm.hpp>
 #include <chrono>
 
@@ -24,6 +25,7 @@ namespace rendering {
         virtual void deinit_impl();
     private:
         technique_normal_as_colour technique1;
+        background_technique bg;
 		std::chrono::high_resolution_clock::time_point last_time;
         std::shared_ptr<model::star_model> star_model;
         std::shared_ptr<view::star_view> star_view;

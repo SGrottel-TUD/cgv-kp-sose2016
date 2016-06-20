@@ -8,15 +8,6 @@
 namespace cgvkp {
 namespace rendering {
 namespace view {
-
-	enum VertexAttributeLocation
-	{
-		position = 0,
-		normal,
-		textureCoord,
-		numAttributes
-	};
-
     template<class geo_type>
     class view_geometry_base : public view_base {
     public:

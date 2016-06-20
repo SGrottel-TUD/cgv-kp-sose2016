@@ -63,7 +63,7 @@ namespace controller {
             // Update its data
             std::shared_ptr<model::star_model> star = stars[data_star->id].lock();
             star->model_matrix[3].x = data_star->x;
-            star->model_matrix[3].y = data_star->height;
+            star->model_matrix[3].y = trans_height(data_star->height);
             star->model_matrix[3].z = -data_star->y;
 
             // Check if it was caught
@@ -119,7 +119,7 @@ namespace controller {
             // Update its data
             std::shared_ptr<model::hand_model> hand = hands[data_hand->id].lock();
             hand->model_matrix[3].x = data_hand->x;
-            hand->model_matrix[3].y = data_hand->height;
+            hand->model_matrix[3].y = trans_height(data_hand->height);
             hand->model_matrix[3].z = -data_hand->y;
 
             // Check if it was caught
