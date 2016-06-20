@@ -34,6 +34,9 @@ namespace rendering {
 		void set_camera_mode(camera_mode mode);
 		void set_stereo_parameters(float eye_separation, float zzero_parallax);
 
+		float getDistance();
+		float getAspect();
+
 		virtual void lost_context();
 		virtual bool restore_context(window const& wnd);
 
@@ -62,6 +65,9 @@ namespace rendering {
 		GLsizei framebufferHeight;
 		float eyeSeparation;
 		float zZeroParallax;
+
+		float distance;
+		float aspect;
 
 		std::list<PointLight> pointLights;
 		GeometryBuffer gbuffer;

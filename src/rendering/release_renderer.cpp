@@ -64,14 +64,14 @@ void cgvkp::rendering::release_renderer::calculateViewProjection()
 	float fovy = glm::quarter_pi<float>();
 
 	float tanHalfFovy = tan(fovy / 2);
-	float aspect = static_cast<float>(framebufferWidth / (cameraMode == stereo ? 2 : 1)) / framebufferHeight;
+	aspect = static_cast<float>(framebufferWidth / (cameraMode == stereo ? 2 : 1)) / framebufferHeight;
 
 	// View
 	float w = data.get_config().width();
 	float h = data.get_config().height();
 	float k = 1.0f / 3;
 
-	float distance = (w + 0.5f) / (2 * aspect * tanHalfFovy);	// Distance to the front of the game area. 0.5f is a bias.
+	distance = (w + 0.5f) / (2 * aspect * tanHalfFovy);	// Distance to the front of the game area. 0.5f is a bias.
 
 	float a = 2 * k * distance * sin(fovy / 2);	// projected h
 	float cotTau = (1 - 2 * k) * tanHalfFovy;
@@ -397,4 +397,12 @@ void cgvkp::rendering::release_renderer::add_view(view::view_base::ptr view) {
 
 void cgvkp::rendering::release_renderer::add_controller(controller::controller_base::ptr controller) {
 	new_controllers.push_back(controller);
+}
+
+float cgvkp::rendering::release_renderer::getDistance() {
+	return distance;
+}
+
+float cgvkp::rendering::release_renderer::getAspect() {
+	return aspect;
 }
