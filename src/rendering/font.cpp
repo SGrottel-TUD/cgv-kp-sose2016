@@ -223,7 +223,7 @@ void cgvkp::rendering::Font::addCurve(std::vector<glm::vec2> const& contourVerti
 	}
 	else 
 	{
-		Bezier bezier(concic, contourVertices);
+		util::Bezier<glm::vec2> bezier(concic, contourVertices);
 		float samplingRate = bezier.getLength() * 40.0f; // length * density in one unit
 		
 		for (int i = 0; i < samplingRate; ++i)
