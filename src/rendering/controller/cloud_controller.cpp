@@ -82,7 +82,7 @@ namespace controller {
 		return true;
 	}
 
-	float cloud_controller::calculate_max_w(float z) {
+	float cloud_controller::calculate_max_cloud_space(float z) {
 		float wMax = (h + renderer->getDistance())*((w+0.5)/(renderer->getAspect()));
 		return -z*(wMax - w) / (4 * h);
 	}
@@ -92,9 +92,9 @@ namespace controller {
 		for (int i = 0; i < clouds.size(); i++) {
 			std::shared_ptr<model::cloud_model> cloud = clouds[i].lock();
 			
-			if (cloud->model_matrix[3].x > w+calculate_max_w(cloud->model_matrix[3].z)) {
+			if (cloud->model_matrix[3].x > w+calculate_max_cloud_space(cloud->model_matrix[3].z)) {
 				cloud->speed = -0.001f;
-			} else if (cloud->model_matrix[3].x < -calculate_max_w(cloud->model_matrix[3].z)) {
+			} else if (cloud->model_matrix[3].x < -calculate_max_cloud_space(cloud->model_matrix[3].z)) {
 				cloud->speed = 0.001f;
 			} else {
 				uniform = std::uniform_real_distribution<float>(-0.001f, 0.001f);

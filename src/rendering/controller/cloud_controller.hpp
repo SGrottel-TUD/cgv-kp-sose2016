@@ -28,7 +28,7 @@ namespace controller {
         virtual void update(double seconds, std::shared_ptr<abstract_user_input> input);
     private:
 
-		float calculate_max_w(float z);
+		float calculate_max_cloud_space(float z);
 
 		float w, h;
 		const ::cgvkp::data::world& data;
