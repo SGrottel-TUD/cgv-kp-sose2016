@@ -82,22 +82,27 @@ namespace controller {
 		return true;
 	}
 
+	float cloud_controller::calculate_max_w(float z) {
+		float wMax = (h + renderer->getDistance())*((w+0.5)/(renderer->getAspect()));
+		return -z*(wMax - w) / (4 * h);
+	}
+
 	void cloud_controller::update(double seconds, std::shared_ptr<abstract_user_input> input) {
 
 		for (int i = 0; i < clouds.size(); i++) {
 			std::shared_ptr<model::cloud_model> cloud = clouds[i].lock();
-
-			if (cloud->model_matrix[3].x > w*2) {
-				uniform = std::uniform_real_distribution<float>(-0.0001f, 0.0f);
-			} else if (cloud->model_matrix[3].x < -w) {
-				uniform = std::uniform_real_distribution<float>(0.0f, 0.0001f);
-			} else {
-				uniform = std::uniform_real_distribution<float>(-0.0001f, 0.0001f);
-			}
 			
-			cloud->speed += uniform(random_engine);
+			if (cloud->model_matrix[3].x > w+calculate_max_w(cloud->model_matrix[3].z)) {
+				cloud->speed = -0.001f;
+			} else if (cloud->model_matrix[3].x < -calculate_max_w(cloud->model_matrix[3].z)) {
+				cloud->speed = 0.001f;
+			} else {
+				uniform = std::uniform_real_distribution<float>(-0.001f, 0.001f);
+				cloud->speed += uniform(random_engine);
+			}
+				
 
-			cloud->speed = glm::clamp(cloud->speed, -0.001f, 0.001f);
+			cloud->speed = glm::clamp(cloud->speed, -0.005f, 0.005f);
 
 			cloud->model_matrix[3].x += cloud->speed;
 		}
