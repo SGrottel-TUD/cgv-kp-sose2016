@@ -47,6 +47,10 @@ namespace rendering {
         virtual void deinit_impl();
 
     private:
+
+		double fps_last_time;
+		int nbFrames;
+
         bool has_context = false;
 
 		void calculateViewProjection();

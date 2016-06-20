@@ -9,7 +9,7 @@
 
 cgvkp::rendering::release_renderer::release_renderer(const ::cgvkp::data::world& data)
     : cgvkp::rendering::abstract_renderer(data),
-	framebufferWidth(0), framebufferHeight(0), cameraMode(mono) {
+	framebufferWidth(0), framebufferHeight(0), cameraMode(mono), fps_last_time(glfwGetTime()), nbFrames(0) {
 }
 cgvkp::rendering::release_renderer::~release_renderer(){}
 
@@ -122,6 +122,15 @@ void cgvkp::rendering::release_renderer::calculateViewProjection()
 
 void cgvkp::rendering::release_renderer::render(const window& wnd)
 {
+
+	double current_time = glfwGetTime();
+	nbFrames++;
+	if (current_time - fps_last_time >= 1.0) {
+		printf("%i fps\n",  nbFrames);
+		nbFrames = 0;
+		fps_last_time += 1.0;
+	}
+
 	wnd.make_current();
 	if (wnd.get_size(framebufferWidth, framebufferHeight))
 	{
