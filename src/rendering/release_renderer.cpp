@@ -199,6 +199,8 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projecti
 	glDepthMask(GL_TRUE);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    background.render();
+
 	glm::vec3 ambientLight(0, 0, 0);
 	for (auto const& light : pointLights)
 	{
@@ -323,6 +325,7 @@ void cgvkp::rendering::release_renderer::lost_context()
 		view->deinit();
 	}
 
+    background.deinit();
 	lightingSphere.deinit();
 	geometryPass.deinit();
 	shadowVolumePass.deinit();
@@ -357,6 +360,10 @@ bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 	{
 		return false;
 	}
+    if (!background.init())
+    {
+        return false;
+    }
 
 	for (auto view : cached_views)
 	{

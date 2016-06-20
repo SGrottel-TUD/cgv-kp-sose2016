@@ -8,6 +8,7 @@
 #include "technique/geometryBuffer.hpp"
 #include "technique/ShadowVolume.hpp"
 #include "technique/LightTechnique.hpp"
+#include "technique/background_technique.hpp"
 #include "lights.hpp"
 #include "mesh.hpp"
 #include "model/model_base.hpp"
@@ -67,6 +68,7 @@ namespace rendering {
 		GeometryTechnique geometryPass;
 		ShadowVolumeTechnique shadowVolumePass;
 		LightTechnique lightPass;
+        background_technique background;
 		Mesh lightingSphere;
 
         std::chrono::high_resolution_clock::time_point last_time;
