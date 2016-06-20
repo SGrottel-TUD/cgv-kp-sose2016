@@ -51,9 +51,6 @@ namespace rendering {
 
     private:
 
-		double fps_last_time;
-		int nbFrames;
-
         bool has_context = false;
 
 		void calculateViewProjection();
@@ -82,6 +79,9 @@ namespace rendering {
 		Mesh lightingSphere;
 
         std::chrono::high_resolution_clock::time_point last_time;
+		double fps_counter_elapsed;
+		unsigned int rendered_frames;
+
         std::vector<model::model_base::ptr> models;
         std::vector<view::view_base::ptr> views;
         std::vector<view::view_base::ptr> cached_views;

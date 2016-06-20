@@ -9,7 +9,7 @@
 
 cgvkp::rendering::release_renderer::release_renderer(const ::cgvkp::data::world& data)
     : cgvkp::rendering::abstract_renderer(data),
-	framebufferWidth(0), framebufferHeight(0), cameraMode(mono), fps_last_time(glfwGetTime()), nbFrames(0) {
+	framebufferWidth(0), framebufferHeight(0), cameraMode(mono), fps_counter_elapsed(0.0), rendered_frames(0u) {
 }
 cgvkp::rendering::release_renderer::~release_renderer(){}
 
@@ -122,15 +122,6 @@ void cgvkp::rendering::release_renderer::calculateViewProjection()
 
 void cgvkp::rendering::release_renderer::render(const window& wnd)
 {
-
-	double current_time = glfwGetTime();
-	nbFrames++;
-	if (current_time - fps_last_time >= 1.0) {
-		printf("%i fps\n",  nbFrames);
-		nbFrames = 0;
-		fps_last_time += 1.0;
-	}
-
 	wnd.make_current();
 	if (wnd.get_size(framebufferWidth, framebufferHeight))
 	{
@@ -145,6 +136,16 @@ void cgvkp::rendering::release_renderer::render(const window& wnd)
 	std::chrono::high_resolution_clock::time_point now_time = std::chrono::high_resolution_clock::now();
 	double elapsed = std::chrono::duration<double>(now_time - last_time).count();
 	last_time = now_time;
+	fps_counter_elapsed += elapsed;
+	++rendered_frames;
+	if (fps_counter_elapsed >= 2.0)
+	{
+#if (DEBUG || _DEBUG)
+		std::cout << "FPS: " << rendered_frames / fps_counter_elapsed << std::endl;
+#endif
+		fps_counter_elapsed = 0.0;
+		rendered_frames = 0u;
+	}
 
 	for (controller::controller_base::ptr controller : controllers) {
 		if (!controller->has_model()) continue;

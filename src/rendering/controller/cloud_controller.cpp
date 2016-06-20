@@ -35,7 +35,7 @@ namespace controller {
 			uniform = std::uniform_real_distribution<float>(-0.01f, 0.01f);
 			cloud->speed = 0;//uniform(random_engine);
 
-			uniform = std::uniform_real_distribution<float>(-w, w*2);
+			uniform = std::uniform_real_distribution<float>(0, w);
 			cloud->model_matrix[3].x = uniform(random_engine);
 
 			cloud->speed = uniform(random_engine)/800;
