@@ -11,7 +11,8 @@ data::world::world()
     : cfg(), hands_input(),
         in_hands(hands_input),
         input(cfg, tripple_buffer_facade<input_layer::hand_collection, 0>(hands_input)),
-        hands(), hands_states(), stars(), score(0), next_hand_id(1), next_star_id(1) {
+        hands(), hands_states(), stars(), score(0), next_hand_id(1), next_star_id(1),
+        mode(game_mode::stopped) {
 }
 
 data::world::~world() {
@@ -21,6 +22,11 @@ void data::world::init() {
     hands.clear();
     stars.clear();
     score = 0;
+}
+
+void data::world::set_game_mode(game_mode new_mode) {
+    // for now:
+    mode = new_mode;
 }
 
 void data::world::merge_input(void) {
