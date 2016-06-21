@@ -1,9 +1,5 @@
 #include "rendering/window.hpp"
 #include <iostream>
-#include "GL/glew.h"
-#include "GLFW/glfw3.h"
-#include "glm/glm.hpp"
-#include "glm/gtx/transform.hpp"
 #include "rendering/abstract_user_input.hpp"
 
 using namespace cgvkp;
@@ -35,7 +31,7 @@ namespace {
 }
 
 rendering::window::window(unsigned int w, unsigned int h, const char* title) 
-        : handle(nullptr), user_input() {
+        : handle(nullptr), user_input(), fullscreen(false), windowed_width(w), windowed_height(h), windowed_x(0), windowed_y(0) {
     ctor_impl(nullptr, w, h, title);
 }
 
@@ -83,8 +79,10 @@ void rendering::window::do_events() {
 }
 
 void rendering::window::make_current() const {
-    if (!is_alive()) return;
-    ::glfwMakeContextCurrent(handle);
+	if (handle != nullptr)
+	{
+		::glfwMakeContextCurrent(handle);
+	}
 }
 
 void rendering::window::swap_buffers() const {
@@ -92,16 +90,61 @@ void rendering::window::swap_buffers() const {
     ::glfwSwapBuffers(handle);
 }
 
-bool rendering::window::get_size(unsigned int &out_width, unsigned int &out_height) const {
+bool rendering::window::register_key_callback(int key, std::function<void()> callback, on_event ev /* = OnDown */)
+{
+	if (key > GLFW_KEY_LAST)
+	{
+		return false;
+	}
+
+	key_events& k = keys[key];
+
+	if (ev & OnPress)
+	{
+		k.onPress = callback;
+	}
+	if (ev & OnRepeat)
+	{
+		k.onRepeat = callback;
+	}
+	if (ev & OnRelease)
+	{
+		k.onRelease = callback;
+	}
+
+	return true;
+}
+
+bool rendering::window::get_size(int &out_width, int &out_height) const {
     int w, h;
     ::glfwGetFramebufferSize(handle, &w, &h);
     if (w < 0) w = 0;
     if (h < 0) h = 0;
-    bool rv = (static_cast<unsigned int>(w) != out_width)
-        || (static_cast<unsigned int>(h) != out_height);
-    out_width = static_cast<unsigned int>(w);
-    out_height = static_cast<unsigned int>(h);
+    bool rv = (w != out_width) || (h != out_height);
+    out_width = w;
+    out_height = h;
     return rv;
+}
+
+void rendering::window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	rendering::window* w = static_cast<rendering::window*>(glfwGetWindowUserPointer(window));
+	if (key <= GLFW_KEY_LAST)
+	{
+		key_events const& k = w->keys[key];
+		if (action == GLFW_PRESS && k.onPress)
+		{
+			k.onPress();
+		}
+		else if (action == GLFW_REPEAT && k.onRepeat)
+		{
+			k.onRepeat();
+		}
+		else if (action == GLFW_RELEASE && k.onRelease)
+		{
+			k.onRelease();
+		}
+	}
 }
 
 void rendering::window::mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
@@ -120,25 +163,8 @@ void rendering::window::ctor_impl(GLFWmonitor* fullscreen, unsigned int w, unsig
     ::glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     ::glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    if (((w == -1) || (h == -1)) && (fullscreen != nullptr)) {
-        const GLFWvidmode* mode = ::glfwGetVideoMode(fullscreen);
-        w = mode->width;
-        h = mode->height;
-    }
-
-    handle = ::glfwCreateWindow(w, h, title, fullscreen, NULL);
-
-    if (!handle) {
-        std::cerr << "glfwCreateWindow failed" << std::endl;
-        return;
-    }
-
-    ::glfwSetWindowUserPointer(handle, this);
-
-    ::glfwSetMouseButtonCallback(handle, window::mouse_button_callback);
-    ::glfwSetScrollCallback(handle, window::mouse_scroll_callback);
-
-    ::glfwMakeContextCurrent(handle);
+	this->title = title;
+	create_window(w, h, title, fullscreen);
 
     ::glewExperimental = GL_TRUE;
     GLenum err = ::glewInit();
@@ -173,4 +199,58 @@ void rendering::window::dtor_impl() {
         ::glfwDestroyWindow(handle);
         handle = nullptr;
     }
+}
+
+bool rendering::window::create_window(int width, int height, char const* title, GLFWmonitor* fullscreen) {
+	if (fullscreen != nullptr) {
+		const GLFWvidmode* mode = ::glfwGetVideoMode(fullscreen);
+
+		glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+		glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+		glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+		glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+
+		if (width == -1 || height == -1) {
+			width = mode->width;
+			height = mode->height;
+		}
+	}
+
+	handle = ::glfwCreateWindow(width, height, title, fullscreen, nullptr);
+
+	if (!handle) {
+		std::cerr << "glfwCreateWindow failed" << std::endl;
+		return false;
+	}
+
+	this->fullscreen = fullscreen != nullptr;
+
+	::glfwSetWindowUserPointer(handle, this);
+
+	::glfwSetMouseButtonCallback(handle, window::mouse_button_callback);
+	::glfwSetScrollCallback(handle, window::mouse_scroll_callback);
+	::glfwSetKeyCallback(handle, window::key_callback);
+
+	::glfwMakeContextCurrent(handle);
+	glfwSwapInterval(1);
+
+	return true;
+}
+
+void rendering::window::toggle_fullscreen() {
+	if (fullscreen) {
+		glfwDestroyWindow(handle);
+
+		if(create_window(windowed_width, windowed_height, title.c_str(), nullptr)) {
+			glfwSetWindowPos(handle, windowed_x, windowed_y);
+		}
+	}
+	else {
+		glfwGetWindowPos(handle, &windowed_x, &windowed_y);
+		glfwGetWindowSize(handle, &windowed_width, &windowed_height);
+
+		glfwDestroyWindow(handle);
+
+		create_window(-1, -1, title.c_str(), glfwGetPrimaryMonitor());
+	}
 }

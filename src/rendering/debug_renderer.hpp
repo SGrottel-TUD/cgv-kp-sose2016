@@ -1,4 +1,5 @@
 #pragma once
+#include "rendering/abstract_renderer.hpp"
 #include "rendering/window.hpp"
 
 namespace cgvkp {
@@ -7,16 +8,17 @@ namespace data {
 }
 namespace rendering {
 
-    class debug_renderer {
+    class debug_renderer : public abstract_renderer {
     public:
         static const float presentation_scale;
 
         debug_renderer(const ::cgvkp::data::world& data);
-        ~debug_renderer();
+        virtual ~debug_renderer();
+        virtual void render(const window& wnd);
 
-        bool init(const window& wnd);
-        void render(const window& wnd);
-        void deinit();
+    protected:
+        virtual bool init_impl(const window& wnd);
+        virtual void deinit_impl();
 
     private:
 
@@ -31,11 +33,9 @@ namespace rendering {
             draw_line();
         }
 
-        const ::cgvkp::data::world& data;
-
         unsigned int vao;
         unsigned int shader;
-        unsigned int win_w, win_h;
+        int win_w, win_h;
     };
 
 }

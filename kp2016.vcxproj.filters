@@ -40,6 +40,59 @@
     <Filter Include="vision\Source Files">
       <UniqueIdentifier>{d3fb6ae6-5903-404e-a4ad-bbee1e4118a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{aa39f407-c90a-4b47-ac18-339cf5eaa6c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\Header Files">
+      <UniqueIdentifier>{f31d6f02-98d9-4d63-92e5-1d3a59563e0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\Source Files">
+      <UniqueIdentifier>{fd40c22e-3ec1-49f1-87bd-ba2f370aa180}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\model">
+      <UniqueIdentifier>{19b50978-cc35-41f3-8ddd-de17cd856e50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\view">
+      <UniqueIdentifier>{dd242a34-37be-4a7e-a063-81d86ed8db59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\controller">
+      <UniqueIdentifier>{1a31e74b-16d2-4fcd-ad08-9aab8a05c07a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\model\Header Files">
+      <UniqueIdentifier>{14301e43-4d7e-40e9-813a-bf86235936ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\model\Source Files">
+      <UniqueIdentifier>{26ffc615-d983-4661-bb34-252f33c2f660}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\controller\Source Files">
+      <UniqueIdentifier>{c8c264d5-5889-49ce-a94d-5ab4b67b85db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\view\Source Files">
+      <UniqueIdentifier>{e5c63cea-b4f0-4e61-bbb1-587b144f9e99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\controller\Header Files">
+      <UniqueIdentifier>{a169b4e4-dbbe-495a-adfa-65cff03297fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\view\Header Files">
+      <UniqueIdentifier>{f122605c-8f64-48fa-9f49-86153c5f07d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaders">
+      <UniqueIdentifier>{ccd51729-f27c-4abd-8423-c9ba5bc69442}</UniqueIdentifier>
+      <Extensions>fs;gs;vs</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\meshes">
+      <UniqueIdentifier>{1b7de7a3-8bb9-4290-b56b-46ffeaf6ebf1}</UniqueIdentifier>
+      <Extensions>obj;mtl</Extensions>
+    </Filter>
+    <Filter Include="rendering\technique">
+      <UniqueIdentifier>{b0f321cd-9534-4fa9-bf1f-c5276ca5764b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\technique\Header Files">
+      <UniqueIdentifier>{185dd639-3e60-4226-995a-457e893906b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\technique\Source Files">
+      <UniqueIdentifier>{6f40e07e-2aba-48c1-af70-cb4ffeaf9a79}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -72,9 +125,132 @@
     <ClCompile Include="src\rendering\debug_user_input.cpp">
       <Filter>rendering\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\rendering\abstract_renderer.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vision\abstract_vision.cpp">
+      <Filter>vision\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\application_config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\release_renderer.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\model_listing_renderer.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\resource_file.cpp">
+      <Filter>util\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\view\view_base.cpp">
+      <Filter>rendering\view\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\controller\controller_base.cpp">
+      <Filter>rendering\controller\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\model\model_base.cpp">
+      <Filter>rendering\model\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\view\star_view.cpp">
+      <Filter>rendering\view\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\view\star_geometry.cpp">
+      <Filter>rendering\view\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\view\hand_geometry.cpp">
+      <Filter>rendering\view\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\view\hand_view.cpp">
+      <Filter>rendering\view\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\controller\data_controller.cpp">
+      <Filter>rendering\controller\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\model\graphic_model_base.cpp">
+      <Filter>rendering\model\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\controller\periodic_rotation_controller.cpp">
+      <Filter>rendering\controller\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\view\cloud_geometry.cpp">
+      <Filter>rendering\view\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\view\cloud_view.cpp">
+      <Filter>rendering\view\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\controller\cloud_controller.cpp">
+      <Filter>rendering\controller\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\controller\caught_star_controller.cpp">
+      <Filter>rendering\controller\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\controller\sub_cloud_controller.cpp">
+      <Filter>rendering\controller\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\objImporter.cpp">
+      <Filter>util\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\lights.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\mesh.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\technique_normal_as_colour.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\technique.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\geometryBuffer.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\ShadowVolume.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\LightTechnique.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\texture.cpp">
+      <Filter>util\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\background_technique.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="src\resources\meshes\hand.mtl">
+      <Filter>Resource Files\meshes</Filter>
+    </None>
+    <None Include="src\resources\shaders\light.vs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\normal_as_colour.fs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\normal_as_colour.vs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\shadowVolume.fs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\shadowVolume.gs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\shadowVolume.vs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\geometry.fs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\geometry.vs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\light.fs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\data\input_layer.hpp">
@@ -107,5 +283,124 @@
     <ClInclude Include="src\rendering\debug_user_input.hpp">
       <Filter>rendering\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\rendering\abstract_renderer.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vision\abstract_vision.hpp">
+      <Filter>vision\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\application_config.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\release_renderer.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\model_listing_renderer.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\resource_file.hpp">
+      <Filter>util\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\view\view_base.hpp">
+      <Filter>rendering\view\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\controller\controller_base.hpp">
+      <Filter>rendering\controller\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\model\model_base.hpp">
+      <Filter>rendering\model\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\view\view_geometry_base.hpp">
+      <Filter>rendering\view\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\view\star_geometry.hpp">
+      <Filter>rendering\view\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\view\star_view.hpp">
+      <Filter>rendering\view\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\model\star_model.hpp">
+      <Filter>rendering\model\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\view\hand_geometry.hpp">
+      <Filter>rendering\view\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\view\hand_view.hpp">
+      <Filter>rendering\view\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\model\hand_model.hpp">
+      <Filter>rendering\model\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\controller\data_controller.hpp">
+      <Filter>rendering\controller\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\model\graphic_model_base.hpp">
+      <Filter>rendering\model\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\controller\periodic_rotation_controller.hpp">
+      <Filter>rendering\controller\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\model\cloud_model.hpp">
+      <Filter>rendering\model\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\view\cloud_geometry.hpp">
+      <Filter>rendering\view\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\view\cloud_view.hpp">
+      <Filter>rendering\view\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\controller\cloud_controller.hpp">
+      <Filter>rendering\controller\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\controller\caught_star_controller.hpp">
+      <Filter>rendering\controller\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\controller\sub_cloud_controller.hpp">
+      <Filter>rendering\controller\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\objImporter.hpp">
+      <Filter>util\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\lights.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\mesh.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\technique.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\technique_normal_as_colour.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\geometryBuffer.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\ShadowVolume.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\LightTechnique.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\texture.hpp">
+      <Filter>util\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\background_technique.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\bezier.hpp">
+      <Filter>util\Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="src\resources\meshes\lightingSphere.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="src\resources\meshes\star.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="src\resources\meshes\hand.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
   </ItemGroup>
 </Project>

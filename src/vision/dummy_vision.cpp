@@ -3,7 +3,8 @@
 
 using namespace cgvkp;
 
-vision::dummy_vision::dummy_vision(data::input_layer& input_layer) : input_layer(input_layer) {
+vision::dummy_vision::dummy_vision(data::input_layer& input_layer)
+    : abstract_vision(input_layer) {
     // nothing to do here
 }
 
@@ -11,7 +12,7 @@ vision::dummy_vision::~dummy_vision() {
     // nothing to do here
 }
 
-bool vision::dummy_vision::init() {
+bool vision::dummy_vision::init_impl() {
 
     // nothing to do here
 
@@ -39,6 +40,6 @@ void vision::dummy_vision::update() {
     input_layer.sync_buffer();
 }
 
-void vision::dummy_vision::deinit() {
+void vision::dummy_vision::deinit_impl() {
     // nothing to do here
 }
