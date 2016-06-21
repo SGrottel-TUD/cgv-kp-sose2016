@@ -2,8 +2,11 @@
 #include <iostream>
 #endif
 #include "font.hpp"
+#include <math.h>
 #include "util/bezier.hpp"
 #include <fstream>
+#include <ftoutln.h>
+#include "util/resource_file.hpp"
 #include "poly2tri/poly2tri/poly2tri.h"
 
 cgvkp::rendering::Font::Font()
@@ -29,7 +32,7 @@ bool cgvkp::rendering::Font::init(char const* filename, FT_ULong startCodePoint,
 	}
 
 	// Load face.
-	error = FT_New_Face(library, filename, 0, &face);
+	error = FT_New_Face(library, util::resource_file::find_resource_file(filename).c_str(), 0, &face);
 	if (error == FT_Err_Unknown_File_Format)
 	{
 #if defined(_DEBUG) || defined(DEBUG)
@@ -75,19 +78,19 @@ void cgvkp::rendering::Font::deinit()
 	}
 }
 
-float cgvkp::rendering::Font::getWidth(std::string const& str) const
+float cgvkp::rendering::Font::getWidth(char const* str, float fontSize) const
 {
 	float width = 0;
-	for(auto c : str)
+	for (; *str; ++str)
 	{
-		auto it = glyphs.find(c);
+		auto it = glyphs.find(*str);
 		if (it != glyphs.end())
 		{
 			width += it->second.width;
 		}
 	}
 
-	return width;
+	return width * fontSize;
 }
 
 float cgvkp::rendering::Font::render(FT_ULong codePoint) const
@@ -137,57 +140,54 @@ bool cgvkp::rendering::Font::loadGlyph(FT_ULong codePoint)
 	int iPoint = 0;
 	for (int iCountour = 0; iCountour < outline.n_contours; ++iCountour)
 	{
-		conic = false;
-		vertexRange vr;
-		vr.contour = iCountour;
-		vr.start = static_cast<int>(vertices.size());
-		vr.num = 0;
-		int firstPoint = iPoint;
+		Contour contour;
+		contour.start = static_cast<int>(vertices.size());
+		contour.num = 0;
+		contour.min.x = contour.min.y = 1;
+		contour.max.x = contour.max.y = 0;
 
+		std::vector<glm::vec2> onPoints;
 		std::vector<glm::vec2> curvePoints;
+		bool conic = false;
+
+		glm::vec2 firstPoint((outline.points[iPoint].x + deltaX) * scale, (outline.points[iPoint].y + deltaY) * scale);
+
+		curvePoints.push_back(firstPoint);
+		++iPoint;
+
 		for (; iPoint <= outline.contours[iCountour]; ++iPoint)
 		{
 			//calculate Points
-			FT_Vector& point = outline.points[iPoint];
-			float x = (point.x + deltaX) * scale;
-			float y = (point.y + deltaY) * scale;
+			FT_Vector& p = outline.points[iPoint];
+			glm::vec2 point((p.x + deltaX) * scale, (p.y + deltaY) * scale);
 
-			if (outline.tags[iPoint] & 0x01)
+			if (outline.tags[iPoint] & FT_CURVE_TAG_ON)
 			{
-				// Point on curve.
-				curvePoints.push_back(glm::vec2(x, y));
-				if(curvePoints.size() > 1)
-				{ 
-					addCurve(curvePoints, vr, conic);
-					glm::vec2 tmp = curvePoints.back();
-					curvePoints.clear();
-					conic = false;
-					curvePoints.push_back(tmp);
-				}
+				onPoints.push_back(point);
+				curvePoints.push_back(point);
+				addCurve(curvePoints, contour, conic);
+				curvePoints.clear();
+				conic = false;
+				curvePoints.push_back(point);
 			}
 			else
 			{
-				// Point off curve.
-				curvePoints.push_back(glm::vec2(x, y));
-				conic = !(outline.tags[iPoint] & 0x02);
+				curvePoints.push_back(point);
+				conic = !(outline.tags[iPoint] & FT_CURVE_TAG_CUBIC);
 			}
 		}
 
 		//add last curve vec
-		FT_Vector& point = outline.points[firstPoint];
-		float x = (point.x + deltaX) * scale;
-		float y = (point.y + deltaY) * scale;
-		curvePoints.push_back(glm::vec2(x, y));
-		addCurve(curvePoints, vr, conic);
+		curvePoints.push_back(firstPoint);
+		addCurve(curvePoints, contour, conic);
 
-		getClockwise(vr.clockwise, outline.points, vr);
-
-		contours.push_back(vr);
+		contour.clockwise = getClockwise(onPoints);
+		contours.push_back(contour);
 	}
 	
 	std::vector<glm::vec3> vertices;
 	std::vector<int> indices;
-	trinagulate(vertices, indices);
+	triangulate(vertices, indices);
 
 	Glyph glyph;
 	glyph.width = static_cast<float>(face->glyph->linearHoriAdvance * scale);
@@ -214,53 +214,72 @@ bool cgvkp::rendering::Font::loadGlyph(FT_ULong codePoint)
 	return true;
 }
 
-void cgvkp::rendering::Font::addCurve(std::vector<glm::vec2> const& contourVertices, vertexRange& vr, bool concic)
+void cgvkp::rendering::Font::addCurve(std::vector<glm::vec2> const& contourVertices, Contour& contour, bool conic)
 {
 	if (contourVertices.size() == 2)
 	{	
-		vertices.push_back(contourVertices[0]);
-		vr.num += 1;
+		vertices.push_back(contourVertices.front());
+		contour.num += 1;
 	}
 	else 
 	{
-		util::Bezier<glm::vec2> bezier(concic, contourVertices);
-		float samplingRate = bezier.getLength() * 40.0f; // length * density in one unit
+		util::Bezier<glm::vec2> bezier(conic ? 2 : 3, contourVertices);
+		int samplingRate = static_cast<int>(bezier.getLength() * 40); // length * density in one unit
 		
 		for (int i = 0; i < samplingRate; ++i)
 		{
-			vertices.push_back(bezier.sample(static_cast<float>(i) / samplingRate));
-			vr.num++;
+			glm::vec2 point = bezier.sample(static_cast<float>(i) / samplingRate);
+
+			vertices.push_back(point);
+
+			// Update aabb.
+			if (point.x < contour.min.x)
+			{
+				contour.min.x = point.x;
+			}
+			if (point.y < contour.min.y)
+			{
+				contour.min.y = point.y;
+			}
+			if (point.x > contour.max.x)
+			{
+				contour.max.x = point.x;
+			}
+			if (point.y > contour.max.y)
+			{
+				contour.max.y = point.y;
+			}
 		}
+		contour.num += samplingRate;
 	}
 }
 
-
-void cgvkp::rendering::Font::getClockwise(bool& clockwise, FT_Vector* points, vertexRange& vr)
+bool cgvkp::rendering::Font::getClockwise(std::vector<glm::vec2> const& onPoints) const
 {
-	int j, k, h;
 	int count = 0;
-	double z;
-
-	for (int i = 0; i < (vr.num / 1.5); i++) 
+	for (int i = 0; i < onPoints.size(); i++)
 	{
-		h = (i % vr.num) + vr.start;
-		j = ((i + 1) % vr.num) + vr.start;
-		k = ((i + 2) % vr.num) + vr.start;
+		int j = (i + 1) % onPoints.size();
+		int k = (i + 2) % onPoints.size();
 
-		z = (points[j].x - points[h].x) * (points[k].y - points[j].y);
-		z -= (points[j].y - points[h].y) * (points[k].x - points[j].x);
+		float z = static_cast<float>((onPoints[j].x - onPoints[i].x) * (onPoints[k].y - onPoints[i].y) - (onPoints[j].y - onPoints[i].y) * (onPoints[k].x - onPoints[i].x));
 		if (z < 0)
 			count--;
 		else if (z > 0)
 			count++;
 	}
-	if (count >= 0)
-		clockwise = false;
-	else if (count < 0)
-		clockwise = true;
+
+#if defined(_DEBUG) || defined(DEBUG)
+	if (count == 0)
+	{
+		std::cerr << "Could not determine whether a contour is clockwise or counter-clockwise." << std::endl;
+	}
+#endif
+	
+	return count < 0;
 }
 
-void cgvkp::rendering::Font::save(char * filename)
+void cgvkp::rendering::Font::save(char const* filename)
 {
 	std::ofstream output(filename);
 	for (int i = 0; i < vertices.size(); i++)
@@ -275,17 +294,30 @@ void cgvkp::rendering::Font::save(char * filename)
 	output.close();
 }
 
-void cgvkp::rendering::Font::trinagulate(std::vector<glm::vec3>& glyphVert, std::vector<int>& glyphInd)
+void cgvkp::rendering::Font::triangulate(std::vector<glm::vec3>& glyphVert, std::vector<int>& glyphInd)
 {
+	struct ContourNode
+	{
+		Contour* contour;
+		std::list<ContourNode> children;
+	};
+	ContourNode root;
+
+	for (auto& c : contours)
+	{
+
+	}
+
 	std::vector<p2t::Triangle*> triangles;
 	std::vector<p2t::Point*> polyline;
 	std::vector<std::vector<p2t::Point*>> polylines;
 	std::map<p2t::Point*, int> points;
-	p2t::CDT* cdt = new p2t::CDT(polyline);
+	p2t::CDT* cdt = nullptr;
 
 
 	for (int i = 0; i < contours.size(); i++)
 	{
+		//std::cout << ' ' << (contours[i].clockwise ? "c" : "cc");
 		//outlines ---------------------------------------
 		if (contours[i].clockwise)
 		{
@@ -300,7 +332,7 @@ void cgvkp::rendering::Font::trinagulate(std::vector<glm::vec3>& glyphVert, std:
 			polyline.clear();
 		}
 		//inlines -----------------------------------------
-		if (!contours[i].clockwise)
+		else
 		{
 			for (int j = contours[i].start; j < contours[i].start + contours[i].num; j++)
 			{
@@ -330,54 +362,54 @@ void cgvkp::rendering::Font::trinagulate(std::vector<glm::vec3>& glyphVert, std:
 					indices.push_back(points.find(point1)->second);
 				}
 			}
+
 			for (auto p : points)
 			{
 				delete p.first;
 			}
+
 			delete cdt;
 			polylines.clear();
 			polyline.clear();
 			points.clear();
 		}
 	}
-	save("output.obj");
+	//save("output.obj");
 	ConvertTo3D(glyphVert, glyphInd);
+
 }
 
 
 void cgvkp::rendering::Font::ConvertTo3D(std::vector<glm::vec3>& glyphVert, std::vector<int>& glyphInd)
 {
-	// add front vertices 
-
 	int vs = static_cast<int>(vertices.size());
 
-	for (int i = 0; i < vs; i++)
+	// add front vertices, indices
+	for (auto const& v : vertices)
 	{
-		glyphVert.emplace_back(vertices[i].x, vertices[i].y, 0);
+		glyphVert.emplace_back(v.x, v.y, 0);
 	}
-
-	// add front indices
 	glyphInd.insert(glyphInd.end(), indices.begin(), indices.end());
 	
 	// add back vertices
-	for (int i = 0; i < vs; i++)
+	for (auto const& v : vertices)
 	{
-		glyphVert.emplace_back(vertices[i].x, vertices[i].y, -0.2);
+		glyphVert.emplace_back(v.x, v.y, -0.2);
 	}
 
 	// add back indices
-	for (int i = 0; i < indices.size(); i = i++)
+	/*for (int i = 0; i < indices.size(); i = i++)
 	{
 		glyphInd.push_back(indices[i] + static_cast<int>(vs));
-	}
+	}*/
 
 	// bind side vertices
-	for (int j = 0; j < contours.size(); j++)
+	for (auto const& contour : contours)
 	{
-		for (int i = 0; i < contours[j].num ; ++i)
+		for (int i = 0; i < contour.num; ++i)
 		{
-			int k = i + contours[j].start;
-			int l = ((i + 1) % contours[j].num) + contours[j].start;
+			int k = i + contour.start;
+			int l = ((i + 1) % contour.num) + contour.start;
 
 			glyphInd.push_back(k);
 			glyphInd.push_back(l);

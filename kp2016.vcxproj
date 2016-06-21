@@ -41,6 +41,7 @@
     <ClCompile Include="src\rendering\abstract_user_input.cpp" />
     <ClCompile Include="src\rendering\debug_user_input.cpp" />
     <ClCompile Include="src\rendering\font.cpp" />
+    <ClCompile Include="src\rendering\Gui.cpp" />
     <ClCompile Include="src\rendering\mesh.cpp" />
     <ClCompile Include="src\rendering\model\graphic_model_base.cpp" />
     <ClCompile Include="src\rendering\technique\fontTechnique.cpp" />
@@ -61,7 +62,6 @@
     <ClCompile Include="src\rendering\view\view_base.cpp" />
     <ClCompile Include="src\rendering\window.cpp" />
     <ClCompile Include="src\rendering\technique\technique_normal_as_colour.cpp" />
-    <ClCompile Include="src\util\bezier.cpp" />
     <ClCompile Include="src\util\objImporter.cpp" />
     <ClCompile Include="src\util\resource_file.cpp" />
     <ClCompile Include="src\vision\abstract_vision.cpp" />
@@ -105,6 +105,8 @@
     <ClInclude Include="src\rendering\abstract_user_input.hpp" />
     <ClInclude Include="src\rendering\debug_user_input.hpp" />
     <ClInclude Include="src\rendering\font.hpp" />
+    <ClInclude Include="src\rendering\Gui.hpp" />
+    <ClInclude Include="src\rendering\GuiElements.hpp" />
     <ClInclude Include="src\rendering\model\cloud_model.hpp" />
     <ClInclude Include="src\rendering\mesh.hpp" />
     <ClInclude Include="src\rendering\model\graphic_model_base.hpp" />

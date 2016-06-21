@@ -13,6 +13,7 @@
 #include "model/model_base.hpp"
 #include "view/view_base.hpp"
 #include "controller/controller_base.hpp"
+#include "Gui.hpp"
 
 namespace cgvkp {
 namespace data {
@@ -35,6 +36,8 @@ namespace rendering {
 
 		virtual void lost_context();
 		virtual bool restore_context(window const& wnd);
+		void updateMousePosition(float x, float y) { gui.updateMousePosition(x, y); }
+		void leftMouseButtonClick() { gui.click(); }
 
         void add_model(model::model_base::ptr model);
         void remove_model(model::model_base::ptr model);
@@ -68,6 +71,8 @@ namespace rendering {
 		ShadowVolumeTechnique shadowVolumePass;
 		LightTechnique lightPass;
 		Mesh lightingSphere;
+
+		Gui gui;
 
         std::chrono::high_resolution_clock::time_point last_time;
         std::vector<model::model_base::ptr> models;

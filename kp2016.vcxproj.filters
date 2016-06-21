@@ -221,9 +221,6 @@
     <ClCompile Include="src\rendering\technique\LightTechnique.cpp">
       <Filter>rendering\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\util\bezier.cpp">
-      <Filter>util\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\rendering\font.cpp">
       <Filter>rendering\Source Files</Filter>
     </ClCompile>
@@ -244,6 +241,9 @@
     </ClCompile>
     <ClCompile Include="src\poly2tri\poly2tri\sweep\cdt.cc">
       <Filter>util\Poly2Tri\sweep</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\Gui.cpp">
+      <Filter>rendering\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -438,6 +438,12 @@
     </ClInclude>
     <ClInclude Include="src\poly2tri\poly2tri\sweep\cdt.h">
       <Filter>util\Poly2Tri\sweep</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\Gui.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\GuiElements.hpp">
+      <Filter>rendering\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

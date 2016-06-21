@@ -56,6 +56,10 @@ bool cgvkp::rendering::release_renderer::init_impl(const window& wnd) {
 	p2.calculateWorld();
 	pointLights.push_back(p2);
 
+	gui.setScoreCallback(std::bind(&data::world::get_score, &data));
+	gui.setHighscoresCallback([]() { return std::list<Score>(); });
+	gui.loadEntry();
+
 	return true;
 }
 void cgvkp::rendering::release_renderer::deinit_impl()
@@ -104,6 +108,7 @@ void cgvkp::rendering::release_renderer::render(const window& wnd)
 	{
 		gbuffer.resize(framebufferWidth, framebufferHeight);
 		calculateProjection();
+		gui.setSize(glm::quarter_pi<float>(), framebufferWidth, framebufferHeight, 90);
 	}
 	if (framebufferWidth == 0 || framebufferHeight == 0 || !has_context)
 	{
@@ -197,6 +202,8 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projecti
 	// Copy final image into default framebuffer
 	gbuffer.bindForFinalPass();
 	glBlitFramebuffer(0, 0, framebufferWidth, framebufferHeight, 0, 0, framebufferWidth, framebufferHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+
+	gui.render(projection * viewMatrix);
 }
 void cgvkp::rendering::release_renderer::renderLights(glm::mat4x4 const& projection) const {
 	// Render lights
@@ -305,12 +312,15 @@ void cgvkp::rendering::release_renderer::lost_context()
 	shadowVolumePass.deinit();
 	lightPass.deinit();
 	gbuffer.deinit();
+
+	gui.deinit();
 }
 
 bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 {
 	wnd.get_size(framebufferWidth, framebufferHeight);
 	wnd.make_current();
+	gui.setSize(glm::quarter_pi<float>(), framebufferWidth, framebufferHeight, 90);
 
 	if (!gbuffer.init(framebufferWidth, framebufferHeight))
 	{
@@ -331,6 +341,11 @@ bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 	}
 
 	if (!lightingSphere.init("meshes/lightingSphere.obj"))
+	{
+		return false;
+	}
+
+	if (!gui.init())
 	{
 		return false;
 	}

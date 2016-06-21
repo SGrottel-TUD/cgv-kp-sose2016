@@ -147,16 +147,6 @@ void rendering::window::key_callback(GLFWwindow* window, int key, int scancode, 
 	}
 }
 
-void rendering::window::mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-    rendering::window *that = static_cast<rendering::window*>(::glfwGetWindowUserPointer(window));
-    if (that->user_input) that->user_input->mouse_button(window, button, action, mods);
-}
-
-void rendering::window::mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    rendering::window *that = static_cast<rendering::window*>(::glfwGetWindowUserPointer(window));
-    if (that->user_input) that->user_input->mouse_wheel(window, xoffset, yoffset);
-}
-
 void rendering::window::ctor_impl(GLFWmonitor* fullscreen, unsigned int w, unsigned int h, const char* title) {
     ::glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // ogl 3.3 core
     ::glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -227,6 +217,7 @@ bool rendering::window::create_window(int width, int height, char const* title, 
 
 	::glfwSetWindowUserPointer(handle, this);
 
+	glfwSetCursorPosCallback(handle, mousePositionCallback);
 	::glfwSetMouseButtonCallback(handle, window::mouse_button_callback);
 	::glfwSetScrollCallback(handle, window::mouse_scroll_callback);
 	::glfwSetKeyCallback(handle, window::key_callback);
@@ -253,4 +244,30 @@ void rendering::window::toggle_fullscreen() {
 
 		create_window(-1, -1, title.c_str(), glfwGetPrimaryMonitor());
 	}
+}
+
+void rendering::window::mousePositionCallback(GLFWwindow* window, double x, double y)
+{
+	rendering::window* w = static_cast<rendering::window*>(glfwGetWindowUserPointer(window));
+	if (w->setMousePosition)
+	{
+		w->setMousePosition(x, y);
+	}
+}
+
+void rendering::window::mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+	rendering::window *that = static_cast<rendering::window*>(::glfwGetWindowUserPointer(window));
+	if (that->leftMouseButtonClick && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+	{
+		that->leftMouseButtonClick();
+	}
+	else if (that->user_input)
+	{
+		that->user_input->mouse_button(window, button, action, mods);
+	}
+}
+
+void rendering::window::mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+	rendering::window *that = static_cast<rendering::window*>(::glfwGetWindowUserPointer(window));
+	if (that->user_input) that->user_input->mouse_wheel(window, xoffset, yoffset);
 }
