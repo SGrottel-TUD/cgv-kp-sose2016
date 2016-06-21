@@ -4,6 +4,9 @@
 #include "data/tripple_buffer.hpp"
 #include <memory>
 #include <vector>
+#include "util/spline_curve.hpp"
+#include <glm/glm.hpp>
+#include <random>
 
 namespace cgvkp {
 namespace data {
@@ -98,11 +101,13 @@ namespace data {
             static const float retraction_accel;
             bool valid;
             float retract_speed;
-            // TODO: more to come
         };
         typedef std::shared_ptr<hand_state> hand_state_ptr;
+
         struct star_state {
-            // TODO: more to come
+            double t;
+            double speed;
+            util::spline_curve<glm::dvec3, double, 3> path;
         };
         typedef std::shared_ptr<star_state> star_state_ptr;
 
@@ -115,7 +120,12 @@ namespace data {
         unsigned int next_hand_id;
         unsigned int next_star_id;
         game_mode mode;
+        unsigned int star_spawn_timer;
 
+        std::mt19937 rnd_engine;
+        std::uniform_real_distribution<double> rnd_width;
+        std::uniform_real_distribution<double> rnd_height;
+        std::normal_distribution<double> rnd_elevation;
     };
 
 }

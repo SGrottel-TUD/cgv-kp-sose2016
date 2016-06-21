@@ -2,6 +2,7 @@
 #include <cassert>
 #include <iostream>
 #include <algorithm>
+#include <chrono>
 
 using namespace cgvkp;
 
@@ -12,7 +13,8 @@ data::world::world()
         in_hands(hands_input),
         input(cfg, tripple_buffer_facade<input_layer::hand_collection, 0>(hands_input)),
         hands(), hands_states(), stars(), score(0), next_hand_id(1), next_star_id(1),
-        mode(game_mode::stopped) {
+        mode(game_mode::stopped), star_spawn_timer(0),
+        rnd_engine(), rnd_width(), rnd_height(), rnd_elevation() {
 }
 
 data::world::~world() {
@@ -21,6 +23,7 @@ data::world::~world() {
 void data::world::init() {
     hands.clear();
     stars.clear();
+    rnd_engine.seed(static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count()));
     score = 0;
 }
 
@@ -161,30 +164,87 @@ void data::world::update_step(void) {
         ++hsi;
     }
 
+    // update data of stars
 
+    const size_t max_stars_count = 10;
+    const size_t make_stars_frame_count = 60; // make a star every 60 sim. frames
+    const double star_life_time = 30.0; // 30 seconds
+    const double star_min_z = 0.1;
+    const double star_max_z = 0.9;
+    const double star_mean_z = 0.3;
+    const double star_sigma_z = 0.1;
+    const double star_off_z = 1.5;
+    const unsigned int star_path_ctrl_pts = 15;
 
-    // TODO: update data of hands and stars
+    star_spawn_timer++;
+    if (star_spawn_timer > make_stars_frame_count) {
+        star_spawn_timer = 0;
 
-    // A dummy stars for debugging:
-    static int starmakecounter = 0;
-    starmakecounter++;
-    if (starmakecounter > 100) {
-        starmakecounter = 0;
+        if (stars.size() < max_stars_count) {
+            // add a new star
+            std::shared_ptr<star> new_star = std::make_shared<star>();
+            stars.push_back(new_star);
 
-        if (stars.size() < 10) {
-            stars.push_back(std::make_shared<star>());
-            stars_states.push_back(std::make_shared<star_state>());
+            new_star->id = next_star_id++;
 
-            std::shared_ptr<star> s = stars.back();
-            s->id = next_star_id++;
-            s->x = (static_cast<float>(::rand()) / static_cast<float>(RAND_MAX)) * get_config().width();
-            s->y = (static_cast<float>(::rand()) / static_cast<float>(RAND_MAX)) * get_config().height();
-            s->dx = 0.0f;
-            s->dy = -1.0f;
-            s->height = 0.7f;
-            s->in_hand = false;
+            std::shared_ptr<star_state> new_star_state = std::make_shared<star_state>();
+            stars_states.push_back(new_star_state);
+
+            rnd_width = std::uniform_real_distribution<double>(0.0, static_cast<double>(get_config().width()));
+            rnd_height = std::uniform_real_distribution<double>(0.0, static_cast<double>(get_config().height()));
+            rnd_elevation = std::normal_distribution<double>(star_mean_z, star_sigma_z);
+
+            std::vector<glm::dvec3> spline;
+            for (unsigned int j = 0; j < star_path_ctrl_pts; ++j) {
+                double x = rnd_width(rnd_engine);
+                double y = rnd_height(rnd_engine);
+                double z = 0.0;
+                while ((z < star_min_z) || (z > star_max_z)) z = rnd_elevation(rnd_engine);
+
+                spline.push_back(glm::dvec3(x, y, z));
+            }
+
+            spline.front().z = star_off_z;
+            spline.back().z = star_off_z;
+
+            new_star_state->t = 0.0;
+            new_star_state->speed = 1.0 / (get_config().simulation_fps() * star_life_time);
+            new_star_state->path.set_control_points(spline);
 
         }
+
+    }
+
+    size_t star_cnt = stars.size();
+    for (size_t star_i = 0; star_i < star_cnt; ) {
+        std::shared_ptr<star> obj = stars[star_i];
+        if (obj->in_hand) {
+            ++star_i;
+            continue; // captured stars do not move any more
+        }
+        std::shared_ptr<star_state> state = stars_states[star_i];
+
+        if (state->t >= 1.0) {
+            // remove star
+            stars.erase(stars.begin() + star_i);
+            stars_states.erase(stars_states.begin() + star_i);
+            star_cnt--;
+            continue;
+        }
+
+        glm::dvec2 dir(obj->x, obj->y);
+        glm::dvec3 pos = state->path.evaluate(state->t);
+        dir = glm::normalize(glm::dvec2(pos) - dir);
+
+        state->t += state->speed;
+
+        obj->x = static_cast<float>(pos.x);
+        obj->y = static_cast<float>(pos.y);
+        obj->height = static_cast<float>(pos.z);
+        obj->dx = static_cast<float>(dir.x);
+        obj->dy = static_cast<float>(dir.y);
+
+        ++star_i;
     }
 
 }
