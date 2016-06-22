@@ -1,6 +1,7 @@
 #include "rendering/controller/cloud_controller.hpp"
 #include "rendering/controller/sub_cloud_controller.hpp"
 #include "rendering/view/cloud_view.hpp"
+#include "util/bezier.hpp"
 
 
 namespace cgvkp {
@@ -13,10 +14,12 @@ namespace controller {
 		std::random_device r;
 		random_engine = std::default_random_engine(std::seed_seq{ r(), r(), r() });
 
+		int_uniform = std::uniform_int_distribution<int>(150, 300);
+
 		w = data.get_config().width();
 		h = data.get_config().height();
 
-		int max_clouds = static_cast<int>(h*w)*5;
+		int max_clouds = static_cast<int>(h*w)*2;
 
 		for (int i = 0; i < max_clouds; i++) {
 
@@ -57,7 +60,8 @@ namespace controller {
 			renderer->add_controller(subCloud2);
 			
 
-				
+			cloud->speed_curve = calculate_new_speed_curve();
+			cloud->curve_iterator = 0;
 				
 				
 						
@@ -80,6 +84,28 @@ namespace controller {
 		return -z*(wMax - w) / (4 * h);
 	}
 
+	std::vector<float> cloud_controller::calculate_new_speed_curve() {
+		int curve_points = 4;
+		std::vector<float> control_points;
+
+		uniform = std::uniform_real_distribution<float>(-1.f, 1.f);
+
+		for (int i = 0; i < curve_points; i++) {
+			control_points.push_back(uniform(random_engine));
+		}
+
+		util::Bezier<float> bezier(3, control_points);
+		int samples = int_uniform(random_engine);
+		std::vector<float> new_curve;
+
+		for (int i = 0; i < samples; i++) {
+			new_curve.push_back(bezier.sample(i*(1.f / samples)));
+		}
+
+		return new_curve;
+
+	}
+
 	void cloud_controller::update(double seconds, std::shared_ptr<abstract_user_input> input) {
 
 		for (int i = 0; i < clouds.size(); i++) {
@@ -90,9 +116,14 @@ namespace controller {
 			} else if (cloud->model_matrix[3].x < -calculate_max_cloud_space(cloud->model_matrix[3].z)) {
 				cloud->speed = 0.001f;
 			} else {
-				uniform = std::uniform_real_distribution<float>(-0.001f, 0.001f);
-				cloud->speed += uniform(random_engine);
+				if (cloud->curve_iterator >= cloud->speed_curve.size()) {
+					cloud->speed_curve = calculate_new_speed_curve();
+					cloud->curve_iterator = 0;
+				}
+				cloud->speed += (cloud->speed_curve[cloud->curve_iterator])*0.0005f;
 			}
+			cloud->curve_iterator++;
+
 				
 
 			cloud->speed = glm::clamp(cloud->speed, -0.005f, 0.005f);

@@ -47,7 +47,7 @@ namespace cgvkp
 			}
 			float tSeg = (t - segmentT[i]) / (segmentT[i + 1] - segmentT[i]);
 
-			T point;
+			T point(0);
 			for (int k = 0; k <= degree; ++k)
 			{
 				point += binomial(degree, k) * powf(tSeg, static_cast<float>(k)) * powf(1.0f - tSeg, static_cast<float>(degree - k)) * curvePoints[i * 2 + k];
@@ -84,22 +84,11 @@ namespace cgvkp
 			segmentT.push_back(0);
 			length = 0;
 
-			if (degree == 2)
+			for (int i = 1; i < curvePoints.size() - 1; i += 2)
 			{
-				for (int i = 1; i < curvePoints.size(); i += 2)
-				{
-					length += glm::length(curvePoints[i] - curvePoints[i - 1]);
-					length += glm::length(curvePoints[i + 1] - curvePoints[i]);
-					segmentT.push_back(length);
-				}
-			}
-			else
-			{
-				for (int i = 1; i < curvePoints.size(); i += 2)
-				{
-					length += glm::length(curvePoints[i] - curvePoints[i - 1]);
-					length += glm::length(curvePoints[i + 1] - curvePoints[i]);
-				}
+				length += glm::length(curvePoints[i] - curvePoints[i - 1]);
+				length += glm::length(curvePoints[i + 1] - curvePoints[i]);
+				segmentT.push_back(length);
 			}
 
 			length = segmentT.back();

@@ -29,6 +29,7 @@ namespace controller {
     private:
 
 		float calculate_max_cloud_space(float z);
+		std::vector<float> calculate_new_speed_curve();
 
 		float w, h;
 		const ::cgvkp::data::world& data;
@@ -36,6 +37,8 @@ namespace controller {
         release_renderer* renderer;
 		std::default_random_engine random_engine;
 		std::uniform_real_distribution<float> uniform;
+		std::uniform_int_distribution<int> int_uniform;
+
     };
 
 }
