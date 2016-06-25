@@ -19,7 +19,7 @@ namespace controller {
 		w = data.get_config().width();
 		h = data.get_config().height();
 
-		int max_clouds = static_cast<int>(h*w)*4;
+		int max_clouds = static_cast<int>(h*w)*6;
 
 		for (int i = 0; i < max_clouds; i++) {
 
@@ -128,7 +128,21 @@ namespace controller {
 
 			cloud->speed = glm::clamp(cloud->speed, -0.005f, 0.005f);
 
+
+			for (auto data_hand : data.get_hands()) {
+				glm::vec3 hand_position = glm::vec3(data_hand->x, trans_height(data_hand->height), -data_hand->y);
+				auto hand_to_cloud = glm::vec3(cloud->model_matrix[3]) - hand_position;
+				auto distance = glm::length(hand_to_cloud);
+				int distance_sgn = (hand_to_cloud.x > 0) - (hand_to_cloud.x < 0);
+				cloud->speed += 0.1f*distance_sgn*(1 / std::pow(distance,50));
+
+			}
+
+			cloud->speed = glm::clamp(cloud->speed, -0.01f, 0.01f);
+
+
 			cloud->model_matrix[3].x += cloud->speed;
+
 		}
 	}
 

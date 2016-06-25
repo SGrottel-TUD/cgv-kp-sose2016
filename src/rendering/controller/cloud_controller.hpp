@@ -39,6 +39,9 @@ namespace controller {
 		std::uniform_real_distribution<float> uniform;
 		std::uniform_int_distribution<int> int_uniform;
 
+		inline float trans_height(float h) { return ((h - 0.1f) / 0.6f) * 1.6f + 0.4f; }
+
+
     };
 
 }
