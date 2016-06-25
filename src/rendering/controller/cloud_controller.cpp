@@ -14,12 +14,12 @@ namespace controller {
 		std::random_device r;
 		random_engine = std::default_random_engine(std::seed_seq{ r(), r(), r() });
 
-		int_uniform = std::uniform_int_distribution<int>(150, 300);
+		int_uniform = std::uniform_int_distribution<int>(300, 450);
 
 		w = data.get_config().width();
 		h = data.get_config().height();
 
-		int max_clouds = static_cast<int>(h*w)*2;
+		int max_clouds = static_cast<int>(h*w)*4;
 
 		for (int i = 0; i < max_clouds; i++) {
 
