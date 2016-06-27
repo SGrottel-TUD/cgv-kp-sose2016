@@ -2,7 +2,7 @@
 
 namespace cgvkp {
 namespace rendering {
-    background_technique::background_technique() : Technique(), texture() {}
+    background_technique::background_technique() : Technique(), texture(), screenSizeLocation(invalidLocation) {}
     background_technique::~background_technique() { deinit(); }
 
     bool background_technique::init()
@@ -23,6 +23,8 @@ namespace rendering {
         {
             return false;
         }
+
+		screenSizeLocation = getUniformLocation("screenSize");
 
         texture = util::texture::from_png("starrynight.png");
         if (!texture->uploaded()) return false;
@@ -47,6 +49,11 @@ namespace rendering {
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
         glBindVertexArray(0);
+
+		use();
+		GLint texSizeLocation = getUniformLocation("textureSize");
+		glUniform2i(texSizeLocation, texture->width(), texture->height());
+
         return true;
     }
     void background_technique::deinit()
@@ -55,9 +62,15 @@ namespace rendering {
         texture.reset();
 		glDeleteBuffers(2, vertexBuffers);
     }
+
+	void background_technique::setScreenSize(GLsizei width, GLsizei height) const
+	{
+		glUniform2i(screenSizeLocation, width, height);
+	}
+
     void background_technique::render() const
     {
-        use();
+
         glDisable(GL_DEPTH_TEST);
         glDepthMask(GL_FALSE);
 		glBindVertexArray(vao);
