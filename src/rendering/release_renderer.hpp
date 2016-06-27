@@ -51,8 +51,6 @@ namespace rendering {
 
     private:
 
-        bool has_context = false;
-
 		void calculateViewProjection();
 		void renderScene(glm::mat4x4 const& projection) const;
         void renderLights(glm::mat4x4 const& projection) const;

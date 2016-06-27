@@ -24,12 +24,12 @@ cgvkp::rendering::GeometryBuffer::~GeometryBuffer()
 	deinit();
 }
 
-bool cgvkp::rendering::GeometryBuffer::init(GLsizei width, GLsizei height)
+bool cgvkp::rendering::GeometryBuffer::init()
 {
 	// Create the GBuffer textures.
 	glGenTextures(numTextures, textures);
 	glGenTextures(1, &depthStencilTexture);
-	resize(width, height);
+	resize(1, 1);	// The textures must contain at least 1 pixel.
 
 	// Create the framebuffer.
 	glGenFramebuffers(1, &framebuffer);
