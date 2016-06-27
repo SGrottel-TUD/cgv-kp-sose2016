@@ -41,7 +41,9 @@ void remote_renderer_server::render()
     std::memcpy(&buf[0], &header, sizeof(data::message_header));
     std::memcpy(&buf[sizeof(data::message_header)], stars.data(), stars_size);
 
+#if 0
     std::cout << "Sending: " << header << std::endl;
+#endif
 
     // Do send
     send(tunnel, buf, buf_size, 0);
@@ -72,13 +74,15 @@ void remote_renderer_server::update(data::input_layer &input_layer)
             if (read_bytes > 0)
                 total_read_bytes += read_bytes;
         }
+#if 0
         std::cout << "read: " << total_read_bytes << " hands: " << hands_count << std::endl;
+#endif
 
         if (hands_count > 0)
         {
             auto &hands = input_layer.buffer();
             hands.resize(hands_count);
-            total_read_bytes = 0; target_bytes = sizeof(cgvkp::data::input_layer::hand) * hands_count;
+            total_read_bytes = 0; target_bytes = static_cast<int>(sizeof(cgvkp::data::input_layer::hand) * hands_count);
             while (total_read_bytes < target_bytes)
             {
                 read_bytes = recv(tunnel, (char*)(hands.data()) + total_read_bytes, target_bytes - total_read_bytes, 0);

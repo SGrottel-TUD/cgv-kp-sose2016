@@ -117,30 +117,9 @@ int main(int argc, char **argv)
                 if (read_bytes > 0)
                     total_read_bytes += read_bytes;
             }
+#if 0
             std::cout << "read: " << total_read_bytes << " " << header << std::endl;
-
-            //std::vector<cgvkp::data::input_layer::hand> hands;
-            /*
-            auto &hands = data.get_input_layer().buffer();
-            hands.resize(header.hands_count);
-            total_read_bytes = 0; target_bytes = sizeof(cgvkp::data::input_layer::hand) * header.hands_count;
-            while (total_read_bytes < target_bytes)
-            {
-                read_bytes = recv(sock, (char*)(hands.data()) + total_read_bytes, target_bytes, 0);
-                if (read_bytes > 0)
-                    total_read_bytes += read_bytes;
-            }
-            data.get_input_layer().sync_buffer();
-            data.get_hands().clear();
-            data.get_stars().reserve(header.hands_count);
-            for (auto const &hand : hands)
-            {
-                auto h = std::make_shared<cgvkp::data::world::hand>();
-                h->height = hand.h;
-                h->x = hand.x;
-                h->y = hand.y;
-                data.get_hands().push_back(h);
-            }*/
+#endif
 
             std::vector<cgvkp::data::world::star> stars;
             stars.resize(header.stars_count);
@@ -180,7 +159,9 @@ int main(int argc, char **argv)
             memcpy(&buf[0], &hands_count, sizeof(size_t));
             memcpy(&buf[sizeof(size_t)], hands.data(), hands_size);
             send(sock, buf, buf_size, 0);
+#if 0
             std::cout << "\t sending " << buf_size << " h: " << hands.size() << std::endl;
+#endif
             int nError = WSAGetLastError();
             if (nError != WSAEWOULDBLOCK && nError != 0)
             {
