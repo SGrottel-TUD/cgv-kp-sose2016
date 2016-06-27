@@ -24,7 +24,7 @@ namespace rendering {
             return false;
         }
 
-        texture = util::texture::from_png("sky_night5.png");
+        texture = util::texture::from_png("starrynight.png");
         if (!texture->uploaded()) return false;
 
         glGenVertexArrays(1, &vao);
