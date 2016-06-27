@@ -137,6 +137,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </Object>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\resources\starrynight.png">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Image>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D212F91F-5F4A-4757-9EBA-CA3EA546B69A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>

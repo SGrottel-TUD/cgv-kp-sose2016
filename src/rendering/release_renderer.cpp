@@ -31,7 +31,7 @@ bool cgvkp::rendering::release_renderer::init_impl(const window& wnd) {
 	// light source
 	PointLight p1;
 	p1.position = glm::vec3(0, 1.5f, 0);
-	p1.color = glm::vec3(1, 1, 0.6f);
+	p1.color = glm::vec3(0.1f, 0.1, 0.5f);
 	p1.ambientIntensity = 0.25f;
 	p1.diffuseIntensity = 0.8f;
 	p1.constantAttenuation = 0;
