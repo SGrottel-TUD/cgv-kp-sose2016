@@ -24,7 +24,7 @@ namespace cgvkp
 
 			GeometryBuffer();
 			~GeometryBuffer();
-			bool init(GLsizei width, GLsizei height);
+			bool init();
 			void deinit();
 			void bindForGeometryPass() const;
 			void bindForLightPass() const;
