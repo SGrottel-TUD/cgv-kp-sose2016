@@ -1,5 +1,9 @@
 #include <iostream>
 
+#include "data/world.hpp"
+#include "rendering/debug_renderer.hpp"
+#include "rendering/window.hpp"
+
 // link with Ws2_32.lib
 #pragma comment(lib,"Ws2_32.lib")
 
@@ -32,6 +36,8 @@ struct star {
     bool in_hand;       // true if star is captured in a hand
 };
 
+
+cgvkp::data::world data;
 
 int main(int argc, char **argv)
 {
@@ -68,9 +74,67 @@ int main(int argc, char **argv)
         Sleep(1000);
     }
 
+    if (::glfwInit() != GL_TRUE) {
+        std::cerr << "glfwInit failed" << std::endl;
+        return false;
+    }
+    auto start_time = std::chrono::high_resolution_clock::now();
+    // create debug window
+    auto debug_window = std::make_shared<cgvkp::rendering::window>(1280, 720, "CGV KP SoSe2016 - Remote Debug");
+    std::shared_ptr<cgvkp::rendering::debug_renderer> debug_renderer;
+    if (!debug_window || !debug_window->is_alive()) {
+        debug_window.reset();
+    }
+    else {
+        debug_renderer = std::make_shared<cgvkp::rendering::debug_renderer>(data);
+        if (!debug_renderer || !debug_renderer->init(*debug_window)) {
+            std::cout << "Failed to create Debug renderer" << std::endl;
+            debug_renderer.reset();
+            debug_window.reset();
+        }
+    }
+
     message_header header;
-    while (true)
-    {
+    uint64_t last_sim_frame = 0;
+    while (debug_window) {
+
+        std::chrono::duration<double> game_time_seconds(std::chrono::high_resolution_clock::now() - start_time);
+        uint64_t game_time_sim_frames = static_cast<uint64_t>(game_time_seconds.count() * data.get_config().simulation_fps());
+
+        /*
+        // 1) vision in the main thread
+        if (vision) {
+            vision->update();
+        }*/
+
+        // 2) updating data model
+        data.merge_input(); // merge input from the input_layer (vision) into the data model
+        if ((last_sim_frame == 0) && (game_time_sim_frames > 0)) last_sim_frame = game_time_sim_frames - 1;
+        while (last_sim_frame < game_time_sim_frames) {
+            data.update_step(); // update the data (moving the star creatures)
+            last_sim_frame++;
+        }
+
+        // 3) and now for the rendering
+        if (debug_window)
+        {
+            if (debug_window->is_alive())
+            {
+                debug_window->do_events();
+                debug_renderer->render(*debug_window);
+                debug_window->swap_buffers();
+            }
+            else
+            {
+                if (debug_renderer)
+                {
+                    debug_window->make_current();
+                    debug_renderer->deinit();
+                    debug_renderer.reset();
+                }
+                debug_window.reset();
+            }
+        }
         // Display message from server
         //memset(&header, 0, sizeof(message_header));
         int inDataLength = recv(sock, (char*)(&header), sizeof(message_header), 0);
@@ -84,6 +148,7 @@ int main(int argc, char **argv)
         std::vector<star> stars;
         stars.reserve(header.stars_count);
         inDataLength = recv(sock, (char*)(stars.data()), sizeof(star) * header.stars_count, 0);
+
     }
 
     // Shutdown our socket
