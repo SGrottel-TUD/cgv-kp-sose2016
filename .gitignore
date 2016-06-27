@@ -6,5 +6,5 @@
 /Release
 /x64
 /packages
-/kp2016.vcxproj.user
+/*.vcxproj.user
 /config.ini
