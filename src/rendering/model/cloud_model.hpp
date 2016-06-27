@@ -2,6 +2,7 @@
 #include "rendering/model/graphic_model_base.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include <vector>
 
 namespace cgvkp {
 	namespace rendering {
@@ -16,6 +17,8 @@ namespace cgvkp {
 				virtual ~cloud_model() {}
 
 				float speed;
+				std::vector<float> speed_curve;
+				int curve_iterator;
 			};
 		}
 	}

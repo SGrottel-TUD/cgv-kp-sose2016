@@ -34,6 +34,9 @@ namespace rendering {
 		void set_camera_mode(camera_mode mode);
 		void set_stereo_parameters(float eye_separation, float zzero_parallax);
 
+		float getDistance();
+		float getAspect();
+
 		virtual void lost_context();
 		virtual bool restore_context(window const& wnd);
 
@@ -47,6 +50,7 @@ namespace rendering {
         virtual void deinit_impl();
 
     private:
+
         bool has_context = false;
 
 		void calculateViewProjection();
@@ -63,6 +67,9 @@ namespace rendering {
 		float eyeSeparation;
 		float zZeroParallax;
 
+		float distance;
+		float aspect;
+
 		std::list<PointLight> pointLights;
 		GeometryBuffer gbuffer;
 		GeometryTechnique geometryPass;
@@ -72,6 +79,9 @@ namespace rendering {
 		Mesh lightingSphere;
 
         std::chrono::high_resolution_clock::time_point last_time;
+		double fps_counter_elapsed;
+		unsigned int rendered_frames;
+
         std::vector<model::model_base::ptr> models;
         std::vector<view::view_base::ptr> views;
         std::vector<view::view_base::ptr> cached_views;

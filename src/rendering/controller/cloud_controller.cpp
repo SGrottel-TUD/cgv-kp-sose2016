@@ -1,6 +1,7 @@
 #include "rendering/controller/cloud_controller.hpp"
 #include "rendering/controller/sub_cloud_controller.hpp"
 #include "rendering/view/cloud_view.hpp"
+#include "util/bezier.hpp"
 
 
 namespace cgvkp {
@@ -13,16 +14,17 @@ namespace controller {
 		std::random_device r;
 		random_engine = std::default_random_engine(std::seed_seq{ r(), r(), r() });
 
+		int_uniform = std::uniform_int_distribution<int>(300, 450);
+
 		w = data.get_config().width();
 		h = data.get_config().height();
 
-		int max_clouds = static_cast<int>(h*w)*10;
-		int min_sub_clouds = 2;
+		int max_clouds = static_cast<int>(h*w)*6;
 
 		for (int i = 0; i < max_clouds; i++) {
 
 
-			uniform = std::uniform_real_distribution<float>(0.19f, 0.25f);
+			uniform = std::uniform_real_distribution<float>(0.19f, 0.22f);
 			float scale = uniform(random_engine);
 			auto cloud = std::make_shared<model::cloud_model>(scale);
 			cloud->model_matrix[3].y = scale;
@@ -36,38 +38,33 @@ namespace controller {
 			uniform = std::uniform_real_distribution<float>(-0.01f, 0.01f);
 			cloud->speed = 0;//uniform(random_engine);
 
-			uniform = std::uniform_real_distribution<float>(-w, w*2);
+			uniform = std::uniform_real_distribution<float>(0, w);
 			cloud->model_matrix[3].x = uniform(random_engine);
 
 			cloud->speed = uniform(random_engine)/800;
 
 			cloud->model_matrix[3].z = -i * h / max_clouds;
 
-			int add_sub_clouds = rand() % 3;
 
 
-			float parent_distance_pos = 0;
-			float parent_distance_neg = 0;
-			for (int j = 0; j < min_sub_clouds+add_sub_clouds; j++) {
 
-				uniform = std::uniform_real_distribution<float>(scale * 0.7f, scale * 0.85f);
-				scale = uniform(random_engine);
+			uniform = std::uniform_real_distribution<float>(scale * 0.7f, scale * 0.85f);
+			scale = uniform(random_engine);
 				
-				if ((rand() % 2) == 0) {
-					parent_distance_pos += scale * 1.3f;
-					auto subCloud = std::make_shared<controller::sub_cloud_controller>(renderer, data, cloud, scale, parent_distance_pos);
-					renderer->add_controller(subCloud);
-				}
-				else {
-					parent_distance_neg += -scale * 1.3f;
-					auto subCloud = std::make_shared<controller::sub_cloud_controller>(renderer, data, cloud, scale, parent_distance_neg);
-					renderer->add_controller(subCloud);
-				}
+			auto subCloud1 = std::make_shared<controller::sub_cloud_controller>(renderer, data, cloud, scale, scale*1.3f);
+			renderer->add_controller(subCloud1);
 
+			scale = uniform(random_engine);
+			
+			auto subCloud2 = std::make_shared<controller::sub_cloud_controller>(renderer, data, cloud, scale, -scale*1.3f);
+			renderer->add_controller(subCloud2);
+			
+
+			cloud->speed_curve = calculate_new_speed_curve();
+			cloud->curve_iterator = 0;
 				
 				
-				
-			}			
+						
 
 			clouds.insert(std::make_pair(i, cloud));
 
@@ -82,24 +79,70 @@ namespace controller {
 		return true;
 	}
 
+	float cloud_controller::calculate_max_cloud_space(float z) {
+		float wMax = static_cast<float>((h + renderer->getDistance())*((w+0.5)/(renderer->getAspect())));
+		return -z*(wMax - w) / (4 * h);
+	}
+
+	std::vector<float> cloud_controller::calculate_new_speed_curve() {
+		int curve_points = 4;
+		std::vector<float> control_points;
+
+		uniform = std::uniform_real_distribution<float>(-1.f, 1.f);
+
+		for (int i = 0; i < curve_points; i++) {
+			control_points.push_back(uniform(random_engine));
+		}
+
+		util::Bezier<float> bezier(3, control_points);
+		int samples = int_uniform(random_engine);
+		std::vector<float> new_curve;
+
+		for (int i = 0; i < samples; i++) {
+			new_curve.push_back(bezier.sample(i*(1.f / samples)));
+		}
+
+		return new_curve;
+
+	}
+
 	void cloud_controller::update(double seconds, std::shared_ptr<abstract_user_input> input) {
 
 		for (int i = 0; i < clouds.size(); i++) {
 			std::shared_ptr<model::cloud_model> cloud = clouds[i].lock();
-
-			if (cloud->model_matrix[3].x > w*2) {
-				uniform = std::uniform_real_distribution<float>(-0.0001f, 0.0f);
-			} else if (cloud->model_matrix[3].x < -w) {
-				uniform = std::uniform_real_distribution<float>(0.0f, 0.0001f);
-			} else {
-				uniform = std::uniform_real_distribution<float>(-0.0001f, 0.0001f);
-			}
 			
-			cloud->speed += uniform(random_engine);
+			if (cloud->model_matrix[3].x > w+calculate_max_cloud_space(cloud->model_matrix[3].z)) {
+				cloud->speed = -0.001f;
+			} else if (cloud->model_matrix[3].x < -calculate_max_cloud_space(cloud->model_matrix[3].z)) {
+				cloud->speed = 0.001f;
+			} else {
+				if (cloud->curve_iterator >= cloud->speed_curve.size()) {
+					cloud->speed_curve = calculate_new_speed_curve();
+					cloud->curve_iterator = 0;
+				}
+				cloud->speed += (cloud->speed_curve[cloud->curve_iterator])*0.0005f;
+			}
+			cloud->curve_iterator++;
 
-			cloud->speed = glm::clamp(cloud->speed, -0.001f, 0.001f);
+				
+
+			cloud->speed = glm::clamp(cloud->speed, -0.005f, 0.005f);
+
+
+			for (auto data_hand : data.get_hands()) {
+				glm::vec3 hand_position = glm::vec3(data_hand->x, trans_height(data_hand->height), -data_hand->y);
+				auto hand_to_cloud = glm::vec3(cloud->model_matrix[3]) - hand_position;
+				auto distance = glm::length(hand_to_cloud);
+				int distance_sgn = (hand_to_cloud.x > 0) - (hand_to_cloud.x < 0);
+				cloud->speed += 0.1f*distance_sgn*(1 / std::pow(distance,50));
+
+			}
+
+			cloud->speed = glm::clamp(cloud->speed, -0.01f, 0.01f);
+
 
 			cloud->model_matrix[3].x += cloud->speed;
+
 		}
 	}
 
