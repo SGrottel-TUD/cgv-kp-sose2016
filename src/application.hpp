@@ -4,6 +4,7 @@
 #include "rendering/abstract_renderer.hpp"
 #include <memory>
 #include <chrono>
+#include "rendering/remote_renderer_server.hpp"
 
 namespace cgvkp {
 namespace rendering {
@@ -32,6 +33,7 @@ namespace rendering {
 		std::shared_ptr<rendering::abstract_renderer> debug_renderer;
 		std::shared_ptr<rendering::window> release_window;
 		std::shared_ptr<rendering::release_renderer> release_renderer;
+		std::shared_ptr<rendering::remote_renderer_server> remote_renderer_server;
         std::chrono::high_resolution_clock::time_point start_time;
     };
 

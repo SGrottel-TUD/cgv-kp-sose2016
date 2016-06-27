@@ -37,6 +37,7 @@
     <ClCompile Include="src\rendering\debug_user_input.cpp" />
     <ClCompile Include="src\rendering\mesh.cpp" />
     <ClCompile Include="src\rendering\model\graphic_model_base.cpp" />
+    <ClCompile Include="src\rendering\remote_renderer_server.cpp" />
     <ClCompile Include="src\rendering\technique\background_technique.cpp" />
     <ClCompile Include="src\rendering\technique\geometryBuffer.cpp" />
     <ClCompile Include="src\rendering\lights.cpp" />
@@ -94,6 +95,7 @@
     <ClInclude Include="src\rendering\model\cloud_model.hpp" />
     <ClInclude Include="src\rendering\mesh.hpp" />
     <ClInclude Include="src\rendering\model\graphic_model_base.hpp" />
+    <ClInclude Include="src\rendering\remote_renderer_server.hpp" />
     <ClInclude Include="src\rendering\technique\background_technique.hpp" />
     <ClInclude Include="src\rendering\technique\geometryBuffer.hpp" />
     <ClInclude Include="src\rendering\lights.hpp" />

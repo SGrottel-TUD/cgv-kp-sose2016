@@ -126,6 +126,8 @@ void application::run()
 		}
 	}
 
+    remote_renderer_server = std::make_shared<rendering::remote_renderer_server>(data);
+    remote_renderer_server->init(*((release_window) ? release_window : debug_window));
     // main loop
     uint64_t last_sim_frame = 0;
     while (debug_window || release_window) {
@@ -147,6 +149,7 @@ void application::run()
         }
 
         // 3) and now for the rendering
+        remote_renderer_server->render();
 		if (debug_window)
 		{
 			if (debug_window->is_alive())
@@ -188,6 +191,8 @@ void application::run()
 		}
 
     }
+    remote_renderer_server->deinit();
+    remote_renderer_server.reset();
 
     // shutdown vision
     if (vision) {
@@ -195,6 +200,7 @@ void application::run()
         vision.reset();
     }
 
+    assert(!remote_renderer_server);
     assert(!debug_renderer);
     assert(!debug_window);
 	assert(!release_renderer);

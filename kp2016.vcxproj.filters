@@ -113,9 +113,6 @@
     <ClCompile Include="src\application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\vision\dummy_vision.cpp">
-      <Filter>vision\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\rendering\debug_renderer.cpp">
       <Filter>rendering\Source Files</Filter>
     </ClCompile>
@@ -218,6 +215,12 @@
     <ClCompile Include="src\rendering\technique\background_technique.cpp">
       <Filter>rendering\technique\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\vision\dummy_vision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\remote_renderer_server.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -270,9 +273,6 @@
     </ClInclude>
     <ClInclude Include="src\application.hpp">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\vision\dummy_vision.hpp">
-      <Filter>vision\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\debug_renderer.hpp">
       <Filter>rendering\Header Files</Filter>
@@ -390,6 +390,12 @@
     </ClInclude>
     <ClInclude Include="src\util\bezier.hpp">
       <Filter>util\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vision\dummy_vision.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\remote_renderer_server.hpp">
+      <Filter>rendering\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
