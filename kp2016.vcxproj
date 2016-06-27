@@ -120,6 +120,7 @@
     <ClInclude Include="src\util\bezier.hpp" />
     <ClInclude Include="src\util\objImporter.hpp" />
     <ClInclude Include="src\util\resource_file.hpp" />
+    <ClInclude Include="src\util\spline_curve.hpp" />
     <ClInclude Include="src\util\texture.hpp" />
     <ClInclude Include="src\vision\abstract_vision.hpp" />
     <ClInclude Include="src\vision\dummy_vision.hpp" />

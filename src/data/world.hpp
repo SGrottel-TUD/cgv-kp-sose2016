@@ -4,12 +4,15 @@
 #include "data/tripple_buffer.hpp"
 #include <memory>
 #include <vector>
+#include "util/spline_curve.hpp"
+#include <glm/glm.hpp>
+#include <random>
 
 namespace cgvkp {
 namespace data {
 
-	class world {
-	public:
+    class world {
+    public:
 
         struct hand;
         struct star;
@@ -29,6 +32,13 @@ namespace data {
             float height;       // height of star over ground (meter)
             float dx, dy;       // movement direction
             bool in_hand;       // true if star is captured in a hand
+        };
+
+        enum class game_mode {
+            running,    // game is currently running
+            paused,     // game is running but paused
+            completed,  // game completed (e.g. show game over / highscores)
+            stopped     // game is not running (e.g. show start screen / main menu)
         };
 
         world();
@@ -57,9 +67,24 @@ namespace data {
             return stars;
         }
         /** The current game score aka number of catched stars */
-        inline unsigned int get_score(void)const {
+        inline unsigned int get_score(void) const {
             return score;
         }
+        /**
+         * Answer the current game mode.
+         *
+         * The world logic will work accordingly.
+         */
+        inline game_mode get_game_mode(void) const {
+            return mode;
+        }
+        /**
+         * Request to change the game mode
+         *
+         * The game mode will be changed as soon as possible. However, it is
+         * not guaranteed to change instantly.
+         */
+        void set_game_mode(game_mode new_mode);
 
         /** merges data from the input layer */
         void merge_input(void);
@@ -76,11 +101,13 @@ namespace data {
             static const float retraction_accel;
             bool valid;
             float retract_speed;
-            // TODO: more to come
         };
         typedef std::shared_ptr<hand_state> hand_state_ptr;
+
         struct star_state {
-            // TODO: more to come
+            double t;
+            double speed;
+            util::spline_curve<glm::dvec3, double, 3> path;
         };
         typedef std::shared_ptr<star_state> star_state_ptr;
 
@@ -92,7 +119,14 @@ namespace data {
         unsigned int score;
         unsigned int next_hand_id;
         unsigned int next_star_id;
-	};
+        game_mode mode;
+        unsigned int star_spawn_timer;
+
+        std::mt19937 rnd_engine;
+        std::uniform_real_distribution<double> rnd_width;
+        std::uniform_real_distribution<double> rnd_height;
+        std::normal_distribution<double> rnd_elevation;
+    };
 
 }
 }
