@@ -40,17 +40,6 @@ bool cgvkp::rendering::release_renderer::init_impl(const window& wnd) {
 	p1.calculateWorld();
 	pointLights.push_back(p1);
 
-	PointLight p2;
-	p2.position = glm::vec3(0, 1.5f, -3);
-	p2.color = glm::vec3(1, 1, 0.6f);
-	p2.ambientIntensity = 0.25f;
-	p2.diffuseIntensity = 0.2f;
-	p2.constantAttenuation = 0;
-	p2.linearAttenuation = 0;
-	p2.exponentialAttenuation = 0.3f;
-	p2.calculateWorld();
-	pointLights.push_back(p2);
-
 	return true;
 }
 
@@ -233,7 +222,8 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projecti
 	glBlitFramebuffer(0, 0, framebufferWidth, framebufferHeight, 0, 0, framebufferWidth, framebufferHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 }
 
-void cgvkp::rendering::release_renderer::renderLights(glm::mat4x4 const& projection) const {
+void cgvkp::rendering::release_renderer::renderLights(glm::mat4x4 const& projection) const
+{
 	// Render lights
 	glEnable(GL_STENCIL_TEST);
 	glCullFace(GL_FRONT);
@@ -241,26 +231,23 @@ void cgvkp::rendering::release_renderer::renderLights(glm::mat4x4 const& project
 	glBlendEquation(GL_FUNC_ADD);
 	glBlendFunc(GL_ONE, GL_ONE);
 	glEnable(GL_DEPTH_CLAMP);
-	for (auto const& pointLight : pointLights)
+
+	PointLight pointLight;
+	pointLight.color = glm::vec3(1, 1, 0.6f);
+	pointLight.ambientIntensity = 0.25f;
+	pointLight.diffuseIntensity = 0.2f;
+	pointLight.constantAttenuation = 0;
+	pointLight.linearAttenuation = 0;
+	pointLight.exponentialAttenuation = 0.3f;
+	for (auto const& view : views)
 	{
-        renderPointLight(pointLight, projection);
+		if (!view->is_valid() || !view->has_model() || !view->light_source()) continue;
+		auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(view->get_model());
+		if (graphic_model == nullptr) continue;
+		pointLight.position = glm::vec3(graphic_model->model_matrix[3]);
+		pointLight.calculateWorld();
+		renderPointLight(pointLight, projection);
 	}
-    PointLight p2;
-    p2.color = glm::vec3(1, 1, 0.6f);
-    p2.ambientIntensity = 0.25f;
-    p2.diffuseIntensity = 0.2f;
-    p2.constantAttenuation = 0;
-    p2.linearAttenuation = 0;
-    p2.exponentialAttenuation = 0.3f;
-    for (auto const& view : views)
-    {
-        if (!view->is_valid() || !view->has_model() || !view->light_source()) continue;
-        auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(view->get_model());
-        if (graphic_model == nullptr) continue;
-        p2.position = glm::vec3(graphic_model->model_matrix[3]);
-        p2.calculateWorld();
-        renderPointLight(p2, projection);
-    }
 	glDisable(GL_DEPTH_CLAMP);
 	glDisable(GL_BLEND);
 	glCullFace(GL_BACK);
