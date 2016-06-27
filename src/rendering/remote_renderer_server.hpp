@@ -40,13 +40,11 @@ namespace rendering {
         virtual bool init_impl(const window& wnd);
         virtual void deinit_impl();
     private:
-        void send_multicast();
+        bool setup_tunnel();
+        void close_tunnel();
         message_header header;
-        std::chrono::high_resolution_clock::time_point last_multicast;
-        struct sockaddr_in sock_name, mc_addr;
-        SOCKET sock, client_sock, mc_sock;
-        int port;
-        int mc_port = 55500;
+        struct sockaddr_in tunnel_addr;
+        SOCKET tunnel;
     };
 }
 }
