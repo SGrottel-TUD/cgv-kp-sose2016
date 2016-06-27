@@ -126,27 +126,6 @@ bool rendering::window::get_size(int &out_width, int &out_height) const {
     return rv;
 }
 
-void rendering::window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-	rendering::window* w = static_cast<rendering::window*>(glfwGetWindowUserPointer(window));
-	if (key <= GLFW_KEY_LAST)
-	{
-		key_events const& k = w->keys[key];
-		if (action == GLFW_PRESS && k.onPress)
-		{
-			k.onPress();
-		}
-		else if (action == GLFW_REPEAT && k.onRepeat)
-		{
-			k.onRepeat();
-		}
-		else if (action == GLFW_RELEASE && k.onRelease)
-		{
-			k.onRelease();
-		}
-	}
-}
-
 void rendering::window::ctor_impl(GLFWmonitor* fullscreen, unsigned int w, unsigned int h, const char* title) {
     ::glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // ogl 3.3 core
     ::glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -218,11 +197,12 @@ bool rendering::window::create_window(int width, int height, char const* title, 
 	::glfwSetWindowUserPointer(handle, this);
 
 	glfwSetCursorPosCallback(handle, mousePositionCallback);
-	::glfwSetMouseButtonCallback(handle, window::mouse_button_callback);
-	::glfwSetScrollCallback(handle, window::mouse_scroll_callback);
-	::glfwSetKeyCallback(handle, window::key_callback);
+	glfwSetMouseButtonCallback(handle, mouse_button_callback);
+	glfwSetScrollCallback(handle, mouse_scroll_callback);
+	glfwSetKeyCallback(handle, key_callback);
+	glfwSetCharCallback(handle, character_callback);
 
-	::glfwMakeContextCurrent(handle);
+	glfwMakeContextCurrent(handle);
 	glfwSwapInterval(1);
 
 	return true;
@@ -255,19 +235,68 @@ void rendering::window::mousePositionCallback(GLFWwindow* window, double x, doub
 	}
 }
 
-void rendering::window::mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-	rendering::window *that = static_cast<rendering::window*>(::glfwGetWindowUserPointer(window));
-	if (that->leftMouseButtonClick && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+void rendering::window::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+	rendering::window *win = static_cast<rendering::window*>(::glfwGetWindowUserPointer(window));
+	if (win->leftMouseButtonClick && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{
-		that->leftMouseButtonClick();
+		win->leftMouseButtonClick();
 	}
-	else if (that->user_input)
+	else if (win->user_input)
 	{
-		that->user_input->mouse_button(window, button, action, mods);
+		win->user_input->mouse_button(window, button, action, mods);
 	}
 }
 
 void rendering::window::mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 	rendering::window *that = static_cast<rendering::window*>(::glfwGetWindowUserPointer(window));
 	if (that->user_input) that->user_input->mouse_wheel(window, xoffset, yoffset);
+}
+
+void rendering::window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	rendering::window* w = static_cast<rendering::window*>(glfwGetWindowUserPointer(window));
+
+	if (w->inputCodePoint && key)
+	{
+		if (w->inputCodePoint(0))
+		{
+			if (key > GLFW_KEY_ESCAPE && (action == GLFW_PRESS || action == GLFW_REPEAT))
+			{
+				switch (key)
+				{
+				case GLFW_KEY_BACKSPACE:
+					w->inputCodePoint(0x08);
+					break;
+				}
+			}
+			return;
+		}
+	}
+
+	if (key <= GLFW_KEY_LAST)
+	{
+		key_events const& k = w->keys[key];
+		if (action == GLFW_PRESS && k.onPress)
+		{
+			k.onPress();
+		}
+		else if (action == GLFW_REPEAT && k.onRepeat)
+		{
+			k.onRepeat();
+		}
+		else if (action == GLFW_RELEASE && k.onRelease)
+		{
+			k.onRelease();
+		}
+	}
+}
+
+void rendering::window::character_callback(GLFWwindow* window, unsigned int codepoint)
+{
+	rendering::window* w = static_cast<rendering::window*>(glfwGetWindowUserPointer(window));
+	if (w->inputCodePoint)
+	{
+		w->inputCodePoint(codepoint);
+	}
 }

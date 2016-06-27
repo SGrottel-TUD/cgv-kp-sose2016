@@ -65,8 +65,9 @@ void application::run()
 			release_window->register_key_callback(GLFW_KEY_RIGHT, std::bind(&application::increase_eye_separation, this, 0.001f), rendering::window::OnPress | rendering::window::OnRepeat);
 			release_window->register_key_callback(GLFW_KEY_M, std::bind(&application::set_camera_mode, this, rendering::mono));
 			release_window->register_key_callback(GLFW_KEY_S, std::bind(&application::set_camera_mode, this, rendering::stereo));
-			release_window->setMousePositionCallback([&](double x, double y) { release_renderer->updateMousePosition(static_cast<float>(x), static_cast<float>(y)); });
-			release_window->setLeftMouseButtonCallback(std::bind(&rendering::release_renderer::leftMouseButtonClick, release_renderer));
+			release_window->setMousePositionCallback([&](double x, double y) { release_renderer->gui.updateMousePosition(static_cast<float>(x), static_cast<float>(y)); });
+			release_window->setLeftMouseButtonCallback(std::bind(&rendering::Gui::click, &release_renderer->gui));
+			release_window->setInputCodePointCallback(std::bind(&rendering::Gui::inputCodePoint, &release_renderer->gui, std::placeholders::_1));
 		}
 	}
 

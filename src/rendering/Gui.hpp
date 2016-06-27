@@ -23,14 +23,19 @@ namespace cgvkp
 			bool init(/*float fontSize*/);
 			void deinit();
 			void setSize(float fovy, GLsizei framebufferWidth, GLsizei framebufferHeight, float zPlane);
+
 			void updateMousePosition(float x, float y);
-			inline void click() { if (hoveredButton && hoveredButton->onClick) { auto f = hoveredButton->onClick; f(); } }
+			void click();
+			bool inputCodePoint(unsigned int codePoint);
+
 			void render(glm::mat4 const& viewProjectionMatrix) const;
+
 			void clear();
 			void loadMenu();
 			void loadScore();
 			void loadHighscore();
 			void loadEntry();
+
 			inline void setScoreCallback(std::function<unsigned int()> callback) { getScore = callback; }
 			inline void setHighscoresCallback(std::function<std::list<Score>()> callback) { getHighscores = callback; }
 
@@ -57,6 +62,7 @@ namespace cgvkp
 			std::list<Button> buttons;
 			std::list<Input> inputs;
 			Button* hoveredButton;
+			Input* activeInput;
 
 			cgvkp::rendering::FontTechnique fontPass;
 

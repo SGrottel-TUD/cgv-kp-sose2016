@@ -6,7 +6,6 @@
 #include "glm/glm.hpp"
 #include <vector>
 #include FT_FREETYPE_H
-#include "poly2tri/poly2tri/poly2tri.h"
 #include "GL\glew.h"
 
 

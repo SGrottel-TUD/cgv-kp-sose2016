@@ -36,13 +36,16 @@ namespace rendering {
 
 		virtual void lost_context();
 		virtual bool restore_context(window const& wnd);
-		void updateMousePosition(float x, float y) { gui.updateMousePosition(x, y); }
-		void leftMouseButtonClick() { gui.click(); }
+		//inline void updateMousePosition(float x, float y) { gui.updateMousePosition(x, y); }
+		//inline void leftMouseButtonClick() { gui.click(); }
+		//inline bool inputCodePoint(unsigned int codePoint) { return gui.inputCodePoint(codePoint); }
 
         void add_model(model::model_base::ptr model);
         void remove_model(model::model_base::ptr model);
         void add_view(view::view_base::ptr view);
         void add_controller(controller::controller_base::ptr controller);
+
+		Gui gui;
 
     protected:
         virtual bool init_impl(const window& wnd);
@@ -71,8 +74,6 @@ namespace rendering {
 		ShadowVolumeTechnique shadowVolumePass;
 		LightTechnique lightPass;
 		Mesh lightingSphere;
-
-		Gui gui;
 
         std::chrono::high_resolution_clock::time_point last_time;
         std::vector<model::model_base::ptr> models;

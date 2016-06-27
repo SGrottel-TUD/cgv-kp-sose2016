@@ -28,16 +28,19 @@ namespace cgvkp
 			float fontSize;
 			Anchor anchor; // left middle right, top middle bottom
 			std::function<std::string()> getText;
+
+			inline bool within(float x, float y) { return x >= position.x && x <= position.x + size.x && y >= position.y && y <= position.y + size.y; }
 		};
 
-		struct Button : Label
+		struct Button : public Label
 		{
 		public:
 			std::function<void()> onClick;
 		};
 
-		struct Input : Label
+		struct Input : public Button
 		{
+
 		};
 
 	}

@@ -6,7 +6,7 @@
 #include <math.h>
 
 cgvkp::rendering::Gui::Gui()
-	: width(0), height(0), fontSize(0), hoveredButton(nullptr)
+	: width(0), height(0), fontSize(0), hoveredButton(nullptr), activeInput(nullptr)
 {
 }
 
@@ -38,6 +38,9 @@ void cgvkp::rendering::Gui::deinit()
 
 void cgvkp::rendering::Gui::clear()
 {
+	hoveredButton = nullptr;
+	activeInput = nullptr;
+	
 	labels.clear();
 	buttons.clear();
 	inputs.clear();
@@ -241,7 +244,7 @@ void cgvkp::rendering::Gui::render(Input const& input, glm::mat4 const& viewProj
 	label.size.x = font.getWidth(label.text, label.fontSize);
 
 	label.position = render(static_cast<Label>(input), viewProjectionMatrix);
-	if (static_cast<int>(2 * glfwGetTime()) % 2)
+	if (activeInput == &input && static_cast<int>(2 * glfwGetTime()) % 2)
 	{
 		render(label, viewProjectionMatrix);
 	}
@@ -281,7 +284,8 @@ void cgvkp::rendering::Gui::createInput(float fontSize, Anchor anchor /*= center
 	input.anchor = anchor;
 	input.offset = offset;
 	input.fontSize = fontSize;
-	input.text = "asafffffffffffffggggsdfgsdfgsdfgsfgsgggggggggggg";
+	input.text = "Alfred ist wieder da!";
+	input.onClick = [&]() { activeInput = &input; };
 }
 
 void cgvkp::rendering::Gui::createButton(std::string const& text, float fontSize, std::function<void()> onClick, Anchor anchor /*= center*/, glm::vec2 const& offset /*= glm::vec2(0, 0)*/, glm::vec3 const& color /*= glm::vec3(1, 1, 1)*/)
@@ -311,11 +315,55 @@ void cgvkp::rendering::Gui::updateMousePosition(float x, float y)
 	// Find the button the mouse hovers.
 	for (auto& button : buttons)
 	{
-		if (position.x >= button.position.x && position.x <= button.position.x + button.size.x && position.y >= button.position.y && position.y <= button.position.y + button.size.y)
+		if (button.within(position.x, position.y))
 		{
 			hoveredButton = &button;
 			button.color = glm::vec3(0, 1, 0);
 			return;
 		}
 	}
+
+	for (auto& input : inputs)
+	{
+		if (input.within(position.x, position.y))
+		{
+			hoveredButton = &input;
+			input.color = glm::vec3(0, 1, 0);
+			return;
+		}
+	}
+}
+
+void cgvkp::rendering::Gui::click()
+{
+	activeInput = nullptr;
+	if (hoveredButton && hoveredButton->onClick)
+	{
+		auto f = hoveredButton->onClick; 
+		f(); 
+	} 
+}
+
+bool cgvkp::rendering::Gui::inputCodePoint(unsigned int codePoint)
+{
+	if (codePoint == 0)
+	{
+		return activeInput != nullptr;
+	}
+
+	if (activeInput)
+	{
+		if (codePoint == 0x08)
+		{
+			if(!activeInput->text.empty()) activeInput->text.pop_back();
+		}
+		else
+		{
+			activeInput->text += static_cast<char>(codePoint);
+		} 
+
+		return true;
+	}
+
+	return false;
 }

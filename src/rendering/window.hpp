@@ -35,6 +35,7 @@ namespace rendering {
 		bool register_key_callback(int key, std::function<void()> callback, on_event ev = OnPress);
 		inline void setMousePositionCallback(std::function<void(double, double)> callback) { setMousePosition = callback; }
 		inline void setLeftMouseButtonCallback(std::function<void()> callback) { leftMouseButtonClick = callback; }
+		inline void setInputCodePointCallback(std::function<bool(unsigned int)> callback) { inputCodePoint = callback; }
 
         inline const std::shared_ptr<abstract_user_input> get_user_input_object(void) const {
             return user_input;
@@ -52,6 +53,7 @@ namespace rendering {
 		};
 
 		static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+		static void character_callback(GLFWwindow* window, unsigned int codepoint);
 		static void mousePositionCallback(GLFWwindow* window, double x, double y);
         static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
         static void mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -72,6 +74,7 @@ namespace rendering {
 
 		std::function<void(double, double)> setMousePosition;
 		std::function<void()> leftMouseButtonClick;
+		std::function<bool(unsigned int)> inputCodePoint;
     };
 
 
