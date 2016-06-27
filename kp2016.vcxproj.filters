@@ -412,4 +412,9 @@
       <Filter>Resource Files\meshes</Filter>
     </Object>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\resources\starrynight.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

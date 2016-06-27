@@ -477,7 +477,9 @@ bool cgvkp::util::ObjImporter::readTexturePathFromMtl(std::string const& filenam
             size_t sep = filename.find_last_of("\\/");
             if (sep != std::string::npos)
                 texturePath = filename.substr(0, sep) + filename[sep] + texturePath;
+#if defined(_DEBUG) || defined(DEBUG)
             std::cout << "Got texture path: " << texturePath << std::endl;
+#endif
             pathRead = true;
         }
     }
