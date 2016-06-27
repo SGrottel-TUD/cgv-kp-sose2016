@@ -2,6 +2,8 @@
 #include "abstract_renderer.hpp"
 #include "data/world.hpp"
 
+#include <chrono>
+
 // link with Ws2_32.lib
 #pragma comment(lib,"Ws2_32.lib")
 
@@ -38,8 +40,13 @@ namespace rendering {
         virtual bool init_impl(const window& wnd);
         virtual void deinit_impl();
     private:
+        void send_multicast();
         message_header header;
-        SOCKET sock, client_sock;
+        std::chrono::high_resolution_clock::time_point last_multicast;
+        struct sockaddr_in sock_name, mc_addr;
+        SOCKET sock, client_sock, mc_sock;
+        int port;
+        int mc_port = 55500;
     };
 }
 }
