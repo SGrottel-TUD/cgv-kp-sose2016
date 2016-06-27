@@ -5,9 +5,12 @@
 #include "rendering/model/graphic_model_base.hpp"
 
 cgvkp::rendering::LightTechnique::LightTechnique()
-    : mapLocation{ invalidLocation, invalidLocation, invalidLocation, invalidLocation }, lightLocation{ invalidLocation, invalidLocation, invalidLocation },
-    eyePositionLocation(invalidLocation), screenSizeLocation(invalidLocation)
+    : eyePositionLocation(invalidLocation), screenSizeLocation(invalidLocation)
 {
+    mapLocation.diffuseColor = invalidLocation; mapLocation.material = invalidLocation;
+    mapLocation.normal = invalidLocation; mapLocation.position = invalidLocation;
+    lightLocation.attenuation = invalidLocation; lightLocation.diffuseColor = invalidLocation;
+    lightLocation.position = invalidLocation;
 }
 
 bool cgvkp::rendering::LightTechnique::init()
