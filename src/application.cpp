@@ -27,6 +27,7 @@ bool application::init() {
     data.init();
     data.get_config().set_size(4.0f, 3.0f); // 4x3 meter game area
     data.get_config().set_positional_epsilon(0.1f); // 10cm positional precision (used for hand matching)
+    data.set_game_mode(data::world::game_mode::running);
 
     start_time = std::chrono::high_resolution_clock::now();
 

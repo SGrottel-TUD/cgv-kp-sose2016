@@ -145,6 +145,8 @@ void rendering::debug_renderer::render(const window& wnd) {
         draw_line(star->x - marker_size, star->y - marker_size, star->x + marker_size, star->y + marker_size);
         draw_line(star->x - marker_size, star->y + marker_size, star->x + marker_size, star->y - marker_size);
 
+        draw_line(star->x - 0.25f * marker_size, star->y + star->height * marker_extra_size, star->x + 0.25f * marker_size, star->y + star->height * marker_extra_size);
+
         draw_line(star->x, star->y, star->x + marker_extra_size * star->dx, star->y + marker_extra_size * star->dy);
     }
 

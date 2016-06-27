@@ -391,6 +391,9 @@
     <ClInclude Include="src\util\bezier.hpp">
       <Filter>util\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\util\spline_curve.hpp">
+      <Filter>util\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Object Include="src\resources\meshes\lightingSphere.obj">
