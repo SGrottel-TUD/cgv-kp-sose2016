@@ -140,6 +140,9 @@ void application::run()
         if (vision) {
             vision->update();
         }
+        // Remote vision
+        data.merge_input();
+        remote_renderer_server->update(data.get_input_layer());
 
         // 2) updating data model
         data.merge_input(); // merge input from the input_layer (vision) into the data model

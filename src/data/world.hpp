@@ -87,10 +87,21 @@ namespace data {
         void set_game_mode(game_mode new_mode);
 
         /** merges data from the input layer */
-        void merge_input(void);
+        virtual void merge_input(void);
         /** updates the data assuming 1/60s time step */
-        void update_step(void);
+        virtual void update_step(void);
+    protected:
+        std::vector<star_ptr> stars;
+        std::vector<hand_ptr> hands;
+        struct star_state {
+            double t;
+            double speed;
+            util::spline_curve<glm::dvec3, double, 3> path;
+        };
+        typedef std::shared_ptr<star_state> star_state_ptr;
+        std::vector<star_state_ptr> stars_states;
 
+        unsigned int score;
     private:
         world_config cfg;
         tripple_buffer<input_layer::hand_collection> hands_input;
@@ -103,20 +114,9 @@ namespace data {
             float retract_speed;
         };
         typedef std::shared_ptr<hand_state> hand_state_ptr;
-
-        struct star_state {
-            double t;
-            double speed;
-            util::spline_curve<glm::dvec3, double, 3> path;
-        };
-        typedef std::shared_ptr<star_state> star_state_ptr;
-
-        std::vector<hand_ptr> hands;
         std::vector<hand_state_ptr> hands_states;
-        std::vector<star_ptr> stars;
-        std::vector<star_state_ptr> stars_states;
 
-        unsigned int score;
+
         unsigned int next_hand_id;
         unsigned int next_star_id;
         game_mode mode;

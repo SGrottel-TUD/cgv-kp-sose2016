@@ -95,6 +95,9 @@
     <ClInclude Include="src\rendering\window.hpp">
       <Filter>rendering\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\data\world_remote.hpp">
+      <Filter>data\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

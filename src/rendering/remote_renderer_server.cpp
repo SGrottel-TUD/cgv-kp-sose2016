@@ -1,4 +1,5 @@
 #include "remote_renderer_server.hpp"
+#include "data/input_layer.hpp"
 
 #include <iostream>
 
@@ -20,31 +21,27 @@ void remote_renderer_server::render()
     // Prepare message
     header.w = data.get_config().width();
     header.h = data.get_config().height();
+    header.game_mode = data.get_game_mode();
     header.pos_eps = data.get_config().positional_epsilon();
     header.score = static_cast<uint32_t>(data.get_score());
-    auto data_hands = data.get_hands();
-    std::vector<message_hand> hands;
-    hands.reserve(data_hands.size());
-    for (data::world::hand_ptr const &hand : data_hands)
+    std::vector <data::world::star> stars;
+    auto data_stars = data.get_stars();
+    stars.reserve(data_stars.size());
+    for (data::world::star_ptr const &star : data_stars)
     {
-        message_hand h;
-        h.id = hand->id;
-        h.x = hand->x;
-        h.y = hand->y;
-        h.star_id = (hand->star) ? hand->star->id : -1;
-        hands.push_back(h);
+        data::world::star s;
+        memcpy(&s, star.get(), sizeof(data::world::star));
+        stars.push_back(s);
     }
-    auto stars = data.get_stars();
-    header.hands_count = static_cast<uint32_t>(hands.size());
     header.stars_count = static_cast<uint32_t>(stars.size());
-    // Body: hands + stars
-    size_t hands_size = sizeof(message_hand) * hands.size();
+    // Body: stars
     size_t stars_size = sizeof(data::world::star) * stars.size();
-    int buf_size = static_cast<int>(sizeof(message_header) + hands_size + stars_size);
+    int buf_size = static_cast<int>(sizeof(data::message_header) + stars_size);
     char *buf = static_cast<char*>(malloc(buf_size));
-    std::memcpy(&buf[0], &header, sizeof(message_header));
-    std::memcpy(&buf[sizeof(message_header)], hands.data(), hands_size);
-    std::memcpy(&buf[sizeof(message_header) + hands_size], stars.data(), stars_size);
+    std::memcpy(&buf[0], &header, sizeof(data::message_header));
+    std::memcpy(&buf[sizeof(data::message_header)], stars.data(), stars_size);
+
+    std::cout << "Sending: " << header << std::endl;
 
     // Do send
     send(tunnel, buf, buf_size, 0);
@@ -58,9 +55,45 @@ void remote_renderer_server::render()
         close_tunnel();
     }
 }
-void remote_renderer_server::render(window const & wnd)
+void remote_renderer_server::update(data::input_layer &input_layer)
 {
-    return render();
+    size_t hands_count;
+    int total_read_bytes = 0; int target_bytes = sizeof(size_t);
+    int read_bytes = recv(tunnel, (char*)(&hands_count), target_bytes, 0);
+    bool read_frame = false;
+    // We also use a while, to discard any in-between frames.
+    while (read_bytes > 0) // Got some data, ensure we read whole frame before continuing
+    {
+        read_frame = true;
+        total_read_bytes = read_bytes;
+        while (total_read_bytes < target_bytes)
+        {
+            read_bytes = recv(tunnel, (char*)(&hands_count) + total_read_bytes, target_bytes - total_read_bytes, 0);
+            if (read_bytes > 0)
+                total_read_bytes += read_bytes;
+        }
+        std::cout << "read: " << total_read_bytes << " hands: " << hands_count << std::endl;
+
+        if (hands_count > 0)
+        {
+            auto &hands = input_layer.buffer();
+            hands.resize(hands_count);
+            total_read_bytes = 0; target_bytes = sizeof(cgvkp::data::input_layer::hand) * hands_count;
+            while (total_read_bytes < target_bytes)
+            {
+                read_bytes = recv(tunnel, (char*)(hands.data()) + total_read_bytes, target_bytes - total_read_bytes, 0);
+                if (read_bytes > 0)
+                    total_read_bytes += read_bytes;
+            }
+        }
+        else
+            input_layer.buffer().clear();
+
+        total_read_bytes = 0; target_bytes = sizeof(size_t);
+        read_bytes = recv(tunnel, (char*)(&hands_count), target_bytes, 0);
+    }
+    if (read_frame)
+        input_layer.sync_buffer();
 }
 bool remote_renderer_server::init_impl(const window& wnd) {
     // Set up target address
@@ -93,7 +126,7 @@ bool remote_renderer_server::setup_tunnel()
     if (connect(tunnel, (sockaddr*)&tunnel_addr, sizeof(tunnel_addr)) == SOCKET_ERROR)
     {
         int eCode = WSAGetLastError();
-        if (eCode != 10035) // Would block, it's normal
+        if (eCode != WSAEWOULDBLOCK) // Would block, it's normal
         {
             std::cout << "Could not connect socket: " << eCode << std::endl;
             close_tunnel();
