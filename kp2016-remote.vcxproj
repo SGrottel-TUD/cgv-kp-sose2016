@@ -112,6 +112,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -119,12 +120,24 @@
     <ClCompile Include="src\data\world.cpp" />
     <ClCompile Include="src\data\world_config.cpp" />
     <ClCompile Include="src\main-remote.cpp" />
+    <ClCompile Include="src\rendering\abstract_renderer.cpp" />
+    <ClCompile Include="src\rendering\abstract_user_input.cpp" />
+    <ClCompile Include="src\rendering\debug_renderer.cpp" />
+    <ClCompile Include="src\rendering\debug_user_input.cpp" />
+    <ClCompile Include="src\rendering\window.cpp" />
+    <ClCompile Include="src\vision\abstract_vision.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\data\input_layer.hpp" />
     <ClInclude Include="src\data\tripple_buffer.hpp" />
     <ClInclude Include="src\data\world.hpp" />
     <ClInclude Include="src\data\world_config.hpp" />
+    <ClInclude Include="src\rendering\abstract_renderer.hpp" />
+    <ClInclude Include="src\rendering\abstract_user_input.hpp" />
+    <ClInclude Include="src\rendering\debug_renderer.hpp" />
+    <ClInclude Include="src\rendering\debug_user_input.hpp" />
+    <ClInclude Include="src\rendering\window.hpp" />
+    <ClInclude Include="src\vision\abstract_vision.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -132,11 +145,17 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\glm.0.9.7.1\build\native\glm.targets" Condition="Exists('packages\glm.0.9.7.1\build\native\glm.targets')" />
+    <Import Project="packages\glew.v140.1.12.0\build\native\glew.v140.targets" Condition="Exists('packages\glew.v140.1.12.0\build\native\glew.v140.targets')" />
+    <Import Project="packages\glfw.redist.3.1.2\build\native\glfw.redist.targets" Condition="Exists('packages\glfw.redist.3.1.2\build\native\glfw.redist.targets')" />
+    <Import Project="packages\glfw.3.1.2\build\native\glfw.targets" Condition="Exists('packages\glfw.3.1.2\build\native\glfw.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\glm.0.9.7.1\build\native\glm.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glm.0.9.7.1\build\native\glm.targets'))" />
+    <Error Condition="!Exists('packages\glew.v140.1.12.0\build\native\glew.v140.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glew.v140.1.12.0\build\native\glew.v140.targets'))" />
+    <Error Condition="!Exists('packages\glfw.redist.3.1.2\build\native\glfw.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glfw.redist.3.1.2\build\native\glfw.redist.targets'))" />
+    <Error Condition="!Exists('packages\glfw.3.1.2\build\native\glfw.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glfw.3.1.2\build\native\glfw.targets'))" />
   </Target>
 </Project>

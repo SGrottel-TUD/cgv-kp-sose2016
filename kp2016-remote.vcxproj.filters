@@ -22,6 +22,15 @@
     <Filter Include="data\Source Files">
       <UniqueIdentifier>{1a608daf-4aae-44b3-a781-e75636782f51}</UniqueIdentifier>
     </Filter>
+    <Filter Include="rendering">
+      <UniqueIdentifier>{57f0564e-de5b-4641-afd8-4bc728646deb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\Header Files">
+      <UniqueIdentifier>{27173a42-3689-4ee1-bf55-d3b789327a9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\Source Files">
+      <UniqueIdentifier>{b885a237-5104-432b-9756-e46a14d8a77a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main-remote.cpp">
@@ -36,6 +45,24 @@
     <ClCompile Include="src\data\world_config.cpp">
       <Filter>data\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\vision\abstract_vision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\abstract_user_input.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\abstract_renderer.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\debug_renderer.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\debug_user_input.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\window.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\data\world_config.hpp">
@@ -49,6 +76,24 @@
     </ClInclude>
     <ClInclude Include="src\data\input_layer.hpp">
       <Filter>data\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vision\abstract_vision.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\abstract_renderer.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\abstract_user_input.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\debug_renderer.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\debug_user_input.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\window.hpp">
+      <Filter>rendering\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

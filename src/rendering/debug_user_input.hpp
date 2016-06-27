@@ -2,7 +2,7 @@
 #include "rendering/abstract_user_input.hpp"
 #include "vision/abstract_vision.hpp"
 #include "data/input_layer.hpp"
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 #include <vector>
 #include <array>
 
