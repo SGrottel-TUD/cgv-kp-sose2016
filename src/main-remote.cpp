@@ -100,6 +100,7 @@ int main(int argc, char **argv)
 
     cgvkp::data::message_header header;
     uint64_t last_sim_frame = 0;
+    size_t last_hand_count = 0;
     while (debug_window) {
 
         std::chrono::duration<double> game_time_seconds(std::chrono::high_resolution_clock::now() - start_time);
@@ -151,7 +152,7 @@ int main(int argc, char **argv)
         // 2') send vision data to server
         auto &hands = data.get_input_layer().buffer();
         auto hands_count = hands.size();
-        if (hands_count > 0)
+        if (hands_count > 0 || last_hand_count > 0)
         {
             auto hands_size = hands_count * sizeof(cgvkp::data::input_layer::hand);
             int buf_size = static_cast<int>(sizeof(size_t) + hands_size);
@@ -169,6 +170,7 @@ int main(int argc, char **argv)
             }
             free(buf);
         }
+        last_hand_count = hands_count;
 
         // Release buffer
 
