@@ -8,3 +8,4 @@
 /packages
 /*.vcxproj.user
 /config.ini
+/bin
