@@ -51,8 +51,13 @@ void cgvkp::rendering::release_renderer::deinit_impl()
 void cgvkp::rendering::release_renderer::calculateViewProjection()
 {
 	float fovy = glm::quarter_pi<float>();
-
 	float tanHalfFovy = tan(fovy / 2);
+
+	if(framebufferWidth == 0 || framebufferHeight == 0)
+	{
+		return;
+	}
+
 	aspect = static_cast<float>(framebufferWidth / (cameraMode == stereo ? 2 : 1)) / framebufferHeight;
 
 	// View
@@ -117,7 +122,7 @@ void cgvkp::rendering::release_renderer::render(const window& wnd)
 		gbuffer.resize(framebufferWidth, framebufferHeight);
 		calculateViewProjection();
 	}
-	if (framebufferWidth == 0 || framebufferHeight == 0 || !has_context)
+	if (framebufferWidth == 0 || framebufferHeight == 0)
 	{
 		return;
 	}
@@ -198,6 +203,8 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projecti
 	glDepthMask(GL_TRUE);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	background.use();
+	background.setScreenSize(cameraMode == mono ? framebufferWidth : framebufferWidth / 2, framebufferHeight);
     background.render();
 
 	glm::vec3 ambientLight(0, 0, 0);
@@ -308,8 +315,6 @@ void cgvkp::rendering::release_renderer::set_stereo_parameters(float eye_separat
 
 void cgvkp::rendering::release_renderer::lost_context()
 {
-    has_context = false;
-
 	glBindVertexArray(0);
 	glUseProgram(0);
 
@@ -332,10 +337,9 @@ void cgvkp::rendering::release_renderer::lost_context()
 
 bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 {
-	wnd.get_size(framebufferWidth, framebufferHeight);
 	wnd.make_current();
 
-	if (!gbuffer.init(framebufferWidth, framebufferHeight))
+	if (!gbuffer.init())
 	{
 		return false;
 	}
@@ -371,8 +375,6 @@ bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 		view->init();
 	}
 
-	calculateViewProjection();
-	has_context = true;
 	return true;
 }
 

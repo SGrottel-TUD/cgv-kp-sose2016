@@ -15,8 +15,10 @@ namespace cgvkp
             virtual bool init();
             void deinit();
             void render() const;
-        private:
-            GLuint vao, vertexBuffers[2];
+			void setScreenSize(GLsizei width, GLsizei height) const;
+		private:
+			GLint screenSizeLocation;
+			GLuint vao, vertexBuffers[2];
             std::shared_ptr<util::texture> texture;
         };
     }
