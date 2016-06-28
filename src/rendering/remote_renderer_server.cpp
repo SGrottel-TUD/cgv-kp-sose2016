@@ -52,21 +52,27 @@ void remote_renderer_server::render()
     int nError = WSAGetLastError();
     if (nError != WSAEWOULDBLOCK && nError != 0)
     {
-        std::cout << "Winsock error code: " << nError << std::endl;
+        if (!is_disconnected)
+        {
+            std::cout << "Winsock error code: " << nError << std::endl;
+            is_disconnected = true;
+        }
 
         close_tunnel();
     }
+    else
+        is_disconnected = false;
 }
-void remote_renderer_server::update(data::input_layer &input_layer)
+bool remote_renderer_server::update(data::input_layer &input_layer)
 {
+    if (tunnel == INVALID_SOCKET)
+        return false;
     size_t hands_count;
     int total_read_bytes = 0; int target_bytes = sizeof(size_t);
     int read_bytes = recv(tunnel, (char*)(&hands_count), target_bytes, 0);
-    bool read_frame = false;
     // We also use a while, to discard any in-between frames.
     while (read_bytes > 0) // Got some data, ensure we read whole frame before continuing
     {
-        read_frame = true;
         total_read_bytes = read_bytes;
         while (total_read_bytes < target_bytes)
         {
@@ -80,7 +86,6 @@ void remote_renderer_server::update(data::input_layer &input_layer)
 
         if (hands_count > 0)
         {
-            auto &hands = input_layer.buffer();
             hands.resize(hands_count);
             total_read_bytes = 0; target_bytes = static_cast<int>(sizeof(cgvkp::data::input_layer::hand) * hands_count);
             while (total_read_bytes < target_bytes)
@@ -91,13 +96,26 @@ void remote_renderer_server::update(data::input_layer &input_layer)
             }
         }
         else
-            input_layer.buffer().clear();
+            hands.clear();
 
         total_read_bytes = 0; target_bytes = sizeof(size_t);
         read_bytes = recv(tunnel, (char*)(&hands_count), target_bytes, 0);
     }
-    if (read_frame)
-        input_layer.sync_buffer();
+    if (input_layer.buffer().size() > 0)
+    {
+        // TODO: Remove this check if debug_user_input gets removed from the main pipeline
+        if (!debug_warning && hands.size() > 0)
+        {
+            std::cout << "Warning: ignoring remote_vision since debug passed data" << std::endl;
+            debug_warning = true;
+        }
+        return false;
+    }
+    debug_warning = false;
+    input_layer.buffer().resize(hands.size());
+    memcpy(input_layer.buffer().data(), hands.data(), hands.size() * sizeof(data::input_layer::hand));
+    input_layer.sync_buffer();
+    return true;
 }
 bool remote_renderer_server::init_impl(const window& wnd) {
     // Set up target address

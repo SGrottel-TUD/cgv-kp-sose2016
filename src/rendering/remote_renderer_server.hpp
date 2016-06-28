@@ -23,7 +23,7 @@ namespace rendering {
         virtual void render();
         inline virtual void render(const window& wnd) { render(); }
 
-        void update(data::input_layer &input_layer);
+        bool update(data::input_layer &input_layer);
     protected:
         virtual bool init_impl(const window& wnd);
         virtual void deinit_impl();
@@ -33,6 +33,9 @@ namespace rendering {
         data::message_header header;
         struct sockaddr_in tunnel_addr;
         SOCKET tunnel;
+        bool is_disconnected = false;
+        bool debug_warning = false;
+        std::vector<data::input_layer::hand> hands;
     };
 }
 }
