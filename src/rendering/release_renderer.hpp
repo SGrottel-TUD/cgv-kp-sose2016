@@ -8,6 +8,7 @@
 #include "technique/geometryBuffer.hpp"
 #include "technique/ShadowVolume.hpp"
 #include "technique/LightTechnique.hpp"
+#include "technique/background_technique.hpp"
 #include "lights.hpp"
 #include "mesh.hpp"
 #include "model/model_base.hpp"
@@ -34,6 +35,9 @@ namespace rendering {
 		void set_camera_mode(camera_mode mode);
 		void set_stereo_parameters(float eye_separation, float zzero_parallax);
 
+		float getDistance();
+		float getAspect();
+
 		virtual void lost_context();
 		virtual bool restore_context(window const& wnd);
 		//inline void updateMousePosition(float x, float y) { gui.updateMousePosition(x, y); }
@@ -52,9 +56,10 @@ namespace rendering {
         virtual void deinit_impl();
 
     private:
+
         bool has_context = false;
 
-		void calculateProjection();
+		void calculateViewProjection();
 		void renderScene(glm::mat4x4 const& projection) const;
         void renderLights(glm::mat4x4 const& projection) const;
         void renderPointLight(PointLight const& pointLight, glm::mat4x4 const& projection) const;
@@ -68,14 +73,21 @@ namespace rendering {
 		float eyeSeparation;
 		float zZeroParallax;
 
+		float distance;
+		float aspect;
+
 		std::list<PointLight> pointLights;
 		GeometryBuffer gbuffer;
 		GeometryTechnique geometryPass;
 		ShadowVolumeTechnique shadowVolumePass;
 		LightTechnique lightPass;
+        background_technique background;
 		Mesh lightingSphere;
 
         std::chrono::high_resolution_clock::time_point last_time;
+		double fps_counter_elapsed;
+		unsigned int rendered_frames;
+
         std::vector<model::model_base::ptr> models;
         std::vector<view::view_base::ptr> views;
         std::vector<view::view_base::ptr> cached_views;

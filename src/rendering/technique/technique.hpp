@@ -14,7 +14,7 @@ namespace cgvkp
 		{
 		public:
 			virtual ~Technique();
-			void deinit();
+			virtual void deinit();
 			void setWorldViewProjection(glm::mat4x4 const& worldViewProjection) const;
 			inline void use() const { glUseProgram(program); }
 

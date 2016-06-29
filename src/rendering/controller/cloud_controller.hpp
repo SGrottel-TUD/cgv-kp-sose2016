@@ -27,12 +27,21 @@ namespace controller {
          */
         virtual void update(double seconds, std::shared_ptr<abstract_user_input> input);
     private:
+
+		float calculate_max_cloud_space(float z);
+		std::vector<float> calculate_new_speed_curve();
+
 		float w, h;
 		const ::cgvkp::data::world& data;
         std::map<unsigned int, std::weak_ptr<model::cloud_model> > clouds;
         release_renderer* renderer;
 		std::default_random_engine random_engine;
 		std::uniform_real_distribution<float> uniform;
+		std::uniform_int_distribution<int> int_uniform;
+
+		inline float trans_height(float h) { return ((h - 0.1f) / 0.6f) * 1.6f + 0.4f; }
+
+
     };
 
 }

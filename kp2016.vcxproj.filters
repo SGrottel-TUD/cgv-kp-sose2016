@@ -93,14 +93,8 @@
     <Filter Include="rendering\technique\Source Files">
       <UniqueIdentifier>{6f40e07e-2aba-48c1-af70-cb4ffeaf9a79}</UniqueIdentifier>
     </Filter>
-    <Filter Include="util\Poly2Tri">
-      <UniqueIdentifier>{29290a5f-4457-4854-a5cd-4fc26b7aae4c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="util\Poly2Tri\common">
-      <UniqueIdentifier>{9260d732-1752-4e26-8b1d-71894bcf0efb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="util\Poly2Tri\sweep">
-      <UniqueIdentifier>{344d38c2-251d-446e-bc37-4f75469a7176}</UniqueIdentifier>
+    <Filter Include="rendering\poly2tri">
+      <UniqueIdentifier>{4d93d0f3-e480-4b62-b6a4-e7b58d9ee78f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -221,29 +215,35 @@
     <ClCompile Include="src\rendering\technique\LightTechnique.cpp">
       <Filter>rendering\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\font.cpp">
-      <Filter>rendering\Source Files</Filter>
+    <ClCompile Include="src\util\texture.cpp">
+      <Filter>util\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\technique\fontTechnique.cpp">
+    <ClCompile Include="src\rendering\technique\background_technique.cpp">
       <Filter>rendering\technique\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\poly2tri\poly2tri\common\shapes.cc">
-      <Filter>util\Poly2Tri\common</Filter>
-    </ClCompile>
-    <ClCompile Include="src\poly2tri\poly2tri\sweep\sweep.cc">
-      <Filter>util\Poly2Tri\sweep</Filter>
-    </ClCompile>
-    <ClCompile Include="src\poly2tri\poly2tri\sweep\sweep_context.cc">
-      <Filter>util\Poly2Tri\sweep</Filter>
-    </ClCompile>
-    <ClCompile Include="src\poly2tri\poly2tri\sweep\advancing_front.cc">
-      <Filter>util\Poly2Tri\sweep</Filter>
-    </ClCompile>
-    <ClCompile Include="src\poly2tri\poly2tri\sweep\cdt.cc">
-      <Filter>util\Poly2Tri\sweep</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\Gui.cpp">
       <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\font.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\sweep_context.cc">
+      <Filter>rendering\poly2tri</Filter>
+    </ClCompile>
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\sweep.cc">
+      <Filter>rendering\poly2tri</Filter>
+    </ClCompile>
+    <ClCompile Include="src\poly2tri\poly2tri\common\shapes.cc">
+      <Filter>rendering\poly2tri</Filter>
+    </ClCompile>
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\cdt.cc">
+      <Filter>rendering\poly2tri</Filter>
+    </ClCompile>
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\advancing_front.cc">
+      <Filter>rendering\poly2tri</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\fontTechnique.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -409,41 +409,29 @@
     <ClInclude Include="src\rendering\technique\LightTechnique.hpp">
       <Filter>rendering\technique\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\util\texture.hpp">
+      <Filter>util\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\background_technique.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\util\bezier.hpp">
       <Filter>util\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\rendering\font.hpp">
-      <Filter>rendering\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\technique\fontTechnique.hpp">
-      <Filter>rendering\technique\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\poly2tri\poly2tri\common\shapes.h">
-      <Filter>util\Poly2Tri\common</Filter>
-    </ClInclude>
-    <ClInclude Include="src\poly2tri\poly2tri\common\utils.h">
-      <Filter>util\Poly2Tri\common</Filter>
-    </ClInclude>
-    <ClInclude Include="src\poly2tri\poly2tri\poly2tri.h">
-      <Filter>util\Poly2Tri</Filter>
-    </ClInclude>
-    <ClInclude Include="src\poly2tri\poly2tri\sweep\sweep.h">
-      <Filter>util\Poly2Tri\sweep</Filter>
-    </ClInclude>
-    <ClInclude Include="src\poly2tri\poly2tri\sweep\sweep_context.h">
-      <Filter>util\Poly2Tri\sweep</Filter>
-    </ClInclude>
-    <ClInclude Include="src\poly2tri\poly2tri\sweep\advancing_front.h">
-      <Filter>util\Poly2Tri\sweep</Filter>
-    </ClInclude>
-    <ClInclude Include="src\poly2tri\poly2tri\sweep\cdt.h">
-      <Filter>util\Poly2Tri\sweep</Filter>
+    <ClInclude Include="src\util\spline_curve.hpp">
+      <Filter>util\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\Gui.hpp">
       <Filter>rendering\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\GuiElements.hpp">
       <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\font.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\fontTechnique.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

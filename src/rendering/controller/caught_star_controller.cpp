@@ -60,14 +60,14 @@ namespace controller {
             glm::rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
             glm::rotate(glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f)) *
             glm::rotate(glm::radians(40.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
-            glm::rotate(glm::radians(-40.0f), glm::vec3(0.0f, 0.0f, 1.0f)) *
-            glm::scale(glm::vec3(0.25f));
+            glm::rotate(glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f)) *
+            glm::scale(glm::vec3(0.50f));
         star_target =
             glm::scale(
                 glm::rotate(glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
-                glm::vec3(0.2f)) *
+                glm::vec3(0.18f)) *
             glm::rotate(glm::radians(-40.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
-            glm::rotate(glm::radians(40.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+            glm::rotate(glm::radians(50.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     }
 }
 }

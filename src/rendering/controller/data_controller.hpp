@@ -32,6 +32,9 @@ namespace controller {
         std::map<unsigned int, std::weak_ptr<model::hand_model> > hands;
         std::shared_ptr<caught_star_controller> caught_star_controller;
         release_renderer* renderer;
+        // In debug hands have height: 0.1 and stars: 0.7 (see debug_user_input)
+        // Transform that to a height from 0.4 to 2, which seems to an OK representation
+        inline float trans_height(float h) { return ((h - 0.1f)/ 0.6f) * 1.6f + 0.4f; }
     };
 
 }

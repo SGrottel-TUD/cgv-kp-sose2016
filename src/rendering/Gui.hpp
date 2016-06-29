@@ -28,7 +28,7 @@ namespace cgvkp
 			void click();
 			bool inputCodePoint(unsigned int codePoint);
 
-			void render(glm::mat4 const& viewProjectionMatrix) const;
+			void render(glm::mat4 projectionMatrix) const;
 
 			void clear();
 			void loadMenu();
@@ -47,17 +47,15 @@ namespace cgvkp
 			void createButton(std::string const& text, float fontSize, std::function<void()> onClick, Anchor anchor = center, glm::vec2 const& offset = glm::vec2(0, 0), glm::vec3 const& color = glm::vec3(1, 1, 1));
 			void setPosition(Label& label);
 			void setPositions();
-			glm::vec2 render(Label const& label, glm::mat4 const& viewProjectionMatrix) const;
-			void render(Button const& button, glm::mat4 const& viewProjectionMatrix) const;
-			void render(Input const& input, glm::mat4 const& viewProjectionMatrix) const;
+			glm::vec2 render(Label const& label, glm::mat4 const& projectionMatrix) const;
+			void render(Button const& button, glm::mat4 const& projectionMatrix) const;
+			void render(Input const& input, glm::mat4 const& projectionMatrix) const;
 
 			Font font;
-			float width;
-			float height;
 			GLsizei framebufferWidth;
 			GLsizei framebufferHeight;
-			float internExternRatio;
 			float fontSize;
+			glm::mat4 guiProjection;
 			std::list<Label> labels;
 			std::list<Button> buttons;
 			std::list<Input> inputs;

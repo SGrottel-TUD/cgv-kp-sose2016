@@ -62,9 +62,9 @@ namespace controller {
             // Now we are sure we know about the star
             // Update its data
             std::shared_ptr<model::star_model> star = stars[data_star->id].lock();
-            star->model_matrix[3][0] = data_star->x;
-            star->model_matrix[3][1] = data_star->height * 10.0f - 3.0f;
-            star->model_matrix[3][2] = -data_star->y * 2.0f + 1.0f;
+            star->model_matrix[3].x = data_star->x;
+            star->model_matrix[3].y = trans_height(data_star->height);
+            star->model_matrix[3].z = -data_star->y;
 
             // Check if it was caught
             if (data_star->in_hand) {
@@ -118,9 +118,9 @@ namespace controller {
             // Now we are sure we know about the hand
             // Update its data
             std::shared_ptr<model::hand_model> hand = hands[data_hand->id].lock();
-            hand->model_matrix[3][0] = data_hand->x;
-            hand->model_matrix[3][1] = (data_hand->height) * 10.0f - 3.0f;
-            hand->model_matrix[3][2] = -data_hand->y * 2.0f + 1.0f;
+            hand->model_matrix[3].x = data_hand->x;
+            hand->model_matrix[3].y = trans_height(data_hand->height);
+            hand->model_matrix[3].z = -data_hand->y;
 
             // Check if it was caught
             if (data_hand->star != nullptr)

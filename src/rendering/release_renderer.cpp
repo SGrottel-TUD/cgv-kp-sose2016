@@ -9,7 +9,7 @@
 
 cgvkp::rendering::release_renderer::release_renderer(const ::cgvkp::data::world& data)
     : cgvkp::rendering::abstract_renderer(data),
-	framebufferWidth(0), framebufferHeight(0), cameraMode(mono) {
+	framebufferWidth(0), framebufferHeight(0), cameraMode(mono), fps_counter_elapsed(0.0), rendered_frames(0u) {
 }
 cgvkp::rendering::release_renderer::~release_renderer(){}
 
@@ -18,11 +18,6 @@ bool cgvkp::rendering::release_renderer::init_impl(const window& wnd) {
 	{
 		return false;
 	}
-
-	float w = data.get_config().width();
-	float h = data.get_config().height();
-	viewMatrix = glm::lookAt(glm::vec3(w / 2, 1.8f, 5.5f), glm::vec3(w / 2, 1.8f, - h / 2), glm::vec3(0, 1, 0));
-	calculateProjection();
 
     // Create and add data, cloud controller
     controllers.push_back(std::make_shared<controller::data_controller>(this, data));
@@ -62,22 +57,58 @@ bool cgvkp::rendering::release_renderer::init_impl(const window& wnd) {
 
 	return true;
 }
+
 void cgvkp::rendering::release_renderer::deinit_impl()
 {
 	lost_context();
 }
 
-void cgvkp::rendering::release_renderer::calculateProjection()
+void cgvkp::rendering::release_renderer::calculateViewProjection()
 {
-	float fovy = glm::quarter_pi<float>();
-	float zNear = 0.01f;
-	float zFar = 100;
+	if (framebufferWidth == 0 || framebufferHeight == 0)
+	{
+		return;
+	}
 
+	float fovy = glm::quarter_pi<float>();
+
+	float tanHalfFovy = tan(fovy / 2);
+	aspect = static_cast<float>(framebufferWidth / (cameraMode == stereo ? 2 : 1)) / framebufferHeight;
+
+	// View
+	float w = data.get_config().width();
+	float h = data.get_config().height();
+	float k = 1.0f / 3;
+
+	distance = (w + 0.5f) / (2 * aspect * tanHalfFovy);	// Distance to the front of the game area. 0.5f is a bias.
+
+	float a = 2 * k * distance * sin(fovy / 2);	// projected h
+	float cotTau = (1 - 2 * k) * tanHalfFovy;
+	float tau = atan(1 / cotTau);	// tau: angle at a in direction of h
+	float epsilon = a < h ? asin(a / h * sin(tau)) : tau;	// epsilon: angle at h in direction of a
+	float beta = fovy / 2 + tau + epsilon - glm::half_pi<float>();	// beta: angle used for projection
+
+	glm::vec3 position(0, sin(beta) * distance, cos(beta) * distance);
+
+	glm::vec4 temp = glm::rotate(fovy / 2, glm::vec3(1, 0, 0)) * glm::vec4(-position, 1);
+	glm::vec3 lookAt(temp.x, temp.y, temp.z);
+	lookAt += position;
+
+	position.x = w / 2;
+	lookAt.x = w / 2;
+
+	viewMatrix = glm::lookAt(position, lookAt, glm::vec3(0, 1, 0));
+
+	// Projection
+	float zNear = distance * cos(fovy / 2) - 1;	// Estimated minimum depth.
+	if (zNear < 0.01f)
+	{
+		zNear = 0.01f;
+	}
+	float zFar = distance + h + 2;	// Estimated maximum depth.
+	zFar = 100;
 	if (cameraMode == stereo)
 	{
-		float aspect = static_cast<float>(framebufferWidth / 2) / framebufferHeight;
-
-		float tanHalfFovy = tan(fovy / 2);
 		glm::vec3 translation = glm::vec3(eyeSeparation * tanHalfFovy * zZeroParallax * aspect, 0.0f, 0.0f);
 
 		float top = zNear * tanHalfFovy;
@@ -95,9 +126,7 @@ void cgvkp::rendering::release_renderer::calculateProjection()
 	}
 	else	// mono
 	{
-		float aspect = static_cast<float>(framebufferWidth) / framebufferHeight;
-        if (aspect > glm::epsilon<float>())
-		    leftProjection = glm::perspective(fovy, aspect, zNear, zFar);
+		leftProjection = glm::perspective(fovy, aspect, zNear, zFar);
 	}
 }
 
@@ -107,8 +136,8 @@ void cgvkp::rendering::release_renderer::render(const window& wnd)
 	if (wnd.get_size(framebufferWidth, framebufferHeight))
 	{
 		gbuffer.resize(framebufferWidth, framebufferHeight);
-		calculateProjection();
-		gui.setSize(glm::quarter_pi<float>(), framebufferWidth, framebufferHeight, 90);
+		calculateViewProjection();
+		gui.setSize(glm::quarter_pi<float>(), cameraMode == mono ? framebufferWidth : framebufferWidth / 2, framebufferHeight, 10);
 	}
 	if (framebufferWidth == 0 || framebufferHeight == 0 || !has_context)
 	{
@@ -118,6 +147,16 @@ void cgvkp::rendering::release_renderer::render(const window& wnd)
 	std::chrono::high_resolution_clock::time_point now_time = std::chrono::high_resolution_clock::now();
 	double elapsed = std::chrono::duration<double>(now_time - last_time).count();
 	last_time = now_time;
+	fps_counter_elapsed += elapsed;
+	++rendered_frames;
+	if (fps_counter_elapsed >= 2.0)
+	{
+#if (DEBUG || _DEBUG)
+		std::cout << "FPS: " << rendered_frames / fps_counter_elapsed << std::endl;
+#endif
+		fps_counter_elapsed = 0.0;
+		rendered_frames = 0u;
+	}
 
 	for (controller::controller_base::ptr controller : controllers) {
 		if (!controller->has_model()) continue;
@@ -164,7 +203,6 @@ void cgvkp::rendering::release_renderer::render(const window& wnd)
 		renderScene(rightProjection);
 
 		// reset
-		glViewport(0, 0, framebufferWidth, framebufferHeight);
 		glDisable(GL_SCISSOR_TEST);
 	}
 	else	// mono
@@ -181,6 +219,8 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projecti
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    background.render();
 
 	glm::vec3 ambientLight(0, 0, 0);
 	for (auto const& light : pointLights)
@@ -203,8 +243,9 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projecti
 	gbuffer.bindForFinalPass();
 	glBlitFramebuffer(0, 0, framebufferWidth, framebufferHeight, 0, 0, framebufferWidth, framebufferHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
-	gui.render(projection * viewMatrix);
+	gui.render(projection);
 }
+
 void cgvkp::rendering::release_renderer::renderLights(glm::mat4x4 const& projection) const {
 	// Render lights
 	glEnable(GL_STENCIL_TEST);
@@ -281,14 +322,14 @@ void cgvkp::rendering::release_renderer::renderPointLight(PointLight const& poin
 void cgvkp::rendering::release_renderer::set_camera_mode(cgvkp::rendering::camera_mode mode)
 {
 	cameraMode = mode;
-	calculateProjection();
+	calculateViewProjection();
 }
 
 void cgvkp::rendering::release_renderer::set_stereo_parameters(float eye_separation, float zzero_parallax)
 {
 	eyeSeparation = eye_separation;
 	zZeroParallax = zzero_parallax;
-	calculateProjection();
+	calculateViewProjection();
 }
 
 void cgvkp::rendering::release_renderer::lost_context()
@@ -307,6 +348,7 @@ void cgvkp::rendering::release_renderer::lost_context()
 		view->deinit();
 	}
 
+    background.deinit();
 	lightingSphere.deinit();
 	geometryPass.deinit();
 	shadowVolumePass.deinit();
@@ -320,7 +362,7 @@ bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 {
 	wnd.get_size(framebufferWidth, framebufferHeight);
 	wnd.make_current();
-	gui.setSize(glm::quarter_pi<float>(), framebufferWidth, framebufferHeight, 90);
+	gui.setSize(glm::quarter_pi<float>(), framebufferWidth, framebufferHeight, distance - 1);
 
 	if (!gbuffer.init(framebufferWidth, framebufferHeight))
 	{
@@ -344,6 +386,10 @@ bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 	{
 		return false;
 	}
+    if (!background.init())
+    {
+        return false;
+    }
 
 	if (!gui.init())
 	{
@@ -359,7 +405,7 @@ bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 		view->init();
 	}
 
-	calculateProjection();
+	calculateViewProjection();
 	has_context = true;
 	return true;
 }
@@ -367,6 +413,7 @@ bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 void cgvkp::rendering::release_renderer::add_model(model::model_base::ptr model) {
 	models.push_back(model);
 }
+
 void cgvkp::rendering::release_renderer::remove_model(model::model_base::ptr model) {
 	auto it = std::find(models.begin(), models.end(), model);
 	if (it != models.end())
@@ -374,9 +421,19 @@ void cgvkp::rendering::release_renderer::remove_model(model::model_base::ptr mod
 		models.erase(it);
 	}
 }
+
 void cgvkp::rendering::release_renderer::add_view(view::view_base::ptr view) {
 	views.push_back(view);
 }
+
 void cgvkp::rendering::release_renderer::add_controller(controller::controller_base::ptr controller) {
 	new_controllers.push_back(controller);
+}
+
+float cgvkp::rendering::release_renderer::getDistance() {
+	return distance;
+}
+
+float cgvkp::rendering::release_renderer::getAspect() {
+	return aspect;
 }

@@ -27,6 +27,7 @@ bool cgvkp::rendering::model_listing_renderer::init_impl(const window& wnd) {
 	::glDepthMask(GL_TRUE);
 
     technique1.init();
+    bg.init();
 
     star_model->model_matrix =
         glm::translate(glm::vec3(-0.5f, 0.0f, 0.0f)) *
@@ -55,6 +56,7 @@ void cgvkp::rendering::model_listing_renderer::deinit_impl() {
     hand_model.reset();
 
     technique1.deinit();
+    bg.deinit();
 }
 
 void cgvkp::rendering::model_listing_renderer::render(const window& wnd) {
@@ -76,6 +78,8 @@ void cgvkp::rendering::model_listing_renderer::render(const window& wnd) {
 		glm::vec3(0.0f, 0.0f, 1.0f));
 
 	::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    bg.render();
 
     technique1.use();
     technique1.setWorldViewProjection(glm::mat4(1.0f));

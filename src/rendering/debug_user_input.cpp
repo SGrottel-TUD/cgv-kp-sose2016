@@ -37,7 +37,7 @@ void rendering::debug_user_input::mouse_button(GLFWwindow *window, int button, i
                 if (in_game_area(x, y)) {
                     int h = hand_at(x, y);
                     if (h < 0) {
-                        hands.push_back({ x, y, 0.5f });
+                        hands.push_back({ x, y, 0.1f });
                     }
                 }
 

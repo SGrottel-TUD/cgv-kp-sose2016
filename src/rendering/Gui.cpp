@@ -6,7 +6,7 @@
 #include <math.h>
 
 cgvkp::rendering::Gui::Gui()
-	: width(0), height(0), fontSize(0), hoveredButton(nullptr), activeInput(nullptr)
+	: fontSize(0), hoveredButton(nullptr), activeInput(nullptr)
 {
 }
 
@@ -46,6 +46,17 @@ void cgvkp::rendering::Gui::clear()
 	inputs.clear();
 }
 
+void cgvkp::rendering::Gui::setSize(float fovy, GLsizei framebufferWidth, GLsizei framebufferHeight, float zPlane)
+{
+	this->framebufferHeight = framebufferHeight;
+	this->framebufferWidth = framebufferHeight;
+	float internExternRatio = 2 * tan(fovy / 2) * zPlane / framebufferHeight;
+
+	guiProjection = glm::translate(glm::vec3(0, 0, -zPlane)) * glm::scale(glm::vec3(internExternRatio, internExternRatio, 1));
+
+	setPositions();
+}
+
 void cgvkp::rendering::Gui::setPositions()
 {
 	for (auto& label : labels)
@@ -64,40 +75,29 @@ void cgvkp::rendering::Gui::setPositions()
 	}
 }
 
+
 void cgvkp::rendering::Gui::setPosition(Label& label)
 {
 	label.position = glm::vec2(-label.size.x / 2, -label.size.y / 2);
 
 	if (label.anchor & left)
 	{
-		label.position.x = -static_cast<float>(width) / 2;
+		label.position.x = -static_cast<float>(framebufferWidth) / 2;
 	}
 	if (label.anchor & right)
 	{
-		label.position.x = static_cast<float>(width) / 2 - label.size.x;
+		label.position.x = static_cast<float>(framebufferWidth) / 2 - label.size.x;
 	}
 	if (label.anchor & top)						
 	{
-		label.position.y = static_cast<float>(height) / 2 - label.size.y;
+		label.position.y = static_cast<float>(framebufferHeight) / 2 - label.size.y;
 	}
 	if (label.anchor & bottom)					
 	{
-		label.position.y = -static_cast<float>(height) / 2;
+		label.position.y = -static_cast<float>(framebufferHeight) / 2;
 	}
 
 	label.position += label.offset;
-}
-
-void cgvkp::rendering::Gui::setSize(float fovy, GLsizei framebufferWidth, GLsizei framebufferHeight, float zPlane)
-{
-	height = 2 * tan(fovy / 2) * zPlane;
-	internExternRatio = height / framebufferHeight;
-	width = static_cast<float>(framebufferWidth)  * internExternRatio;
-
-	this->framebufferHeight = framebufferHeight;
-	this->framebufferWidth = framebufferWidth;
-
-	setPositions();
 }
 
 void cgvkp::rendering::Gui::loadMenu()
@@ -116,9 +116,8 @@ void cgvkp::rendering::Gui::loadScore()
 	clear();
 	//star before score
 	createLabel([&]() { return std::to_string(getScore()); }, 10, right | top);
-	setPositions();
 
-	
+	setPositions();
 }
 
 void cgvkp::rendering::Gui::loadHighscore()
@@ -139,8 +138,8 @@ void cgvkp::rendering::Gui::loadHighscore()
 		Label& score = createLabel(std::to_string(s.score), 5,  top | right, offsetNum);
 		
 		// points
-		float pointLeft = -width / 2 + offsetX + name.size.x;
-		float pointRight = width / 2 - offsetX - score.size.x;
+		float pointLeft = -framebufferWidth / 2 + offsetX + name.size.x;
+		float pointRight = framebufferWidth / 2 - offsetX - score.size.x;
 		std::string points = "";
 
 		std::string str = " . ";
@@ -161,35 +160,38 @@ void cgvkp::rendering::Gui::loadHighscore()
 void cgvkp::rendering::Gui::loadEntry()
 {
 	clear();
-	float x = createLabel("Erreichte Punktzahl: ", 5, left,glm::vec2(0, 10)).size.x;
+	float x = createLabel("Erreichte Punktzahl: ", 50, left, glm::vec2(0, 10)).size.x;
 	createLabel(std::to_string(getScore()), 5, left, glm::vec2(x, 10));
 	Label& label = createLabel("Gib deinen Namen ein: ", 5, left);
 	createInput(5, left, glm::vec2(label.size.x,0));
-	createButton("Weiter", 5, std::bind(&Gui::loadHighscore, this), bottom);
+	//createButton("Weiter", 5, std::bind(&Gui::loadHighscore, this), bottom);
+	createLabel("center", 20);
 	setPositions();
 }
 
-void cgvkp::rendering::Gui::render(glm::mat4 const& viewProjectionMatrix) const
+void cgvkp::rendering::Gui::render(glm::mat4 projectionMatrix) const
 {
 	fontPass.use();
 
+	//projectionMatrix = glm::perspective(glm::quarter_pi<float>(), static_cast<float>(framebufferWidth) / framebufferHeight, 0.01f, 100.0f);
+	projectionMatrix *= guiProjection;
 	for (auto& label : labels)
 	{
-		render(label, viewProjectionMatrix);
+		render(label, projectionMatrix);
 	}
 	for (auto& button : buttons)
 	{
-		render(button, viewProjectionMatrix);
+		render(button, projectionMatrix);
 	}
 	for (auto& input : inputs)
 	{
-		render(input, viewProjectionMatrix);
+		render(input, projectionMatrix);
 	}
 }
 
 glm::vec2 cgvkp::rendering::Gui::render(Label const& label, glm::mat4 const& viewProjectionMatrix) const
 {
-	glm::vec3 position = glm::vec3(label.position, -90);
+	glm::vec3 position = glm::vec3(label.position, 0);
 	std::string text;
 	char const* str = label.text.c_str();
 
@@ -226,6 +228,7 @@ glm::vec2 cgvkp::rendering::Gui::render(Label const& label, glm::mat4 const& vie
 
 	return glm::vec2(position.x, position.y);
 }
+
 void cgvkp::rendering::Gui::render(Button const& button, glm::mat4 const& viewProjectionMatrix) const
 {
 	// set color on mouseover
@@ -266,7 +269,7 @@ cgvkp::rendering::Label& cgvkp::rendering::Gui::createLabel(char const* text, fl
 	return label;
 }
 
-cgvkp::rendering::Label&  cgvkp::rendering::Gui::createLabel(std::function<std::string()> getText, float fontSize, Anchor anchor /*= center */, glm::vec2 const& offset/*  = glm::vec2(0, 0)*/, glm::vec3 const& color /* = glm::vec3(1, 1, 1)*/)
+cgvkp::rendering::Label& cgvkp::rendering::Gui::createLabel(std::function<std::string()> getText, float fontSize, Anchor anchor /*= center */, glm::vec2 const& offset/*  = glm::vec2(0, 0)*/, glm::vec3 const& color /* = glm::vec3(1, 1, 1)*/)
 {
 	Label& label = createLabel("", fontSize, anchor, offset, color);
 	label.getText = getText;
@@ -306,16 +309,11 @@ void cgvkp::rendering::Gui::createButton(std::string const& text, float fontSize
 void cgvkp::rendering::Gui::updateMousePosition(float x, float y)
 {
 	hoveredButton = nullptr;
-
-	// Calculate intern position.
-	glm::vec2 position;
-	position.x = width / (framebufferWidth - 1) *  x - width / 2;
-	position.y = - height / (framebufferHeight - 1) * y + height / 2;
 	
 	// Find the button the mouse hovers.
 	for (auto& button : buttons)
 	{
-		if (button.within(position.x, position.y))
+		if (button.within(x, y))
 		{
 			hoveredButton = &button;
 			button.color = glm::vec3(0, 1, 0);
@@ -325,7 +323,7 @@ void cgvkp::rendering::Gui::updateMousePosition(float x, float y)
 
 	for (auto& input : inputs)
 	{
-		if (input.within(position.x, position.y))
+		if (input.within(x, y))
 		{
 			hoveredButton = &input;
 			input.color = glm::vec3(0, 1, 0);
