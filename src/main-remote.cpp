@@ -151,14 +151,14 @@ int main(int argc, char **argv)
 
         // 2') send vision data to server
         auto &hands = data.get_input_layer().buffer();
-        auto hands_count = hands.size();
+        uint32_t hands_count = static_cast<uint32_t>(hands.size());
         if (hands_count > 0 || last_hand_count > 0)
         {
             auto hands_size = hands_count * sizeof(cgvkp::data::input_layer::hand);
-            int buf_size = static_cast<int>(sizeof(size_t) + hands_size);
+            int buf_size = static_cast<int>(sizeof(uint32_t) + hands_size);
             char *buf = static_cast<char*>(malloc(buf_size));
-            memcpy(&buf[0], &hands_count, sizeof(size_t));
-            memcpy(&buf[sizeof(size_t)], hands.data(), hands_size);
+            memcpy(&buf[0], &hands_count, sizeof(uint32_t));
+            memcpy(&buf[sizeof(uint32_t)], hands.data(), hands_size);
             send(sock, buf, buf_size, 0);
 #if 0
             std::cout << "\t sending " << buf_size << " h: " << hands.size() << std::endl;

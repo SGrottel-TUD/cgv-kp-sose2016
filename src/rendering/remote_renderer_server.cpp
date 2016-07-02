@@ -67,8 +67,8 @@ bool remote_renderer_server::update(data::input_layer &input_layer)
 {
     if (tunnel == INVALID_SOCKET)
         return false;
-    size_t hands_count;
-    int total_read_bytes = 0; int target_bytes = sizeof(size_t);
+    uint32_t hands_count;
+    int total_read_bytes = 0; int target_bytes = sizeof(uint32_t);
     int read_bytes = recv(tunnel, (char*)(&hands_count), target_bytes, 0);
     // We also use a while, to discard any in-between frames.
     while (read_bytes > 0) // Got some data, ensure we read whole frame before continuing
@@ -98,7 +98,7 @@ bool remote_renderer_server::update(data::input_layer &input_layer)
         else
             hands.clear();
 
-        total_read_bytes = 0; target_bytes = sizeof(size_t);
+        total_read_bytes = 0; target_bytes = sizeof(uint32_t);
         read_bytes = recv(tunnel, (char*)(&hands_count), target_bytes, 0);
     }
     if (input_layer.buffer().size() > 0)
