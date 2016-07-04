@@ -14,7 +14,7 @@ namespace controller {
 		std::random_device r;
 		random_engine = std::default_random_engine(std::seed_seq{ r(), r(), r() });
 
-		int_uniform = std::uniform_int_distribution<int>(300, 450);
+		int_uniform = std::uniform_int_distribution<int>(150, 300);
 
 		w = data.get_config().width();
 		h = data.get_config().height();
@@ -36,7 +36,7 @@ namespace controller {
 			renderer->add_view(cloudView);
 
 			uniform = std::uniform_real_distribution<float>(-0.01f, 0.01f);
-			cloud->speed = 0;//uniform(random_engine);
+			cloud->speed = uniform(random_engine);
 
 			uniform = std::uniform_real_distribution<float>(0, w);
 			cloud->model_matrix[3].x = uniform(random_engine);
@@ -120,25 +120,24 @@ namespace controller {
 					cloud->speed_curve = calculate_new_speed_curve();
 					cloud->curve_iterator = 0;
 				}
-				cloud->speed += (cloud->speed_curve[cloud->curve_iterator])*0.0005f;
+				cloud->speed += (cloud->speed_curve[cloud->curve_iterator])*0.001f;
 			}
 			cloud->curve_iterator++;
 
 				
 
-			cloud->speed = glm::clamp(cloud->speed, -0.005f, 0.005f);
+			cloud->speed = glm::clamp(cloud->speed, -0.001f, 0.001f);
 
 
 			for (auto data_hand : data.get_hands()) {
 				glm::vec3 hand_position = glm::vec3(data_hand->x, trans_height(data_hand->height), -data_hand->y);
 				auto hand_to_cloud = glm::vec3(cloud->model_matrix[3]) - hand_position;
-				auto distance = glm::length(hand_to_cloud);
-				int distance_sgn = (hand_to_cloud.x > 0) - (hand_to_cloud.x < 0);
-				cloud->speed += 0.1f*distance_sgn*(1 / std::pow(distance,50));
+				auto distance = glm::length(hand_to_cloud)*1.2;
+				cloud->speed += (cloud->speed)*(1 / std::pow(distance,2));
 
 			}
 
-			cloud->speed = glm::clamp(cloud->speed, -0.01f, 0.01f);
+			cloud->speed = glm::clamp(cloud->speed, -0.012f, 0.012f);
 
 
 			cloud->model_matrix[3].x += cloud->speed;
