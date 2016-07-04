@@ -1,7 +1,8 @@
 #pragma once
 
 #include <GL/glew.h>
-#include <string>
+#include <memory>
+#include "util/texture.hpp"
 
 namespace cgvkp
 {
@@ -11,8 +12,8 @@ namespace cgvkp
 		{
 		public:
 			Mesh();
-			~Mesh();
-			bool init(std::string const& filename, bool withAdjacencies = false);
+			inline ~Mesh() { deinit(); }
+			bool init(char const* pMeshname, bool withAdjacencies = false);
 			void deinit();
 			void render() const;
 
@@ -31,6 +32,7 @@ namespace cgvkp
 			GLenum indicesMode;
 			GLsizei indicesCount;
 			GLenum indicesType;
+			std::shared_ptr<util::texture> texture;
 		};
 	}
 }
