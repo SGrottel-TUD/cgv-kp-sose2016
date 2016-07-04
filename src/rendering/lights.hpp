@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glm/vec3.hpp>
-#include <iostream>
+#include <glm/mat4x4.hpp>
 
 namespace cgvkp
 {
@@ -12,11 +12,20 @@ namespace cgvkp
 		public:
 			glm::vec3 color;
 
-			float ambientIntensity;
 			float diffuseIntensity;
 
 		protected:
-			inline Light() : ambientIntensity(0), diffuseIntensity(0) {}
+			inline Light() : diffuseIntensity(0) {}
+		};
+
+
+
+		/* Directional light */
+
+		struct DirectionalLight : public Light
+		{
+		public:
+			glm::vec3 direction;
 		};
 
 
@@ -35,7 +44,7 @@ namespace cgvkp
 			float linearAttenuation;
 			float exponentialAttenuation;
 
-			glm::mat4x4 world;
+			glm::mat4 world;
 		};
 	}
 }

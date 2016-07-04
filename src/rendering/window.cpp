@@ -128,6 +128,10 @@ bool rendering::window::get_size(int &out_width, int &out_height) const {
 
 void rendering::window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+	if (key == GLFW_KEY_UNKNOWN)
+	{
+		return;
+	}
 	rendering::window* w = static_cast<rendering::window*>(glfwGetWindowUserPointer(window));
 	if (key <= GLFW_KEY_LAST)
 	{
@@ -232,7 +236,7 @@ bool rendering::window::create_window(int width, int height, char const* title, 
 	::glfwSetKeyCallback(handle, window::key_callback);
 
 	::glfwMakeContextCurrent(handle);
-	glfwSwapInterval(1);
+	//glfwSwapInterval(1);
 
 	return true;
 }

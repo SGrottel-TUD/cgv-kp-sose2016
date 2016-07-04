@@ -2,7 +2,6 @@
 #include "rendering/view/view_geometry_base.hpp"
 #include "util/texture.hpp"
 #include <GL/glew.h>
-#include <glm/glm.hpp>
 
 namespace cgvkp {
 	namespace rendering {

@@ -12,7 +12,7 @@ namespace view {
     class view_geometry_base : public view_base {
     public:
 
-        view_geometry_base() : view_base(), geo() {
+        view_geometry_base() {
             // intentionally empty
         }
         virtual ~view_geometry_base() {

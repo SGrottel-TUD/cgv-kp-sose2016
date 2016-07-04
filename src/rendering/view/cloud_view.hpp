@@ -7,10 +7,8 @@ namespace cgvkp {
 		namespace view {
 			class cloud_view : public view_geometry_base<cloud_geometry> {
 			public:
-				cloud_view();
-				virtual ~cloud_view();
-				virtual void render();
-				std::shared_ptr<model::cloud_model> get_model() const;
+				virtual void render() const;
+				inline std::shared_ptr<model::cloud_model> get_model() const { return std::dynamic_pointer_cast<model::cloud_model>(model.lock()); };
 			};
 		}
 	}

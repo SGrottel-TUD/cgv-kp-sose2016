@@ -400,7 +400,7 @@ bool cgvkp::util::ObjImporter::load(std::string const& filename, bool withAdjace
 #if defined(_DEBUG) || defined(DEBUG)
 	catch (std::exception const& e)	// Could be an index out of bounds.
 	{
-		std::cerr << "Exception during parsing von \"" << filename << "\": " << e.what() << std::endl;
+		std::cerr << "Exception during parsing \"" << filename << "\": " << e.what() << std::endl;
 #else
 	catch (std::exception const&)	// Could be an index out of bounds.
 	{

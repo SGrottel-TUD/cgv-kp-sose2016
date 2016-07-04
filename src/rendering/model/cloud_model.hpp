@@ -14,8 +14,6 @@ namespace cgvkp {
 					glm::scale(glm::vec3(scale))
 				) {}
 
-				virtual ~cloud_model() {}
-
 				float speed;
 				std::vector<float> speed_curve;
 				int curve_iterator;
