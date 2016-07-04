@@ -1,18 +1,9 @@
-#include "Gui.hpp"
-#include "glfw/glfw3.h"
-#include "font.hpp"
-#include "glm/glm.hpp"
-#include "glm/gtx/transform.hpp"
-#include <math.h>
+#include "gui.hpp"
+#include <glfw/glfw3.h>
+#include <glm/gtx/transform.hpp>
 
-cgvkp::rendering::Gui::Gui()
-	: fontSize(0), hoveredButton(nullptr), activeInput(nullptr)
-{
-}
-
-cgvkp::rendering::Gui::~Gui()
-{
-}
+float const cgvkp::rendering::Gui::normalFontSize = 20.0f;
+float const cgvkp::rendering::Gui::titleFontSize = 30.0f;
 
 bool cgvkp::rendering::Gui::init()
 {
@@ -26,33 +17,95 @@ bool cgvkp::rendering::Gui::init()
 		return false;
 	}
 
-	fontSize = 4;
-
 	return true;
-}
-
-void cgvkp::rendering::Gui::deinit()
-{
-	font.deinit();
 }
 
 void cgvkp::rendering::Gui::clear()
 {
-	hoveredButton = nullptr;
-	activeInput = nullptr;
+	pHoveredButton = nullptr;
+	pActiveInput = nullptr;
 	
 	labels.clear();
 	buttons.clear();
 	inputs.clear();
 }
 
-void cgvkp::rendering::Gui::setSize(float fovy, GLsizei framebufferWidth, GLsizei framebufferHeight, float zPlane)
+void cgvkp::rendering::Gui::loadMenu()
 {
-	this->framebufferHeight = framebufferHeight;
-	this->framebufferWidth = framebufferHeight;
-	float internExternRatio = 2 * tan(fovy / 2) * zPlane / framebufferHeight;
+	clear();
 
-	guiProjection = glm::translate(glm::vec3(0, 0, -zPlane)) * glm::scale(glm::vec3(internExternRatio, internExternRatio, 1));
+	createButton("Spielen", normalFontSize, std::bind(&Gui::loadScore, this), top);
+	createButton("Highscore", normalFontSize, std::bind(&Gui::loadHighscore, this), center);
+	createButton("Beenden", normalFontSize, exit, left | bottom);
+
+	setPositions();
+}
+
+void cgvkp::rendering::Gui::loadScore()
+{
+	clear();
+	//star before score
+	createLabel([&]() { return std::to_string(getScore()); }, 10, right | top);
+
+	setPositions();
+}
+
+void cgvkp::rendering::Gui::loadHighscore()
+{
+	clear();
+
+	createLabel("Highscore", 12, top);
+
+	float offsetX = 7;
+	glm::vec2 offsetName = glm::vec2(offsetX, -3 * 12);
+	glm::vec2 offsetNum = glm::vec2(-offsetX, -3 * 12);
+
+	auto scores = getHighscores();
+	for (auto const& s : scores)
+	{
+		Label& name = createLabel(s.name, normalFontSize, top | left, offsetName);
+		Label& score = createLabel(std::to_string(s.score), normalFontSize,  top | right, offsetNum);
+		
+		// points
+		float pointLeft = -framebufferWidth / 2 + offsetX + name.size.x;
+		float pointRight = framebufferWidth / 2 - offsetX - score.size.x;
+		std::string points = "";
+
+		std::string str = " . ";
+		float strWidth = font.getWidth(str, name.fontSize);
+		for (float x = pointLeft; x < pointRight - strWidth; x += strWidth)
+		{
+			points += str;
+		}
+		createLabel(points, normalFontSize, top, glm::vec2((pointLeft + pointRight) / 2, offsetName.y));
+
+		offsetName.y -= 5;
+		offsetNum.y -= 5;
+	}
+	createButton("Back", 8, std::bind(&Gui::loadMenu, this), bottom);
+	setPositions();
+}
+
+void cgvkp::rendering::Gui::loadEntry()
+{
+	clear();
+	//float x = createLabel("Erreichte Punktzahl: ", normalFontSize, left, glm::vec2(0, 10)).size.x;
+	//createLabel(std::to_string(getScore()), normalFontSize, left, glm::vec2(x, 10));
+	//Label& label = createLabel("Gib deinen Namen ein: ", normalFontSize, left, glm::vec2(0, -10));
+	//createInput(normalFontSize, left, glm::vec2(label.size.x, -10));
+	//createButton("Weiter", normalFontSize, std::bind(&Gui::loadHighscore, this), bottom);
+	createLabel("center", normalFontSize);
+	createLabel("left", normalFontSize, left);
+	setPositions();
+}
+
+void cgvkp::rendering::Gui::setSize(GLsizei width, GLsizei height, float fovy, float zPlane)
+{
+	framebufferWidth = static_cast<float>(width);
+	framebufferHeight = static_cast<float>(height);
+
+	float internExternRatio = 2 * tan(fovy / 2) * zPlane / framebufferHeight;
+	guiProjection = glm::translate(glm::vec3(0, 0, -zPlane)) * glm::scale(glm::vec3(internExternRatio));
 
 	setPositions();
 }
@@ -75,105 +128,33 @@ void cgvkp::rendering::Gui::setPositions()
 	}
 }
 
-
 void cgvkp::rendering::Gui::setPosition(Label& label)
 {
-	label.position = glm::vec2(-label.size.x / 2, -label.size.y / 2);
+	label.position = -0.5f * label.size;
 
 	if (label.anchor & left)
 	{
-		label.position.x = -static_cast<float>(framebufferWidth) / 2;
+		label.position.x = -framebufferWidth / 2;
 	}
 	if (label.anchor & right)
 	{
-		label.position.x = static_cast<float>(framebufferWidth) / 2 - label.size.x;
+		label.position.x = framebufferWidth / 2 - label.size.x;
 	}
-	if (label.anchor & top)						
+	if (label.anchor & top)
 	{
-		label.position.y = static_cast<float>(framebufferHeight) / 2 - label.size.y;
+		label.position.y = framebufferHeight / 2 - label.size.y;
 	}
-	if (label.anchor & bottom)					
+	if (label.anchor & bottom)
 	{
-		label.position.y = -static_cast<float>(framebufferHeight) / 2;
+		label.position.y = -framebufferHeight / 2;
 	}
 
 	label.position += label.offset;
 }
 
-void cgvkp::rendering::Gui::loadMenu()
-{
-	clear();
-
-	createButton("Spielen", 10, std::bind(&Gui::loadScore, this), top);
-	createButton("Highscore", 10, std::bind(&Gui::loadHighscore, this), center);
-	//createButton("Beenden", ????, left | bottom, glm::vec2(0, 0));
-
-	setPositions();
-}
-
-void cgvkp::rendering::Gui::loadScore()
-{
-	clear();
-	//star before score
-	createLabel([&]() { return std::to_string(getScore()); }, 10, right | top);
-
-	setPositions();
-}
-
-void cgvkp::rendering::Gui::loadHighscore()
-{
-	clear();
-
-	std::list<Score> scores = getHighscores();
-
-	createLabel("Highscore", 12, top);
-
-	float offsetX = 7;
-	glm::vec2 offsetName = glm::vec2(offsetX, -3 * fontSize);
-	glm::vec2 offsetNum = glm::vec2(-offsetX, -3 * fontSize);
-	 
-	for (auto const& s : scores)
-	{
-		Label& name = createLabel(s.name, 5, top | left, offsetName);
-		Label& score = createLabel(std::to_string(s.score), 5,  top | right, offsetNum);
-		
-		// points
-		float pointLeft = -framebufferWidth / 2 + offsetX + name.size.x;
-		float pointRight = framebufferWidth / 2 - offsetX - score.size.x;
-		std::string points = "";
-
-		std::string str = " . ";
-		float strWidth = font.getWidth(str, name.fontSize);
-		for (float x = pointLeft; x < pointRight - strWidth; x += strWidth)
-		{
-			points += str;
-		}
-		createLabel(points, 5, top, glm::vec2((pointLeft + pointRight) / 2, offsetName.y));
-
-		offsetName.y -= 5;
-		offsetNum.y -= 5;
-	}
-	createButton("Back", 8, std::bind(&Gui::loadMenu, this), bottom);
-	setPositions();
-}
-
-void cgvkp::rendering::Gui::loadEntry()
-{
-	clear();
-	float x = createLabel("Erreichte Punktzahl: ", 50, left, glm::vec2(0, 10)).size.x;
-	createLabel(std::to_string(getScore()), 5, left, glm::vec2(x, 10));
-	Label& label = createLabel("Gib deinen Namen ein: ", 5, left);
-	createInput(5, left, glm::vec2(label.size.x,0));
-	//createButton("Weiter", 5, std::bind(&Gui::loadHighscore, this), bottom);
-	createLabel("center", 20);
-	setPositions();
-}
-
 void cgvkp::rendering::Gui::render(glm::mat4 projectionMatrix) const
 {
 	fontPass.use();
-
-	//projectionMatrix = glm::perspective(glm::quarter_pi<float>(), static_cast<float>(framebufferWidth) / framebufferHeight, 0.01f, 100.0f);
 	projectionMatrix *= guiProjection;
 	for (auto& label : labels)
 	{
@@ -221,7 +202,7 @@ glm::vec2 cgvkp::rendering::Gui::render(Label const& label, glm::mat4 const& vie
 	for (; *str; ++str)
 	{
 		float angle = static_cast<float>(cos(glfwGetTime() * 3 + *str)) * 0.1f;
-		glm::mat4 world = glm::translate(position) * glm::rotate(angle, glm::vec3(0, 0, 1)) * glm::scale(glm::vec3(label.fontSize, label.fontSize, label.fontSize));
+		glm::mat4 world = glm::translate(position) * glm::rotate(angle, glm::vec3(0, 0, 1)) * glm::scale(glm::vec3(label.fontSize, label.fontSize, 1));
 		fontPass.setWorldViewProjection(viewProjectionMatrix * world);
 		position.x += font.render(*str) * label.fontSize;
 	}
@@ -247,7 +228,7 @@ void cgvkp::rendering::Gui::render(Input const& input, glm::mat4 const& viewProj
 	label.size.x = font.getWidth(label.text, label.fontSize);
 
 	label.position = render(static_cast<Label>(input), viewProjectionMatrix);
-	if (activeInput == &input && static_cast<int>(2 * glfwGetTime()) % 2)
+	if (pActiveInput == &input && static_cast<int>(2 * glfwGetTime()) % 2)
 	{
 		render(label, viewProjectionMatrix);
 	}
@@ -288,7 +269,7 @@ void cgvkp::rendering::Gui::createInput(float fontSize, Anchor anchor /*= center
 	input.offset = offset;
 	input.fontSize = fontSize;
 	input.text = "Alfred ist wieder da!";
-	input.onClick = [&]() { activeInput = &input; };
+	input.onClick = [&]() { pActiveInput = &input; };
 }
 
 void cgvkp::rendering::Gui::createButton(std::string const& text, float fontSize, std::function<void()> onClick, Anchor anchor /*= center*/, glm::vec2 const& offset /*= glm::vec2(0, 0)*/, glm::vec3 const& color /*= glm::vec3(1, 1, 1)*/)
@@ -308,14 +289,17 @@ void cgvkp::rendering::Gui::createButton(std::string const& text, float fontSize
 
 void cgvkp::rendering::Gui::updateMousePosition(float x, float y)
 {
-	hoveredButton = nullptr;
+	pHoveredButton = nullptr;
+
+	x -= framebufferWidth / 2;
+	y = framebufferHeight / 2 - y;
 	
 	// Find the button the mouse hovers.
 	for (auto& button : buttons)
 	{
 		if (button.within(x, y))
 		{
-			hoveredButton = &button;
+			pHoveredButton = &button;
 			button.color = glm::vec3(0, 1, 0);
 			return;
 		}
@@ -325,7 +309,7 @@ void cgvkp::rendering::Gui::updateMousePosition(float x, float y)
 	{
 		if (input.within(x, y))
 		{
-			hoveredButton = &input;
+			pHoveredButton = &input;
 			input.color = glm::vec3(0, 1, 0);
 			return;
 		}
@@ -334,10 +318,10 @@ void cgvkp::rendering::Gui::updateMousePosition(float x, float y)
 
 void cgvkp::rendering::Gui::click()
 {
-	activeInput = nullptr;
-	if (hoveredButton && hoveredButton->onClick)
+	pActiveInput = nullptr;
+	if (pHoveredButton && pHoveredButton->onClick)
 	{
-		auto f = hoveredButton->onClick; 
+		auto f = pHoveredButton->onClick; 
 		f(); 
 	} 
 }
@@ -346,18 +330,18 @@ bool cgvkp::rendering::Gui::inputCodePoint(unsigned int codePoint)
 {
 	if (codePoint == 0)
 	{
-		return activeInput != nullptr;
+		return pActiveInput != nullptr;
 	}
 
-	if (activeInput)
+	if (pActiveInput)
 	{
 		if (codePoint == 0x08)
 		{
-			if(!activeInput->text.empty()) activeInput->text.pop_back();
+			if(!pActiveInput->text.empty()) pActiveInput->text.pop_back();
 		}
 		else
 		{
-			activeInput->text += static_cast<char>(codePoint);
+			pActiveInput->text += static_cast<char>(codePoint);
 		} 
 
 		return true;

@@ -221,9 +221,6 @@
     <ClCompile Include="src\rendering\technique\background_technique.cpp">
       <Filter>rendering\technique\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\Gui.cpp">
-      <Filter>rendering\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\rendering\font.cpp">
       <Filter>rendering\Source Files</Filter>
     </ClCompile>
@@ -241,6 +238,9 @@
     </ClCompile>
     <ClCompile Include="src\poly2tri\poly2tri\sweep\advancing_front.cc">
       <Filter>rendering\poly2tri</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\gui.cpp">
+      <Filter>rendering\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\technique\fontTechnique.cpp">
       <Filter>Source Files</Filter>
@@ -421,13 +421,13 @@
     <ClInclude Include="src\util\spline_curve.hpp">
       <Filter>util\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\rendering\Gui.hpp">
-      <Filter>rendering\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\rendering\GuiElements.hpp">
       <Filter>rendering\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\font.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\gui.hpp">
       <Filter>rendering\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\technique\fontTechnique.hpp">

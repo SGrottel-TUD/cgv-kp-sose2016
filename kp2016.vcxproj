@@ -41,7 +41,7 @@
     <ClCompile Include="src\rendering\abstract_user_input.cpp" />
     <ClCompile Include="src\rendering\debug_user_input.cpp" />
     <ClCompile Include="src\rendering\font.cpp" />
-    <ClCompile Include="src\rendering\Gui.cpp" />
+    <ClCompile Include="src\rendering\gui.cpp" />
     <ClCompile Include="src\rendering\mesh.cpp" />
     <ClCompile Include="src\rendering\model\graphic_model_base.cpp" />
     <ClCompile Include="src\rendering\technique\background_technique.cpp" />
@@ -102,7 +102,7 @@
     <ClInclude Include="src\rendering\abstract_user_input.hpp" />
     <ClInclude Include="src\rendering\debug_user_input.hpp" />
     <ClInclude Include="src\rendering\font.hpp" />
-    <ClInclude Include="src\rendering\Gui.hpp" />
+    <ClInclude Include="src\rendering\gui.hpp" />
     <ClInclude Include="src\rendering\GuiElements.hpp" />
     <ClInclude Include="src\rendering\model\cloud_model.hpp" />
     <ClInclude Include="src\rendering\mesh.hpp" />

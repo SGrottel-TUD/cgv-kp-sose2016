@@ -1,8 +1,8 @@
 #pragma once
-#include "GuiElements.hpp"
-#include "Font.hpp"
-#include <iostream>
+#include <functional>
 #include <list>
+#include "font.hpp"
+#include "guiElements.hpp"
 #include "technique/fontTechnique.hpp"
 
 namespace cgvkp
@@ -18,15 +18,14 @@ namespace cgvkp
 		class Gui
 		{
 		public:
-			Gui();
-			~Gui();
-			bool init(/*float fontSize*/);
-			void deinit();
-			void setSize(float fovy, GLsizei framebufferWidth, GLsizei framebufferHeight, float zPlane);
-
-			void updateMousePosition(float x, float y);
-			void click();
-			bool inputCodePoint(unsigned int codePoint);
+			inline Gui() : framebufferWidth(0), framebufferHeight(0), pHoveredButton(nullptr), pActiveInput(nullptr) {}
+			inline ~Gui() { deinit(); }
+			bool init();
+			inline void deinit() { font.deinit(); fontPass.deinit(); }
+			inline void setExitCallback(std::function<void()> const& callback) { exit = callback; }
+			inline void setHighscoresCallback(std::function<std::list<Score>()> const& callback) { getHighscores = callback; }
+			inline void setScoreCallback(std::function<unsigned int()> const& callback) { getScore = callback; }
+			void setSize(GLsizei framebufferWidth, GLsizei framebufferHeight, float fovy, float zPlane);
 
 			void render(glm::mat4 projectionMatrix) const;
 
@@ -36,8 +35,9 @@ namespace cgvkp
 			void loadHighscore();
 			void loadEntry();
 
-			inline void setScoreCallback(std::function<unsigned int()> callback) { getScore = callback; }
-			inline void setHighscoresCallback(std::function<std::list<Score>()> callback) { getHighscores = callback; }
+			void updateMousePosition(float x, float y);
+			void click();
+			bool inputCodePoint(unsigned int codePoint);
 
 		private:
 			Label& createLabel(char const* text, float fontSize, Anchor anchor = center, glm::vec2 const& offset = glm::vec2(0, 0), glm::vec3 const& color = glm::vec3(1, 1, 1));
@@ -52,21 +52,24 @@ namespace cgvkp
 			void render(Input const& input, glm::mat4 const& projectionMatrix) const;
 
 			Font font;
-			GLsizei framebufferWidth;
-			GLsizei framebufferHeight;
-			float fontSize;
+			float framebufferWidth;
+			float framebufferHeight;
 			glm::mat4 guiProjection;
 			std::list<Label> labels;
 			std::list<Button> buttons;
 			std::list<Input> inputs;
-			Button* hoveredButton;
-			Input* activeInput;
+			Button* pHoveredButton;
+			Input* pActiveInput;
 
-			cgvkp::rendering::FontTechnique fontPass;
+			FontTechnique fontPass;
 
-			//callbacks
+			// Callbacks.
 			std::function<unsigned int()> getScore;
 			std::function<std::list<Score>()> getHighscores;
+			std::function<void()> exit;
+
+			static float const normalFontSize;
+			static float const titleFontSize;
 		};
 
 	}

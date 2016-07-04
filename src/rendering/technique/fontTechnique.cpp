@@ -1,9 +1,5 @@
 #include "fontTechnique.hpp"
 
-cgvkp::rendering::FontTechnique::FontTechnique()
-{
-}
-
 bool cgvkp::rendering::FontTechnique::init()
 {
     if (!Technique::init())
@@ -31,4 +27,9 @@ bool cgvkp::rendering::FontTechnique::init()
     }
 
     return true;
+}
+
+void cgvkp::rendering::FontTechnique::setWorldViewProjection(glm::mat4 const& worldViewProjection) const
+{
+	glUniformMatrix4fv(worldViewProjectionLocation, 1, GL_FALSE, &worldViewProjection[0][0]);
 }

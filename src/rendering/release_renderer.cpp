@@ -1,11 +1,12 @@
+#include <iostream>
 #include "release_renderer.hpp"
 #include "data/world.hpp"
 #include "glm/gtx/transform.hpp"
 #include "view/star_view.hpp"
 #include "view/hand_view.hpp"
-#include <iostream>
 #include "controller/data_controller.hpp"
 #include "controller/cloud_controller.hpp"
+#include "window.hpp"
 
 cgvkp::rendering::release_renderer::release_renderer(const ::cgvkp::data::world& data)
     : cgvkp::rendering::abstract_renderer(data),
@@ -51,9 +52,10 @@ bool cgvkp::rendering::release_renderer::init_impl(const window& wnd) {
 	p2.calculateWorld();
 	pointLights.push_back(p2);
 
-	gui.setScoreCallback(std::bind(&data::world::get_score, &data));
+	gui.setExitCallback([&]() { wnd.close(); });
 	gui.setHighscoresCallback([]() { return std::list<Score>(); });
-	gui.loadEntry();
+	gui.setScoreCallback(std::bind(&data::world::get_score, &data));
+	gui.loadMenu();
 
 	return true;
 }
@@ -100,7 +102,7 @@ void cgvkp::rendering::release_renderer::calculateViewProjection()
 	viewMatrix = glm::lookAt(position, lookAt, glm::vec3(0, 1, 0));
 
 	// Projection
-	float zNear = distance * cos(fovy / 2) - 1;	// Estimated minimum depth.
+	float zNear = 0.01f;
 	if (zNear < 0.01f)
 	{
 		zNear = 0.01f;
@@ -137,7 +139,7 @@ void cgvkp::rendering::release_renderer::render(const window& wnd)
 	{
 		gbuffer.resize(framebufferWidth, framebufferHeight);
 		calculateViewProjection();
-		gui.setSize(glm::quarter_pi<float>(), cameraMode == mono ? framebufferWidth : framebufferWidth / 2, framebufferHeight, 10);
+		gui.setSize(cameraMode == mono ? framebufferWidth : framebufferWidth / 2, framebufferHeight, glm::quarter_pi<float>(), cameraMode == stereo ? zZeroParallax : 10);
 	}
 	if (framebufferWidth == 0 || framebufferHeight == 0 || !has_context)
 	{
@@ -362,7 +364,6 @@ bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
 {
 	wnd.get_size(framebufferWidth, framebufferHeight);
 	wnd.make_current();
-	gui.setSize(glm::quarter_pi<float>(), framebufferWidth, framebufferHeight, distance - 1);
 
 	if (!gbuffer.init(framebufferWidth, framebufferHeight))
 	{
