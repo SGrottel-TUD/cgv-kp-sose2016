@@ -11,12 +11,14 @@ cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world const&
 	: cgvkp::rendering::abstract_renderer(data),
 	framebufferWidth(0), framebufferHeight(0), cameraMode(mono), fps_counter_elapsed(0.0), rendered_frames(0u)
 {
-	// Create and add data, cloud controller
-	controllers.push_back(std::make_shared<controller::data_controller>(this, data));
-	controllers.push_back(std::make_shared<controller::cloud_controller>(this, data));
+	pQuad = &meshes.insert({ "quad", Mesh() }).first->second;
+	Mesh const& cloudMesh = meshes.insert({ "sphere", Mesh() }).first->second;
+	Mesh const& starMesh = meshes.insert({ "star", Mesh() }).first->second;
+	Mesh const& handMesh = meshes.insert({ "hand", Mesh() }).first->second;
 
-	// Create a cached hand view to avoid delay on first hand appearance.
-	cached_views.push_back(std::make_shared<view::hand_view>());
+	// Create and add data, cloud controller
+	controllers.push_back(std::make_shared<controller::data_controller>(this, data, handMesh, starMesh));
+	controllers.push_back(std::make_shared<controller::cloud_controller>(this, data, cloudMesh));
 
 	ambientLight = glm::vec3(0.1, 0.1, 0.5) * 0.25f;
 	directionalLight.color = glm::vec3(1, 1, 1);
@@ -34,26 +36,15 @@ bool cgvkp::rendering::release_renderer::init_impl(window const& wnd)
 		!directionalLightPass.init() ||
 		!ssaoPass.init() ||
 		!gaussianBlur.init() ||
-		!quad.init("meshes/quad.obj") ||
 		!background.init()
 		)
 	{
 		return false;
 	}
 
-	for (auto const& view : cached_views)
+	for (auto& pair : meshes)
 	{
-		if (!view->init())
-		{
-			return false;
-		}
-	}
-	for (auto const& view : views)
-	{
-		if (!view->init())
-		{
-			return false;
-		}
+		pair.second.init(pair.first);
 	}
 
 	return true;
@@ -64,17 +55,12 @@ void cgvkp::rendering::release_renderer::deinit_impl()
 	glBindVertexArray(0);
 	glUseProgram(0);
 
-	for (auto const& view : views)
+	for (auto& pair : meshes)
 	{
-		view->deinit();
-	}
-	for (auto const& view : cached_views)
-	{
-		view->deinit();
+		pair.second.deinit();
 	}
 
 	background.deinit();
-	quad.deinit();
 	gaussianBlur.deinit();
 	ssaoPass.deinit();
 	directionalLightPass.deinit();
@@ -181,12 +167,33 @@ void cgvkp::rendering::release_renderer::render(window const& wnd)
 		new_controllers.clear();
 	}
 	// Remove views and controllers without model
-	for (auto it = views.begin(); it != views.end();)
+	for (auto it = cloudViews.begin(); it != cloudViews.end();)
 	{
 		if (!(*it)->has_model())
 		{
-			it->get()->deinit();
-			it = views.erase(it);
+			it = cloudViews.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+	for (auto it = handViews.begin(); it != handViews.end();)
+	{
+		if (!(*it)->has_model())
+		{
+			it = handViews.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+	for (auto it = starViews.begin(); it != starViews.end();)
+	{
+		if (!(*it)->has_model())
+		{
+			it = starViews.erase(it);
 		}
 		else
 		{
@@ -240,13 +247,30 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 	// Render a quad with a very low z value in view space to not get wrong results during the ambient occlusion.
 	geometryPass.setWorldView(glm::translate(glm::vec3(0, 0, -1000)));
 	geometryPass.setWorldViewProjection(glm::mat4(1));
-	quad.render();
+	pQuad->render();
 
 	glEnable(GL_DEPTH_TEST);
 
-	for (view::view_base::ptr v : views)
+	for (auto const& c : cloudViews)
 	{
-		geometryPass.renderView(v, viewMatrix, projection);
+		auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(c->get_model());
+		geometryPass.setWorldView(viewMatrix * graphic_model->model_matrix);
+		geometryPass.setWorldViewProjection(projection * viewMatrix * graphic_model->model_matrix);
+		c->render();
+	}
+	for (auto const& v : handViews)
+	{
+		auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(v->get_model());
+		geometryPass.setWorldView(viewMatrix * graphic_model->model_matrix);
+		geometryPass.setWorldViewProjection(projection * viewMatrix * graphic_model->model_matrix);
+		v->render();
+	}
+	for (auto const& s : starViews)
+	{
+		auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(s->get_model());
+		geometryPass.setWorldView(viewMatrix * graphic_model->model_matrix);
+		geometryPass.setWorldViewProjection(projection * viewMatrix * graphic_model->model_matrix);
+		s->render();
 	}
 
 	glDepthMask(GL_FALSE);
@@ -260,19 +284,19 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 	postProcessing.nextPass(0, 0);
 	ssaoPass.use();
 	ssaoPass.setAmbientLight(ambientLight);
-	quad.render();
+	pQuad->render();
 
 	postProcessing.nextPass(1);
 	gaussianBlur.use();
 	gaussianBlur.setDirection(GaussianBlurTechnique::horizontal);
 	gaussianBlur.setBlurSize(framebufferWidth);
-	quad.render();
+	pQuad->render();
 
 	postProcessing.finalPass(1);
 	gbuffer.bindForWritingFinal();
 	gaussianBlur.setDirection(GaussianBlurTechnique::vertical);
 	gaussianBlur.setBlurSize(framebufferHeight);
-	quad.render();
+	pQuad->render();
 
 	// Directional Light
 	gbuffer.bindForReadingGeometry();
@@ -281,7 +305,7 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 	directionalLightPass.setLight(directionalLight);
 
 	glEnable(GL_BLEND);
-	quad.render();
+	pQuad->render();
 	glDisable(GL_BLEND);
 
 	// Background
@@ -290,7 +314,7 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 	background.use();
 	background.setScreenSize(cameraMode == mono ? framebufferWidth : framebufferWidth / 2, framebufferHeight);
 	background.render();
-	quad.render();
+	pQuad->render();
 	glDepthFunc(GL_LESS);
 	glDisable(GL_DEPTH_TEST);
 }

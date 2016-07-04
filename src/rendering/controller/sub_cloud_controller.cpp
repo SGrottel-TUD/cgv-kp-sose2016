@@ -7,7 +7,7 @@ namespace cgvkp {
 	namespace rendering {
 		namespace controller {
 
-			sub_cloud_controller::sub_cloud_controller(release_renderer* renderer, const data::world &data, std::shared_ptr<model::cloud_model> parent_cloud, float scale, float parent_distance) :
+			sub_cloud_controller::sub_cloud_controller(release_renderer* renderer, const data::world &data, Mesh const& mesh, std::shared_ptr<model::cloud_model> parent_cloud, float scale, float parent_distance) :
 				controller_base(), renderer(renderer), data(data), parent_cloud(parent_cloud), parent_distance(parent_distance)
 			{
 
@@ -18,9 +18,8 @@ namespace cgvkp {
 				subCloud->model_matrix[3].y = scale;
 				renderer->add_model(subCloud);
 
-				auto cloudView = std::make_shared<view::cloud_view>();
+				auto cloudView = std::make_shared<view::cloud_view>(mesh);
 				cloudView->set_model(subCloud);
-				cloudView->init();
 				renderer->add_view(cloudView);
 
 				parent_x = parent_cloud->model_matrix[3].x;
@@ -42,7 +41,7 @@ namespace cgvkp {
 				int parent_sgn = (parent_distance > 0) - (parent_distance < 0);
 
 				if ((rand() % 2) != 0) {
-					auto subSubCloud = std::make_shared<controller::sub_cloud_controller>(renderer, data, subCloud, scale, scale*1.3f*parent_sgn);
+					auto subSubCloud = std::make_shared<controller::sub_cloud_controller>(renderer, data, mesh, subCloud, scale, scale*1.3f*parent_sgn);
 					renderer->add_controller(subSubCloud);
 				}
 

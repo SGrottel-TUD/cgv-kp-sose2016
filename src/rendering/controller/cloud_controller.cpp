@@ -8,7 +8,7 @@ namespace cgvkp {
 namespace rendering {
 namespace controller {
 
-	cloud_controller::cloud_controller(release_renderer* renderer, const data::world &data) :
+	cloud_controller::cloud_controller(release_renderer* renderer, const data::world &data, Mesh const& mesh) :
 		controller_base(), renderer(renderer), data(data), clouds()
 	{
 		std::random_device r;
@@ -30,9 +30,8 @@ namespace controller {
 			cloud->model_matrix[3].y = scale;
 			renderer->add_model(cloud);
 
-			auto cloudView = std::make_shared<view::cloud_view>();
+			auto cloudView = std::make_shared<view::cloud_view>(mesh);
 			cloudView->set_model(cloud);
-			cloudView->init();
 			renderer->add_view(cloudView);
 
 			uniform = std::uniform_real_distribution<float>(-0.01f, 0.01f);
@@ -51,12 +50,12 @@ namespace controller {
 			uniform = std::uniform_real_distribution<float>(scale * 0.7f, scale * 0.85f);
 			scale = uniform(random_engine);
 				
-			auto subCloud1 = std::make_shared<controller::sub_cloud_controller>(renderer, data, cloud, scale, scale*1.3f);
+			auto subCloud1 = std::make_shared<controller::sub_cloud_controller>(renderer, data, mesh, cloud, scale, scale*1.3f);
 			renderer->add_controller(subCloud1);
 
 			scale = uniform(random_engine);
 			
-			auto subCloud2 = std::make_shared<controller::sub_cloud_controller>(renderer, data, cloud, scale, -scale*1.3f);
+			auto subCloud2 = std::make_shared<controller::sub_cloud_controller>(renderer, data, mesh, cloud, scale, -scale*1.3f);
 			renderer->add_controller(subCloud2);
 			
 

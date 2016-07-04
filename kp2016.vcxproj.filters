@@ -143,35 +143,14 @@
     <ClCompile Include="src\util\resource_file.cpp">
       <Filter>util\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\view\view_base.cpp">
-      <Filter>rendering\view\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\rendering\controller\controller_base.cpp">
       <Filter>rendering\controller\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\view\star_view.cpp">
-      <Filter>rendering\view\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\view\star_geometry.cpp">
-      <Filter>rendering\view\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\view\hand_geometry.cpp">
-      <Filter>rendering\view\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\view\hand_view.cpp">
-      <Filter>rendering\view\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\controller\data_controller.cpp">
       <Filter>rendering\controller\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\controller\periodic_rotation_controller.cpp">
       <Filter>rendering\controller\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\view\cloud_geometry.cpp">
-      <Filter>rendering\view\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\view\cloud_view.cpp">
-      <Filter>rendering\view\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\controller\cloud_controller.cpp">
       <Filter>rendering\controller\Source Files</Filter>
@@ -203,13 +182,7 @@
     <ClCompile Include="src\rendering\technique\background_technique.cpp">
       <Filter>rendering\technique\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\technique\shadowVolume.cpp">
-      <Filter>rendering\technique\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\rendering\technique\ssao.cpp">
-      <Filter>rendering\technique\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\technique\lightTechnique.cpp">
       <Filter>rendering\technique\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\technique\gaussianBlur.cpp">
@@ -319,20 +292,11 @@
     <ClInclude Include="src\rendering\model\model_base.hpp">
       <Filter>rendering\model\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\rendering\view\view_geometry_base.hpp">
-      <Filter>rendering\view\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\view\star_geometry.hpp">
-      <Filter>rendering\view\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\rendering\view\star_view.hpp">
       <Filter>rendering\view\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\model\star_model.hpp">
       <Filter>rendering\model\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\view\hand_geometry.hpp">
-      <Filter>rendering\view\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\view\hand_view.hpp">
       <Filter>rendering\view\Header Files</Filter>
@@ -351,9 +315,6 @@
     </ClInclude>
     <ClInclude Include="src\rendering\model\cloud_model.hpp">
       <Filter>rendering\model\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\view\cloud_geometry.hpp">
-      <Filter>rendering\view\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\view\cloud_view.hpp">
       <Filter>rendering\view\Header Files</Filter>
@@ -393,12 +354,6 @@
     </ClInclude>
     <ClInclude Include="src\util\spline_curve.hpp">
       <Filter>util\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\technique\lightTechnique.hpp">
-      <Filter>rendering\technique\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\technique\shadowVolume.hpp">
-      <Filter>rendering\technique\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\technique\ssao.hpp">
       <Filter>rendering\technique\Header Files</Filter>

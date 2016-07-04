@@ -1,5 +1,4 @@
 #include "geometry.hpp"
-#include "rendering/model/graphic_model_base.hpp"
 
 bool cgvkp::rendering::GeometryTechnique::init()
 {
@@ -49,15 +48,4 @@ void cgvkp::rendering::GeometryTechnique::setWorldView(glm::mat4 const& worldVie
 void cgvkp::rendering::GeometryTechnique::setWorldViewProjection(glm::mat4 const& worldViewProjection) const
 {
 	glUniformMatrix4fv(worldViewProjectionLocation, 1, GL_FALSE, &worldViewProjection[0][0]);
-}
-
-bool cgvkp::rendering::GeometryTechnique::renderView(view::view_base::ptr const view, glm::mat4 const& viewMatrix, glm::mat4 const& projection) const
-{
-	if (!view->is_valid() || !view->has_model()) return false;
-	auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(view->get_model());
-	if (graphic_model == nullptr) return false;
-	setWorldView(viewMatrix * graphic_model->model_matrix);
-	setWorldViewProjection(projection * viewMatrix * graphic_model->model_matrix);
-	view->render();
-	return true;
 }
