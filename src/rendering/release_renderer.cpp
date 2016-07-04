@@ -22,7 +22,7 @@ cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world const&
 	controllers.push_back(std::make_shared<controller::data_controller>(this, data, handMesh, starMesh));
 	controllers.push_back(std::make_shared<controller::cloud_controller>(this, data, cloudMesh));
 
-	cloudViews.sort([](view::cloud_view::ptr const& lhs, view::cloud_view::ptr const& rhs) { return rhs->get_model()->model_matrix[3].z - lhs->get_model()->model_matrix[3].z > glm::epsilon<float>(); });
+	//cloudViews.sort([](view::cloud_view::ptr const& lhs, view::cloud_view::ptr const& rhs) { return rhs->get_model()->model_matrix[3].z - lhs->get_model()->model_matrix[3].z > glm::epsilon<float>(); });
 
 	ambientLight = glm::vec3(0.1, 0.1, 0.5) * 0.25f;
 	directionalLight.color = glm::vec3(1, 1, 1);
@@ -253,7 +253,6 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 	geometryPass.setWorldViewProjection(glm::mat4(1));
 	pQuad->render();
 
-	glEnable(GL_DEPTH_TEST);
 
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
@@ -267,6 +266,7 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 		c->render();
 	}
 	glDisable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
 	for (auto const& v : handViews)
 	{
 		auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(v->get_model());
