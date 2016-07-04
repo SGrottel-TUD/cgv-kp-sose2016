@@ -6,6 +6,7 @@
 #include "rendering/view/hand_view.hpp"
 #include "rendering/technique/technique_normal_as_colour.hpp"
 #include "rendering/technique/background_technique.hpp"
+#include "mesh.hpp"
 #include <glm/glm.hpp>
 #include <chrono>
 
@@ -31,6 +32,8 @@ namespace rendering {
         std::shared_ptr<view::star_view> star_view;
         std::shared_ptr<model::hand_model> hand_model;
         std::shared_ptr<view::hand_view> hand_view;
+		Mesh handMesh;
+		Mesh starMesh;
     };
 }
 }

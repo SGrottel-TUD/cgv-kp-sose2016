@@ -13,7 +13,7 @@ cgvkp::application_config::application_config()
 	resourcesBasePath("src/resources"),
 	windowWidth(1280),
 	windowHeight(720),
-	cameraMode(rendering::camera_mode::mono),
+	cameraMode(rendering::release_renderer::CameraMode::mono),
 	eyeSeparation(0),
 	zZeroParallax(0),
 	fullscreen(false)
@@ -130,7 +130,7 @@ std::istream& cgvkp::operator>>(std::istream& lhs, application_config& rhs)
 		{
 			int mode = 0;
 			ss >> mode;
-			rhs.cameraMode = static_cast<rendering::camera_mode>(mode);
+			rhs.cameraMode = static_cast<rendering::release_renderer::CameraMode>(mode);
 		}
 		else if (key.find("eyeSeparation") != std::string::npos)
 		{

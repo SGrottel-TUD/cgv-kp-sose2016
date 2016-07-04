@@ -44,10 +44,10 @@ struct Face
 	unsigned int vertices[3];
 };
 
-cgvkp::util::ObjImporter::ObjImporter(std::string const& filename, bool withAdjacencies /* = false */)
-	: verticesCount(0), positions(nullptr), normals(nullptr), textureCoords(nullptr), indices(nullptr), indicesMode(GL_NONE), indicesCount(0), indicesType(GL_NONE), indicesSize(0), texturePath()
+cgvkp::util::ObjImporter::ObjImporter(char const* pMeshname, bool withAdjacencies /* = false */)
+	: verticesCount(0), positions(nullptr), normals(nullptr), textureCoords(nullptr), indices(nullptr), indicesMode(GL_NONE), indicesCount(0), indicesType(GL_NONE), indicesSize(0)
 {
-	load(filename, withAdjacencies);
+	load(pMeshname, withAdjacencies);
 }
 
 cgvkp::util::ObjImporter::~ObjImporter()
@@ -72,14 +72,14 @@ cgvkp::util::ObjImporter::~ObjImporter()
 	}
 }
 
-bool cgvkp::util::ObjImporter::load(std::string const& filename, bool withAdjacencies)
+bool cgvkp::util::ObjImporter::load(char const* pMeshname, bool withAdjacencies)
 {
-	std::ifstream file(resource_file::find_resource_file(filename));
+	std::ifstream file(resource_file::find_resource_file(std::string("meshes/") + pMeshname + ".obj"));
 
 	if (!file.good())
 	{
 #if defined(_DEBUG) || defined(DEBUG)
-		std::cerr << "Could not open mesh file \"" << filename << "\"." << std::endl;
+		std::cerr << "Could not open mesh file \"" << pMeshname << ".obj\"." << std::endl;
 #endif
 		return false;
 	}
@@ -223,15 +223,12 @@ bool cgvkp::util::ObjImporter::load(std::string const& filename, bool withAdjace
 		}
 		else if (type == "mtllib")	// Materials not (fully) supported.
 		{
-            // Do a quick scan for the texture file name in the mtl file
-            std::string mtlFile;
-            ss >> mtlFile;
-            // Adapt directory
-            size_t sep = filename.find_last_of("\\/");
-            if (sep != std::string::npos)
-                mtlFile = filename.substr(0, sep) + filename[sep] + mtlFile;
+			// Do a quick scan for the texture file name in the mtl file
+			std::string mtlFile;
+			ss >> mtlFile;
+			// Adapt directory
 
-            readTexturePathFromMtl(mtlFile);
+			readTexturePathFromMtl("meshes/" + mtlFile);
 		}
 		else if (type == "usemtl")
 		{
@@ -273,13 +270,13 @@ bool cgvkp::util::ObjImporter::load(std::string const& filename, bool withAdjace
 		else
 		{
 #if defined(_DEBUG) || defined(DEBUG)
-			std::cerr << filename << ": Unknown type \"" << type << "\"." << std::endl;
+			std::cerr << pMeshname << ".obj: Unknown type \"" << type << "\"." << std::endl;
 #endif
 			return false;
 		}
 	}
-    file.close();
-	
+	file.close();
+
 
 	try {
 		// Create data for the vertex buffers.
@@ -310,7 +307,7 @@ bool cgvkp::util::ObjImporter::load(std::string const& filename, bool withAdjace
 		objTextureCoords.clear();	// Not needed anymore.
 
 
-		// Create data for the index buffers.
+									// Create data for the index buffers.
 		objIndices.reserve(faces.size() * (withAdjacencies ? 6 : 3));
 		for (auto const& f : faces)
 		{
@@ -323,11 +320,11 @@ bool cgvkp::util::ObjImporter::load(std::string const& filename, bool withAdjace
 #if defined(_DEBUG) || defined(DEBUG)
 					if (edge.size() == 1)
 					{
-						std::cerr << "Could not create adjacencies. The mesh " << filename << " has a hole." << std::endl;
+						std::cerr << "Could not create adjacencies. The mesh " << pMeshname << ".obj has a hole." << std::endl;
 					}
 					else
 					{
-						std::cerr << "Could not create adjacencies. The mesh " << filename << " has an edge which is used by more than two triangles." << std::endl;
+						std::cerr << "Could not create adjacencies. The mesh " << pMeshname << ".obj has an edge which is used by more than two triangles." << std::endl;
 					}
 #endif
 					return false;
@@ -350,11 +347,11 @@ bool cgvkp::util::ObjImporter::load(std::string const& filename, bool withAdjace
 #if defined(_DEBUG) || defined(DEBUG)
 					if (edge.size() == 1)
 					{
-						std::cerr << "Could not create adjacencies. The mesh " << filename << " has a hole." << std::endl;
+						std::cerr << "Could not create adjacencies. The mesh " << pMeshname << ".obj has a hole." << std::endl;
 					}
 					else
 					{
-						std::cerr << "Could not create adjacencies. The mesh " << filename << " has an edge which is used by more than two triangles." << std::endl;
+						std::cerr << "Could not create adjacencies. The mesh " << pMeshname << ".obj has an edge which is used by more than two triangles." << std::endl;
 					}
 #endif
 					return false;
@@ -377,11 +374,11 @@ bool cgvkp::util::ObjImporter::load(std::string const& filename, bool withAdjace
 #if defined(_DEBUG) || defined(DEBUG)
 					if (edge.size() == 1)
 					{
-						std::cerr << "Could not create adjacencies. The mesh " << filename << " has a hole." << std::endl;
+						std::cerr << "Could not create adjacencies. The mesh " << pMeshname << ".obj has a hole." << std::endl;
 					}
 					else
 					{
-						std::cerr << "Could not create adjacencies. The mesh " << filename << " has an edge which is used by more than two triangles." << std::endl;
+						std::cerr << "Could not create adjacencies. The mesh " << pMeshname << ".obj has an edge which is used by more than two triangles." << std::endl;
 					}
 #endif
 					return false;
@@ -400,7 +397,7 @@ bool cgvkp::util::ObjImporter::load(std::string const& filename, bool withAdjace
 #if defined(_DEBUG) || defined(DEBUG)
 	catch (std::exception const& e)	// Could be an index out of bounds.
 	{
-		std::cerr << "Exception during parsing von \"" << filename << "\": " << e.what() << std::endl;
+		std::cerr << "Exception during parsing \"" << pMeshname << ".obj\": " << e.what() << std::endl;
 #else
 	catch (std::exception const&)	// Could be an index out of bounds.
 	{
@@ -448,39 +445,44 @@ bool cgvkp::util::ObjImporter::load(std::string const& filename, bool withAdjace
 	}
 
 	return true;
-}
-bool cgvkp::util::ObjImporter::readTexturePathFromMtl(std::string const& filename) {
-    std::ifstream file(resource_file::find_resource_file(filename));
+	}
 
-    if (!file.good())
-    {
+bool cgvkp::util::ObjImporter::readTexturePathFromMtl(std::string const& filename)
+{
+	std::ifstream file(resource_file::find_resource_file(filename));
+
+	if (!file.good())
+	{
 #if defined(_DEBUG) || defined(DEBUG)
-        std::cerr << "Could not open mtl file \"" << filename << "\"." << std::endl;
+		std::cerr << "Could not open mtl file \"" << filename << "\"." << std::endl;
 #endif
-        return false;
-    }
+		return false;
+	}
 
-    // Read the data.
-    std::string line;
-    bool pathRead = false;
-    while (!pathRead && std::getline(file, line))
-    {
-        std::stringstream ss;
-        ss << line;
-        std::string type;
-        ss >> type;
+	// Read the data.
+	std::string line;
+	bool pathRead = false;
+	while (!pathRead && std::getline(file, line))
+	{
+		std::stringstream ss;
+		ss << line;
+		std::string type;
+		ss >> type;
 
-        if (type == "map_Kd")
-        {
-            ss >> texturePath;
-            // Adapt directory
-            size_t sep = filename.find_last_of("\\/");
-            if (sep != std::string::npos)
-                texturePath = filename.substr(0, sep) + filename[sep] + texturePath;
-            pathRead = true;
-        }
-    }
-    file.close();
+		if (type == "map_Kd")
+		{
+			ss >> texturePath;
+			// Adapt directory
+			size_t sep = filename.find_last_of("\\/");
+			if (sep != std::string::npos)
+				texturePath = filename.substr(0, sep) + filename[sep] + texturePath;
+#if defined(_DEBUG) || defined(DEBUG)
+			std::cout << "Got texture path: " << texturePath << std::endl;
+#endif
+			pathRead = true;
+		}
+	}
+	file.close();
 
-    return pathRead;
+	return pathRead;
 }

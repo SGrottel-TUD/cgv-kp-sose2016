@@ -2,8 +2,8 @@
 #include <glfw/glfw3.h>
 #include <glm/gtx/transform.hpp>
 
-float const cgvkp::rendering::Gui::normalFontSize = 20.0f;
-float const cgvkp::rendering::Gui::titleFontSize = 30.0f;
+float const cgvkp::rendering::Gui::normalFontSize = 60.0f;
+float const cgvkp::rendering::Gui::titleFontSize = 100.0f;
 
 bool cgvkp::rendering::Gui::init()
 {

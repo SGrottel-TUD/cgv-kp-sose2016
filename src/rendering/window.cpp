@@ -149,7 +149,7 @@ bool rendering::window::create_window(int width, int height, char const* title, 
 	glfwSetCharCallback(handle, character_callback);
 
 	glfwMakeContextCurrent(handle);
-	glfwSwapInterval(1);
+	//glfwSwapInterval(1);
 
 	return true;
 }

@@ -10,14 +10,9 @@ cgvkp::rendering::Mesh::Mesh()
 	}
 }
 
-cgvkp::rendering::Mesh::~Mesh()
+bool cgvkp::rendering::Mesh::init(char const* pMeshname, bool withAdjacencies /* = false */)
 {
-	deinit();
-}
-
-bool cgvkp::rendering::Mesh::init(std::string const& filename, bool withAdjacencies /* = false */)
-{
-	util::ObjImporter mesh(filename, withAdjacencies);
+	util::ObjImporter mesh(pMeshname, withAdjacencies);
 	if (!mesh.isValid())
 	{
 		return false;
@@ -47,6 +42,10 @@ bool cgvkp::rendering::Mesh::init(std::string const& filename, bool withAdjacenc
 		glBufferData(GL_ARRAY_BUFFER, mesh.getTextureCoordsSize(), mesh.getTextureCoords(), GL_STATIC_DRAW);
 		glEnableVertexAttribArray(textureCoord);
 		glVertexAttribPointer(textureCoord, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+		if (!mesh.getTexturePath().empty())
+		{
+			texture = util::texture::from_png(mesh.getTexturePath());
+		}
 	}
 
 	glGenBuffers(1, &indexBuffer);
@@ -83,10 +82,15 @@ void cgvkp::rendering::Mesh::deinit()
 		glDeleteBuffers(1, &indexBuffer);
 		indexBuffer = 0;
 	}
+	texture.reset();
 }
 
 void cgvkp::rendering::Mesh::render() const
 {
 	glBindVertexArray(vertexArray);
+	if (texture)
+	{
+		texture->bind_texture();
+	}
 	glDrawElements(indicesMode, indicesCount, indicesType, nullptr);
 }

@@ -25,7 +25,7 @@ namespace rendering {
 		void toggle_fullscreen();
 		void increase_eye_separation(float val);
 		void increase_zzero_parallax(float val);
-		void set_camera_mode(rendering::camera_mode mode);
+		void set_camera_mode(rendering::release_renderer::CameraMode mode);
 
         data::world data;
         std::shared_ptr<rendering::window> debug_window;

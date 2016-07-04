@@ -13,8 +13,8 @@
 namespace cgvkp {
 namespace rendering {
 namespace controller {
-    data_controller::data_controller(release_renderer* renderer, const data::world &data) :
-        controller_base(), renderer(renderer), data(data), stars(), hands(),
+    data_controller::data_controller(release_renderer* renderer, const data::world &data, Mesh const& _handMesh, Mesh const& _starMesh) :
+        renderer(renderer), data(data), handMesh(_handMesh), starMesh(_starMesh),
         caught_star_controller(std::make_shared<controller::caught_star_controller>())
     {
         renderer->add_controller(caught_star_controller);
@@ -24,9 +24,6 @@ namespace controller {
         // intentionally empty
     }
 
-    bool data_controller::has_model() const {
-        return true;
-    }
     void data_controller::update(double seconds, std::shared_ptr<abstract_user_input> input)
     {
         // Iterate through stars
@@ -43,9 +40,8 @@ namespace controller {
                 renderer->add_model(star);
 
                 // And its view
-                auto starView = std::make_shared<view::star_view>();
+                auto starView = std::make_shared<view::star_view>(starMesh);
                 starView->set_model(star);
-                starView->init();
                 renderer->add_view(starView);
 
                 // And its controller
@@ -99,9 +95,8 @@ namespace controller {
                 renderer->add_model(hand);
 
                 // And its view
-                auto handView = std::make_shared<view::hand_view>();
+                auto handView = std::make_shared<view::hand_view>(handMesh);
                 handView->set_model(hand);
-                handView->init();
                 renderer->add_view(handView);
 
                 // And its controller

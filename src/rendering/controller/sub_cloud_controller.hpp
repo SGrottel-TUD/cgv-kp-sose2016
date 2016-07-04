@@ -16,7 +16,7 @@ namespace controller {
 
 	class sub_cloud_controller : public controller_base {
 	public:
-		sub_cloud_controller(release_renderer* renderer, const data::world& data, std::shared_ptr<model::cloud_model> parent_cloud, float scale, float parent_distance);
+		sub_cloud_controller(release_renderer* renderer, const data::world& data, Mesh const& mesh, std::shared_ptr<model::cloud_model> parent_cloud, float scale, float parent_distance);
 		virtual ~sub_cloud_controller();
 
 		// Answer if the object has a model

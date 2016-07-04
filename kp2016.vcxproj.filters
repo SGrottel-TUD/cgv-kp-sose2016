@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -146,41 +146,14 @@
     <ClCompile Include="src\util\resource_file.cpp">
       <Filter>util\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\view\view_base.cpp">
-      <Filter>rendering\view\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\rendering\controller\controller_base.cpp">
       <Filter>rendering\controller\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\model\model_base.cpp">
-      <Filter>rendering\model\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\view\star_view.cpp">
-      <Filter>rendering\view\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\view\star_geometry.cpp">
-      <Filter>rendering\view\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\view\hand_geometry.cpp">
-      <Filter>rendering\view\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\view\hand_view.cpp">
-      <Filter>rendering\view\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\controller\data_controller.cpp">
       <Filter>rendering\controller\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\model\graphic_model_base.cpp">
-      <Filter>rendering\model\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\rendering\controller\periodic_rotation_controller.cpp">
       <Filter>rendering\controller\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\view\cloud_geometry.cpp">
-      <Filter>rendering\view\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\view\cloud_view.cpp">
-      <Filter>rendering\view\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\controller\cloud_controller.cpp">
       <Filter>rendering\controller\Source Files</Filter>
@@ -206,19 +179,28 @@
     <ClCompile Include="src\rendering\technique\technique.cpp">
       <Filter>rendering\technique\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\technique\geometryBuffer.cpp">
-      <Filter>rendering\technique\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\technique\ShadowVolume.cpp">
-      <Filter>rendering\technique\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\technique\LightTechnique.cpp">
-      <Filter>rendering\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\util\texture.cpp">
       <Filter>util\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\technique\background_technique.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\ssao.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\gaussianBlur.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\geometryBuffer.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\geometry.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\postProcessingFramebuffer.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\directionalLight.cpp">
       <Filter>rendering\technique\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\font.cpp">
@@ -337,20 +319,11 @@
     <ClInclude Include="src\rendering\model\model_base.hpp">
       <Filter>rendering\model\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\rendering\view\view_geometry_base.hpp">
-      <Filter>rendering\view\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\view\star_geometry.hpp">
-      <Filter>rendering\view\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\rendering\view\star_view.hpp">
       <Filter>rendering\view\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\model\star_model.hpp">
       <Filter>rendering\model\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\view\hand_geometry.hpp">
-      <Filter>rendering\view\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\view\hand_view.hpp">
       <Filter>rendering\view\Header Files</Filter>
@@ -369,9 +342,6 @@
     </ClInclude>
     <ClInclude Include="src\rendering\model\cloud_model.hpp">
       <Filter>rendering\model\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\view\cloud_geometry.hpp">
-      <Filter>rendering\view\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\view\cloud_view.hpp">
       <Filter>rendering\view\Header Files</Filter>
@@ -400,15 +370,6 @@
     <ClInclude Include="src\rendering\technique\technique_normal_as_colour.hpp">
       <Filter>rendering\technique\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\rendering\technique\geometryBuffer.hpp">
-      <Filter>rendering\technique\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\technique\ShadowVolume.hpp">
-      <Filter>rendering\technique\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\technique\LightTechnique.hpp">
-      <Filter>rendering\technique\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\util\texture.hpp">
       <Filter>util\Header Files</Filter>
     </ClInclude>
@@ -421,7 +382,7 @@
     <ClInclude Include="src\util\spline_curve.hpp">
       <Filter>util\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\rendering\GuiElements.hpp">
+    <ClInclude Include="src\rendering\guiElements.hpp">
       <Filter>rendering\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\font.hpp">
@@ -432,6 +393,24 @@
     </ClInclude>
     <ClInclude Include="src\rendering\technique\fontTechnique.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\ssao.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\gaussianBlur.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\geometryBuffer.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\geometry.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\postProcessingFramebuffer.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\directionalLight.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -444,5 +423,10 @@
     <Object Include="src\resources\meshes\hand.obj">
       <Filter>Resource Files\meshes</Filter>
     </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\resources\starrynight.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

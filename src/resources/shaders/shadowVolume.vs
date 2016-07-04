@@ -10,6 +10,6 @@ out vec3 normalWorld;
 
 void main()
 {
-	positionWorld = (world * vec4(position, 1)).xyz;
-	normalWorld = (world * vec4(normal, 0)).xyz;
+	positionWorld = (world * vec4(position, 1.0)).xyz;
+	normalWorld = (world * vec4(normal, 0.0)).xyz;
 }

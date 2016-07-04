@@ -22,13 +22,10 @@ namespace cgvkp
 			// Do render
 			virtual void render(const window& wnd) = 0;
 
-			virtual void lost_context() {}
-			virtual bool restore_context(window const& wnd) { return true; }
-
-		protected:
-			// return true on success
-			virtual bool init_impl(const window& wnd) = 0;
-			virtual void deinit_impl() = 0;
+    protected:
+        // return true on success
+        virtual bool init_impl(const window& wnd) = 0;
+        virtual void deinit_impl() = 0;
 
 			const ::cgvkp::data::world& data;
 		private:

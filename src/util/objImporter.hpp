@@ -17,7 +17,7 @@ namespace cgvkp
 		class ObjImporter
 		{
 		public:
-			ObjImporter(std::string const& filename, bool withAdjacencies = false);
+			ObjImporter(char const* pMeshname, bool withAdjacencies = false);
 			~ObjImporter();
 			inline AABB const& getAABB() { return aabb; }
 			inline glm::vec3 const* getPositions() const { return positions; }
@@ -38,7 +38,7 @@ namespace cgvkp
             inline std::string getTexturePath() const { return texturePath; }
 
 		private:
-			bool load(std::string const& filename, bool withAdjacencies);
+			bool load(char const* pMeshname, bool withAdjacencies);
             bool readTexturePathFromMtl(std::string const& filename);
 
 			GLsizei verticesCount;
