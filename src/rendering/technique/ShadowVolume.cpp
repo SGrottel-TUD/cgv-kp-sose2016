@@ -1,6 +1,6 @@
 #include<memory>
 
-#include "ShadowVolume.hpp"
+#include "shadowVolume.hpp"
 #include "rendering/model/graphic_model_base.hpp"
 
 /*

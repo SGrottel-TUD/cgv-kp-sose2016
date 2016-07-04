@@ -4,16 +4,6 @@
 #include "technique.hpp"
 #include "util/resource_file.hpp"
 
-cgvkp::rendering::Technique::Technique()
-	: program(0), worldViewProjectionLocation(invalidLocation)
-{
-}
-
-cgvkp::rendering::Technique::~Technique()
-{
-	deinit();
-}
-
 bool cgvkp::rendering::Technique::init()
 {
 	program = glCreateProgram();
@@ -44,28 +34,14 @@ void cgvkp::rendering::Technique::deinit()
 	shaders.clear();
 }
 
-void cgvkp::rendering::Technique::setWorldViewProjection(glm::mat4x4 const& worldViewProjection) const
-{
-	if (worldViewProjectionLocation != invalidLocation)
-	{
-		glUniformMatrix4fv(worldViewProjectionLocation, 1, GL_FALSE, &worldViewProjection[0][0]);
-	}
-	#if defined(_DEBUG) || defined(DEBUG)
-	else
-	{
-		std::cerr << "WARNING: worldViewProjectionLocation was not defined in a Technique subclass" << std::endl;
-	}
-	#endif
-}
-
-bool cgvkp::rendering::Technique::addShader(GLenum shaderType, std::string const& filename)
+bool cgvkp::rendering::Technique::addShader(GLenum shaderType, char const* pFilename)
 {
 	// Get shader source.
 	std::string source;
-	if (!util::resource_file::read_file_as_text(util::resource_file::find_resource_file(filename), source))
+	if (!util::resource_file::read_file_as_text(util::resource_file::find_resource_file(pFilename), source))
 	{
 #if defined(_DEBUG) || defined(DEBUG)
-		std::cerr << "Could not read file \"" << filename << "\"." << std::endl;
+		std::cerr << "Could not read file \"" << pFilename << "\"." << std::endl;
 #endif
 		return false;
 	}
@@ -92,7 +68,7 @@ bool cgvkp::rendering::Technique::addShader(GLenum shaderType, std::string const
 	if (success == GL_FALSE)
 	{
 #if defined(_DEBUG) || defined(DEBUG)
-		std::cerr << "Could not compile shader \"" << filename << "\" (type: " << shaderType << ")." << std::endl;
+		std::cerr << "Could not compile shader \"" << pFilename << "\" (type: " << shaderType << ")." << std::endl;
 		int infoLogLength = 0;
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
 		if (infoLogLength > 0)
@@ -112,14 +88,14 @@ bool cgvkp::rendering::Technique::addShader(GLenum shaderType, std::string const
 	return true;
 }
 
-GLint cgvkp::rendering::Technique::getUniformLocation(GLchar const* name) const
+GLint cgvkp::rendering::Technique::getUniformLocation(GLchar const* pName) const
 {
-	GLint location = glGetUniformLocation(program, name);
+	GLint location = glGetUniformLocation(program, pName);
 
 #if defined(_DEBUG) || defined(DEBUG)
 	if (location == invalidLocation)
 	{
-		std::cerr << "Could not find location for uniform \"" << name << "\"." << std::endl;
+		std::cerr << "Could not find location for uniform \"" << pName << "\"." << std::endl;
 	}
 #endif
 

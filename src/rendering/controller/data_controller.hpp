@@ -20,7 +20,7 @@ namespace controller {
         virtual ~data_controller();
 
         // Answer if the object has a model
-        virtual bool has_model() const;
+		virtual inline bool has_model() const { return true; }
 
         /**
          * @param seconds Time elapsed since last call, in seconds

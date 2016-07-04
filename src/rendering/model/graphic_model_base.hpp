@@ -5,12 +5,10 @@
 namespace cgvkp {
     namespace rendering {
         namespace model {
-
             class graphic_model_base : public model_base {
             public:
-                graphic_model_base();
-                graphic_model_base(glm::mat4 model_matrix);
-                virtual ~graphic_model_base();
+				graphic_model_base() : model_matrix(1.0f), may_rotate(true) {}
+				graphic_model_base(glm::mat4 model_matrix) : model_matrix(model_matrix) {}
                 glm::mat4 model_matrix;
                 bool may_rotate;
             };

@@ -18,31 +18,27 @@ namespace view {
         typedef std::shared_ptr<view_base> ptr;
         typedef std::weak_ptr<view_base> weak_ptr;
 
-        view_base();
-        virtual ~view_base();
+		inline view_base() : initialized(false) {}
+		virtual inline ~view_base() { deinit(); }
 
-        inline void set_model(model::model_base::weak_ptr m) {
-            model = m;
-        }
-        inline model::model_base::ptr get_model() const {
-            return model.lock();
-        }
+        inline void set_model(model::model_base::weak_ptr m) { model = m; }
+        inline model::model_base::ptr get_model() const { return model.lock(); }
 
         // Initializes the object (if not already initialized) and returns the initialization state
         bool init();
 
         // Answer if the object is valid
-        virtual bool is_valid() const;
+        virtual inline bool is_valid() const { return initialized; }
         // Answer if the object has a model
-        virtual bool has_model() const;
+        virtual inline bool has_model() const { return !model.expired(); }
 
-        virtual void render() = 0;
+        virtual void render() const = 0;
 
         // deinitializes the object (if initialized)
         void deinit();
 
-        virtual bool casts_shadows() { return true; }
-        virtual bool light_source() { return false; }
+        virtual inline bool casts_shadows() const { return true; }
+        virtual inline bool light_source() const { return false; }
 
     protected:
         // return true on success

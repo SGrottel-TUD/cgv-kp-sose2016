@@ -24,9 +24,6 @@ namespace controller {
         // intentionally empty
     }
 
-    bool data_controller::has_model() const {
-        return true;
-    }
     void data_controller::update(double seconds, std::shared_ptr<abstract_user_input> input)
     {
         // Iterate through stars

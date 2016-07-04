@@ -149,9 +149,6 @@
     <ClCompile Include="src\rendering\controller\controller_base.cpp">
       <Filter>rendering\controller\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\model\model_base.cpp">
-      <Filter>rendering\model\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\rendering\view\star_view.cpp">
       <Filter>rendering\view\Source Files</Filter>
     </ClCompile>
@@ -166,9 +163,6 @@
     </ClCompile>
     <ClCompile Include="src\rendering\controller\data_controller.cpp">
       <Filter>rendering\controller\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\model\graphic_model_base.cpp">
-      <Filter>rendering\model\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\controller\periodic_rotation_controller.cpp">
       <Filter>rendering\controller\Source Files</Filter>
@@ -203,19 +197,34 @@
     <ClCompile Include="src\rendering\technique\technique.cpp">
       <Filter>rendering\technique\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\technique\geometryBuffer.cpp">
-      <Filter>rendering\technique\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\technique\ShadowVolume.cpp">
-      <Filter>rendering\technique\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\technique\LightTechnique.cpp">
-      <Filter>rendering\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\util\texture.cpp">
       <Filter>util\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\technique\background_technique.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\shadowVolume.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\ssao.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\lightTechnique.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\gaussianBlur.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\geometryBuffer.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\geometry.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\postProcessingFramebuffer.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\directionalLight.cpp">
       <Filter>rendering\technique\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -373,15 +382,6 @@
     <ClInclude Include="src\rendering\technique\technique_normal_as_colour.hpp">
       <Filter>rendering\technique\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\rendering\technique\geometryBuffer.hpp">
-      <Filter>rendering\technique\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\technique\ShadowVolume.hpp">
-      <Filter>rendering\technique\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\technique\LightTechnique.hpp">
-      <Filter>rendering\technique\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\util\texture.hpp">
       <Filter>util\Header Files</Filter>
     </ClInclude>
@@ -393,6 +393,30 @@
     </ClInclude>
     <ClInclude Include="src\util\spline_curve.hpp">
       <Filter>util\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\lightTechnique.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\shadowVolume.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\ssao.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\gaussianBlur.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\geometryBuffer.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\geometry.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\postProcessingFramebuffer.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\directionalLight.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

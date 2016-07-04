@@ -7,45 +7,80 @@
 #include "controller/data_controller.hpp"
 #include "controller/cloud_controller.hpp"
 
-cgvkp::rendering::release_renderer::release_renderer(const ::cgvkp::data::world& data)
-    : cgvkp::rendering::abstract_renderer(data),
-	framebufferWidth(0), framebufferHeight(0), cameraMode(mono), fps_counter_elapsed(0.0), rendered_frames(0u) {
-}
-cgvkp::rendering::release_renderer::~release_renderer(){}
+cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world const& data)
+	: cgvkp::rendering::abstract_renderer(data),
+	framebufferWidth(0), framebufferHeight(0), cameraMode(mono), fps_counter_elapsed(0.0), rendered_frames(0u)
+{
+	// Create and add data, cloud controller
+	controllers.push_back(std::make_shared<controller::data_controller>(this, data));
+	controllers.push_back(std::make_shared<controller::cloud_controller>(this, data));
 
-bool cgvkp::rendering::release_renderer::init_impl(const window& wnd) {
-	if (!restore_context(wnd))
+	// Create a cached hand view to avoid delay on first hand appearance.
+	cached_views.push_back(std::make_shared<view::hand_view>());
+
+	ambientLight = glm::vec3(0.1, 0.1, 0.5) * 0.25f;
+	directionalLight.color = glm::vec3(1, 1, 1);
+	directionalLight.diffuseIntensity = 0.5f;
+	directionalLight.direction = glm::normalize(glm::vec3(0, -2, -1));	// in view space.
+}
+
+bool cgvkp::rendering::release_renderer::init_impl(window const& wnd)
+{
+	wnd.make_current();
+
+	if (!gbuffer.init() ||
+		!postProcessing.init(2) ||
+		!geometryPass.init() ||
+		!directionalLightPass.init() ||
+		!ssaoPass.init() ||
+		!gaussianBlur.init() ||
+		!quad.init("meshes/quad.obj") ||
+		!background.init()
+		)
 	{
 		return false;
 	}
 
-    // Create and add data, cloud controller
-    controllers.push_back(std::make_shared<controller::data_controller>(this, data));
-	controllers.push_back(std::make_shared<controller::cloud_controller>(this, data));
-
-    // Create a cached hand view to avoid delay on first hand appearance.
-    auto hand_view = std::make_shared<view::hand_view>();
-    hand_view->init();
-    cached_views.push_back(hand_view);
-
-	// light source
-	PointLight p1;
-	p1.position = glm::vec3(0, 1.5f, 0);
-	p1.color = glm::vec3(0.1f, 0.1, 0.5f);
-	p1.ambientIntensity = 0.25f;
-	p1.diffuseIntensity = 0.8f;
-	p1.constantAttenuation = 0;
-	p1.linearAttenuation = 0;
-	p1.exponentialAttenuation = 0.3f;
-	p1.calculateWorld();
-	pointLights.push_back(p1);
+	for (auto const& view : cached_views)
+	{
+		if (!view->init())
+		{
+			return false;
+		}
+	}
+	for (auto const& view : views)
+	{
+		if (!view->init())
+		{
+			return false;
+		}
+	}
 
 	return true;
 }
 
 void cgvkp::rendering::release_renderer::deinit_impl()
 {
-	lost_context();
+	glBindVertexArray(0);
+	glUseProgram(0);
+
+	for (auto const& view : views)
+	{
+		view->deinit();
+	}
+	for (auto const& view : cached_views)
+	{
+		view->deinit();
+	}
+
+	background.deinit();
+	quad.deinit();
+	gaussianBlur.deinit();
+	ssaoPass.deinit();
+	directionalLightPass.deinit();
+	geometryPass.deinit();
+	gbuffer.deinit();
+	postProcessing.deinit();
 }
 
 void cgvkp::rendering::release_renderer::calculateViewProjection()
@@ -53,12 +88,7 @@ void cgvkp::rendering::release_renderer::calculateViewProjection()
 	float fovy = glm::quarter_pi<float>();
 	float tanHalfFovy = tan(fovy / 2);
 
-	if(framebufferWidth == 0 || framebufferHeight == 0)
-	{
-		return;
-	}
-
-	aspect = static_cast<float>(framebufferWidth / (cameraMode == stereo ? 2 : 1)) / framebufferHeight;
+	aspect = (cameraMode == stereo ? framebufferWidth / 2.0f : static_cast<float>(framebufferWidth)) / framebufferHeight;
 
 	// View
 	float w = data.get_config().width();
@@ -114,13 +144,17 @@ void cgvkp::rendering::release_renderer::calculateViewProjection()
 	}
 }
 
-void cgvkp::rendering::release_renderer::render(const window& wnd)
+void cgvkp::rendering::release_renderer::render(window const& wnd)
 {
 	wnd.make_current();
 	if (wnd.get_size(framebufferWidth, framebufferHeight))
 	{
-		gbuffer.resize(framebufferWidth, framebufferHeight);
-		calculateViewProjection();
+		if (framebufferWidth != 0 && framebufferHeight != 0)
+		{
+			gbuffer.resize(cameraMode == mono ? framebufferWidth : framebufferWidth / 2, framebufferHeight);
+			postProcessing.resize(cameraMode == mono ? framebufferWidth : framebufferWidth / 2, framebufferHeight);
+			calculateViewProjection();
+		}
 	}
 	if (framebufferWidth == 0 || framebufferHeight == 0)
 	{
@@ -130,276 +164,147 @@ void cgvkp::rendering::release_renderer::render(const window& wnd)
 	std::chrono::high_resolution_clock::time_point now_time = std::chrono::high_resolution_clock::now();
 	double elapsed = std::chrono::duration<double>(now_time - last_time).count();
 	last_time = now_time;
+#if defined(DEBUG) || defined(_DEBUG)
 	fps_counter_elapsed += elapsed;
 	++rendered_frames;
 	if (fps_counter_elapsed >= 2.0)
 	{
-#if (DEBUG || _DEBUG)
 		std::cout << "FPS: " << rendered_frames / fps_counter_elapsed << std::endl;
-#endif
 		fps_counter_elapsed = 0.0;
 		rendered_frames = 0u;
 	}
+#endif
 
-	for (controller::controller_base::ptr controller : controllers) {
-		if (!controller->has_model()) continue;
-		controller->update(elapsed, wnd.get_user_input_object());
+	if (new_controllers.size())
+	{
+		controllers.insert(controllers.end(), new_controllers.begin(), new_controllers.end());
+		new_controllers.clear();
 	}
-    controllers.insert(controllers.end(), new_controllers.begin(), new_controllers.end());
-    new_controllers.clear();
-    // Remove views and controllers without model
-    for (auto it = views.begin(); it != views.end();)
-    {
-        if (!it->get()->has_model())
-        {
-            it->get()->deinit();
-            it = views.erase(it);
-        }
-        else
-        {
-            ++it;
-        }
-    }
-    for (auto it = controllers.begin(); it != controllers.end();)
-    {
-        if (!it->get()->has_model())
-        {
-            it = controllers.erase(it);
-        }
-        else
-        {
-            ++it;
-        }
-    }
+	// Remove views and controllers without model
+	for (auto it = views.begin(); it != views.end();)
+	{
+		if (!(*it)->has_model())
+		{
+			it->get()->deinit();
+			it = views.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+	for (auto it = controllers.begin(); it != controllers.end();)
+	{
+		if (!(*it)->has_model())
+		{
+			it = controllers.erase(it);
+		}
+		else
+		{
+			(*it)->update(elapsed, wnd.get_user_input_object());
+			++it;
+		}
+	}
+
 	if (cameraMode == stereo)
 	{
-		glEnable(GL_SCISSOR_TEST);
-
-		// Render only to the left half.
 		glViewport(0, 0, framebufferWidth / 2, framebufferHeight);
-		glScissor(0, 0, framebufferWidth / 2, framebufferHeight);
+
+		// Render left image.
 		renderScene(leftProjection);
+		gbuffer.bindForReadingFinal();
+		glBlitFramebuffer(0, 0, framebufferWidth / 2, framebufferHeight, 0, 0, framebufferWidth / 2, framebufferHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
-		// Render only to the right half.
-		glViewport(framebufferWidth / 2, 0, framebufferWidth / 2, framebufferHeight);
-		glScissor(framebufferWidth / 2, 0, framebufferWidth / 2, framebufferHeight);
+		// Render right image.
 		renderScene(rightProjection);
-
-		// reset
-		glDisable(GL_SCISSOR_TEST);
+		gbuffer.bindForReadingFinal();
+		glBlitFramebuffer(0, 0, framebufferWidth / 2, framebufferHeight, framebufferWidth / 2, 0, framebufferWidth, framebufferHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	}
 	else	// mono
 	{
 		glViewport(0, 0, framebufferWidth, framebufferHeight);
 		renderScene(leftProjection);
+		gbuffer.bindForReadingFinal();
+		glBlitFramebuffer(0, 0, framebufferWidth, framebufferHeight, 0, 0, framebufferWidth, framebufferHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	}
 }
 
-void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projection) const
+void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection) const
 {
-	gbuffer.bindForGeometryPass();
+	gbuffer.bindForWritingGeometry();
+	geometryPass.use();
 
-	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    background.render();
+	// Render a quad with a very low z value in view space to not get wrong results during the ambient occlusion.
+	geometryPass.setWorldView(glm::translate(glm::vec3(0, 0, -1000)));
+	geometryPass.setWorldViewProjection(glm::mat4(1));
+	quad.render();
 
-	glm::vec3 ambientLight(0, 0, 0);
-	for (auto const& light : pointLights)
-	{
-		ambientLight += light.ambientIntensity * light.color;
-	}
+	glEnable(GL_DEPTH_TEST);
 
-	geometryPass.use();
-	geometryPass.setAmbientLight(ambientLight);
 	for (view::view_base::ptr v : views)
 	{
-        geometryPass.renderView(v, projection * viewMatrix);
+		geometryPass.renderView(v, viewMatrix, projection);
 	}
+
 	glDepthMask(GL_FALSE);
+	glDisable(GL_DEPTH_TEST);
 
-    // Render lights
-    renderLights(projection);
-
-	// Copy final image into default framebuffer
-	gbuffer.bindForFinalPass();
-	glBlitFramebuffer(0, 0, framebufferWidth, framebufferHeight, 0, 0, framebufferWidth, framebufferHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-}
-
-void cgvkp::rendering::release_renderer::renderLights(glm::mat4x4 const& projection) const
-{
-	// Render lights
-	glEnable(GL_STENCIL_TEST);
-	glCullFace(GL_FRONT);
-	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
 	glBlendFunc(GL_ONE, GL_ONE);
-	glEnable(GL_DEPTH_CLAMP);
 
-	PointLight pointLight;
-	pointLight.color = glm::vec3(1, 1, 0.6f);
-	pointLight.ambientIntensity = 0.25f;
-	pointLight.diffuseIntensity = 0.2f;
-	pointLight.constantAttenuation = 0;
-	pointLight.linearAttenuation = 0;
-	pointLight.exponentialAttenuation = 0.3f;
-	for (auto const& view : views)
-	{
-		if (!view->is_valid() || !view->has_model() || !view->light_source()) continue;
-		auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(view->get_model());
-		if (graphic_model == nullptr) continue;
-		pointLight.position = glm::vec3(graphic_model->model_matrix[3]);
-		pointLight.calculateWorld();
-		renderPointLight(pointLight, projection);
-	}
-	glDisable(GL_DEPTH_CLAMP);
+	// Ambient light
+	gbuffer.bindForReadingGeometry();
+	postProcessing.nextPass(0, 0);
+	ssaoPass.use();
+	ssaoPass.setAmbientLight(ambientLight);
+	quad.render();
+
+	postProcessing.nextPass(1);
+	gaussianBlur.use();
+	gaussianBlur.setDirection(GaussianBlurTechnique::horizontal);
+	gaussianBlur.setBlurSize(framebufferWidth);
+	quad.render();
+
+	postProcessing.finalPass(1);
+	gbuffer.bindForWritingFinal();
+	gaussianBlur.setDirection(GaussianBlurTechnique::vertical);
+	gaussianBlur.setBlurSize(framebufferHeight);
+	quad.render();
+
+	// Directional Light
+	gbuffer.bindForReadingGeometry();
+	gbuffer.bindForWritingFinal();
+	directionalLightPass.use();
+	directionalLightPass.setLight(directionalLight);
+
+	glEnable(GL_BLEND);
+	quad.render();
 	glDisable(GL_BLEND);
-	glCullFace(GL_BACK);
-	glDisable(GL_STENCIL_TEST);
+
+	// Background
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_EQUAL);
+	background.render();
+	quad.render();
+	glDepthFunc(GL_LESS);
+	glDisable(GL_DEPTH_TEST);
 }
 
-void cgvkp::rendering::release_renderer::renderPointLight(PointLight const& pointLight, glm::mat4x4 const& projection) const
-{
-    // Render shadow volumes.
-    glDrawBuffer(GL_NONE);
-    glClear(GL_STENCIL_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
-
-    glStencilFunc(GL_ALWAYS, 0, 0xff);
-    glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
-    glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
-
-    shadowVolumePass.use();
-    shadowVolumePass.setLightPosition(pointLight.position);
-    shadowVolumePass.setViewProjection(projection * viewMatrix);
-    for (view::view_base::ptr v : views)
-    {
-        shadowVolumePass.renderView(v);
-    }
-
-    glEnable(GL_CULL_FACE);
-
-    // Render objects not in shadow.
-    gbuffer.bindForLightPass();
-    lightPass.use();
-    lightPass.setScreenSize(framebufferWidth, framebufferHeight);
-    lightPass.setEyePosition(viewMatrix[3].x, viewMatrix[3].y, viewMatrix[3].z);
-    lightPass.setMaps();
-
-    glDisable(GL_DEPTH_TEST);
-
-    glStencilFunc(GL_EQUAL, 0x0, 0xff);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
-    lightPass.setWorldViewProjection(projection * viewMatrix * pointLight.world);
-    lightPass.setLight(pointLight);
-    lightingSphere.render();
-}
-
-void cgvkp::rendering::release_renderer::set_camera_mode(cgvkp::rendering::camera_mode mode)
+void cgvkp::rendering::release_renderer::setCameraMode(CameraMode mode)
 {
 	cameraMode = mode;
-	calculateViewProjection();
+	framebufferWidth = 0;	// Reset framebuffer width. The test in the render method will do the rest.
 }
 
-void cgvkp::rendering::release_renderer::set_stereo_parameters(float eye_separation, float zzero_parallax)
+void cgvkp::rendering::release_renderer::setStereoParameters(float _eyeSeparation, float _zZeroParallax)
 {
-	eyeSeparation = eye_separation;
-	zZeroParallax = zzero_parallax;
-	calculateViewProjection();
-}
-
-void cgvkp::rendering::release_renderer::lost_context()
-{
-	glBindVertexArray(0);
-	glUseProgram(0);
-
-    for (auto view : views)
-    {
-        view->deinit();
-    }
-	for (auto view : cached_views)
+	eyeSeparation = _eyeSeparation;
+	zZeroParallax = _zZeroParallax;
+	if (framebufferWidth != 0 && framebufferHeight != 0)
 	{
-		view->deinit();
+		calculateViewProjection();
 	}
-
-    background.deinit();
-	lightingSphere.deinit();
-	geometryPass.deinit();
-	shadowVolumePass.deinit();
-	lightPass.deinit();
-	gbuffer.deinit();
-}
-
-bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
-{
-	wnd.make_current();
-
-	if (!gbuffer.init())
-	{
-		return false;
-	}
-
-	if (!geometryPass.init())
-	{
-		return false;
-	}
-	if (!shadowVolumePass.init())
-	{
-		return false;
-	}
-	if (!lightPass.init())
-	{
-		return false;
-	}
-
-	if (!lightingSphere.init("meshes/lightingSphere.obj"))
-	{
-		return false;
-	}
-    if (!background.init())
-    {
-        return false;
-    }
-
-	for (auto view : cached_views)
-	{
-		view->init();
-	}
-	for (auto view : views)
-	{
-		view->init();
-	}
-
-	return true;
-}
-
-void cgvkp::rendering::release_renderer::add_model(model::model_base::ptr model) {
-	models.push_back(model);
-}
-
-void cgvkp::rendering::release_renderer::remove_model(model::model_base::ptr model) {
-	auto it = std::find(models.begin(), models.end(), model);
-	if (it != models.end())
-	{
-		models.erase(it);
-	}
-}
-
-void cgvkp::rendering::release_renderer::add_view(view::view_base::ptr view) {
-	views.push_back(view);
-}
-
-void cgvkp::rendering::release_renderer::add_controller(controller::controller_base::ptr controller) {
-	new_controllers.push_back(controller);
-}
-
-float cgvkp::rendering::release_renderer::getDistance() {
-	return distance;
-}
-
-float cgvkp::rendering::release_renderer::getAspect() {
-	return aspect;
 }

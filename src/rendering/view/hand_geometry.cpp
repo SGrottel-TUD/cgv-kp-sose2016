@@ -5,7 +5,7 @@ namespace cgvkp {
 namespace rendering {
 namespace view {
 	hand_geometry::hand_geometry()
-		: vao(0), indexBuffer(0), indicesMode(GL_NONE), indicesCount(0), indicesType(GL_NONE), texture()
+		: vao(0), indexBuffer(0), indicesMode(GL_NONE), indicesCount(0), indicesType(GL_NONE)
 	{
 		for (int i = 0; i < numAttributes; ++i)
 		{

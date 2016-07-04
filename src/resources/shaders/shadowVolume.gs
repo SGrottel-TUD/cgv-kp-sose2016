@@ -49,24 +49,24 @@ void main()
 	vec3 lightDir = lightPosition - positionWorld[0];
 
 	// Handle only light facing triangles
-	if (dot(normal, lightDir) > 0)
+	if (dot(normal, lightDir) > 0.0)
 	{
 		normal = cross(edge0to1, edge0to2);
-		if (dot(normal, lightDir) <= 0)
+		if (dot(normal, lightDir) <= 0.0)
 		{
 			emitQuad(0, 2);
 		}
 
 		normal = cross(edge2to3, edge2to4);
 		lightDir = lightPosition - positionWorld[2];
-		if (dot(normal, lightDir) <= 0)
+		if (dot(normal, lightDir) <= 0.0)
 		{
 			emitQuad(2, 4);
 		}
 
 		normal = cross(edge0to4, edge0to5);
 		lightDir = lightPosition - positionWorld[4];
-		if (dot(normal, lightDir) <= 0)
+		if (dot(normal, lightDir) <= 0.0)
 		{
 			emitQuad(4, 0);
 		}
