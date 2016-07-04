@@ -254,6 +254,7 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 	for (auto const& c : cloudViews)
 	{
 		auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(c->get_model());
+		if (graphic_model == nullptr) continue;
 		geometryPass.setWorldView(viewMatrix * graphic_model->model_matrix);
 		geometryPass.setWorldViewProjection(projection * viewMatrix * graphic_model->model_matrix);
 		c->render();
@@ -261,6 +262,7 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 	for (auto const& v : handViews)
 	{
 		auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(v->get_model());
+		if (graphic_model == nullptr) continue;
 		geometryPass.setWorldView(viewMatrix * graphic_model->model_matrix);
 		geometryPass.setWorldViewProjection(projection * viewMatrix * graphic_model->model_matrix);
 		v->render();
@@ -268,6 +270,7 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 	for (auto const& s : starViews)
 	{
 		auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(s->get_model());
+		if (graphic_model == nullptr) continue;
 		geometryPass.setWorldView(viewMatrix * graphic_model->model_matrix);
 		geometryPass.setWorldViewProjection(projection * viewMatrix * graphic_model->model_matrix);
 		s->render();
