@@ -11,14 +11,18 @@ cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world const&
 	: cgvkp::rendering::abstract_renderer(data),
 	framebufferWidth(0), framebufferHeight(0), cameraMode(mono), fps_counter_elapsed(0.0), rendered_frames(0u)
 {
-	pQuad = &meshes.insert({ "quad", Mesh() }).first->second;
-	Mesh const& cloudMesh = meshes.insert({ "sphere", Mesh() }).first->second;
+	Mesh const& quadMesh = meshes.insert({ "quad", Mesh() }).first->second;
+	Mesh const& cloudMesh = meshes.insert({ "cloudsprite", Mesh() }).first->second;
 	Mesh const& starMesh = meshes.insert({ "star", Mesh() }).first->second;
 	Mesh const& handMesh = meshes.insert({ "hand", Mesh() }).first->second;
+
+	pQuad = &quadMesh;
 
 	// Create and add data, cloud controller
 	controllers.push_back(std::make_shared<controller::data_controller>(this, data, handMesh, starMesh));
 	controllers.push_back(std::make_shared<controller::cloud_controller>(this, data, cloudMesh));
+
+	cloudViews.sort([](view::cloud_view::ptr const& lhs, view::cloud_view::ptr const& rhs) { return rhs->get_model()->model_matrix[3].z - lhs->get_model()->model_matrix[3].z > glm::epsilon<float>(); });
 
 	ambientLight = glm::vec3(0.1, 0.1, 0.5) * 0.25f;
 	directionalLight.color = glm::vec3(1, 1, 1);
@@ -251,6 +255,9 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 
 	glEnable(GL_DEPTH_TEST);
 
+	glEnable(GL_BLEND);
+	glBlendEquation(GL_FUNC_ADD);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	for (auto const& c : cloudViews)
 	{
 		auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(c->get_model());
@@ -259,6 +266,7 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 		geometryPass.setWorldViewProjection(projection * viewMatrix * graphic_model->model_matrix);
 		c->render();
 	}
+	glDisable(GL_BLEND);
 	for (auto const& v : handViews)
 	{
 		auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(v->get_model());
@@ -299,7 +307,7 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 	gbuffer.bindForWritingFinal();
 	gaussianBlur.setDirection(GaussianBlurTechnique::vertical);
 	gaussianBlur.setBlurSize(framebufferHeight);
-	pQuad->render();
+	//pQuad->render();
 
 	// Directional Light
 	gbuffer.bindForReadingGeometry();
@@ -307,7 +315,7 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 	directionalLightPass.use();
 	directionalLightPass.setLight(directionalLight);
 
-	glEnable(GL_BLEND);
+	//glEnable(GL_BLEND);
 	pQuad->render();
 	glDisable(GL_BLEND);
 
@@ -320,6 +328,11 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 	pQuad->render();
 	glDepthFunc(GL_LESS);
 	glDisable(GL_DEPTH_TEST);
+
+	gbuffer.bindForReadingGeometry();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, 3);
+	pQuad->render();
 }
 
 void cgvkp::rendering::release_renderer::setCameraMode(CameraMode mode)

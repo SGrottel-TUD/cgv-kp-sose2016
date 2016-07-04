@@ -81,7 +81,7 @@ namespace cgvkp
 			SSAOTechnique ssaoPass;
 			GaussianBlurTechnique gaussianBlur;
 			background_technique background;
-			Mesh* pQuad;
+			const Mesh* pQuad;
 
 			glm::vec3 ambientLight;
 			DirectionalLight directionalLight;

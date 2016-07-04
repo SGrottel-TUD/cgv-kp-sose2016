@@ -11,5 +11,5 @@ void main()
 {
 	gl_Position = vec4(inPosition, 1.0);
 	vec2 aspects = (1.0 * screenSize) / textureSize;
-	vsTextureCoord = (inPosition.xy + vec2(1.0)) * 0.5 * aspects;
+	vsTextureCoord = (inPosition.xy + vec2(1.0)) * 0.5;// * aspects;
 }
