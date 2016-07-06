@@ -1,7 +1,11 @@
 /.vs
 /*.sdf
 /*.opendb
+/*.VC.db
 /Debug
 /Release
 /x64
 /packages
+/*.vcxproj.user
+/config.ini
+/bin

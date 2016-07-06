@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="data">
+      <UniqueIdentifier>{2f2b1116-a29c-41e0-8086-af76d9490caf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\Header Files">
+      <UniqueIdentifier>{f12a6ecd-e1c3-4de3-897e-5b8584f87a1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\Source Files">
+      <UniqueIdentifier>{1a608daf-4aae-44b3-a781-e75636782f51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering">
+      <UniqueIdentifier>{57f0564e-de5b-4641-afd8-4bc728646deb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\Header Files">
+      <UniqueIdentifier>{27173a42-3689-4ee1-bf55-d3b789327a9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\Source Files">
+      <UniqueIdentifier>{b885a237-5104-432b-9756-e46a14d8a77a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main-remote.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\data\input_layer.cpp">
+      <Filter>data\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\data\world.cpp">
+      <Filter>data\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\data\world_config.cpp">
+      <Filter>data\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vision\abstract_vision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\abstract_user_input.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\abstract_renderer.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\debug_renderer.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\debug_user_input.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\window.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\data\world_config.hpp">
+      <Filter>data\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\world.hpp">
+      <Filter>data\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\tripple_buffer.hpp">
+      <Filter>data\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\input_layer.hpp">
+      <Filter>data\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vision\abstract_vision.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\abstract_renderer.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\abstract_user_input.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\debug_renderer.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\debug_user_input.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\window.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\world_remote.hpp">
+      <Filter>data\Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>
