@@ -1,0 +1,308 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\application.cpp" />
+    <ClCompile Include="src\application_config.cpp" />
+    <ClCompile Include="src\data\input_layer.cpp" />
+    <ClCompile Include="src\data\world_config.cpp" />
+    <ClCompile Include="src\data\world.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\rendering\abstract_renderer.cpp" />
+    <ClCompile Include="src\rendering\controller\cloud_controller.cpp" />
+    <ClCompile Include="src\rendering\controller\caught_star_controller.cpp" />
+    <ClCompile Include="src\rendering\controller\controller_base.cpp" />
+    <ClCompile Include="src\rendering\controller\data_controller.cpp" />
+    <ClCompile Include="src\rendering\controller\periodic_rotation_controller.cpp" />
+    <ClCompile Include="src\rendering\controller\sub_cloud_controller.cpp" />
+    <ClCompile Include="src\rendering\debug_renderer.cpp" />
+    <ClCompile Include="src\rendering\abstract_user_input.cpp" />
+    <ClCompile Include="src\rendering\debug_user_input.cpp" />
+    <ClCompile Include="src\rendering\mesh.cpp" />
+    <ClCompile Include="src\rendering\model\graphic_model_base.cpp" />
+    <ClCompile Include="src\rendering\remote_renderer_server.cpp" />
+    <ClCompile Include="src\rendering\technique\background_technique.cpp" />
+    <ClCompile Include="src\rendering\technique\geometryBuffer.cpp" />
+    <ClCompile Include="src\rendering\lights.cpp" />
+    <ClCompile Include="src\rendering\model\model_base.cpp" />
+    <ClCompile Include="src\rendering\model_listing_renderer.cpp" />
+    <ClCompile Include="src\rendering\release_renderer.cpp" />
+    <ClCompile Include="src\rendering\technique\LightTechnique.cpp" />
+    <ClCompile Include="src\rendering\technique\ShadowVolume.cpp" />
+    <ClCompile Include="src\rendering\technique\technique.cpp" />
+    <ClCompile Include="src\rendering\view\cloud_geometry.cpp" />
+    <ClCompile Include="src\rendering\view\cloud_view.cpp" />
+    <ClCompile Include="src\rendering\view\hand_geometry.cpp" />
+    <ClCompile Include="src\rendering\view\hand_view.cpp" />
+    <ClCompile Include="src\rendering\view\star_geometry.cpp" />
+    <ClCompile Include="src\rendering\view\star_view.cpp" />
+    <ClCompile Include="src\rendering\view\view_base.cpp" />
+    <ClCompile Include="src\rendering\window.cpp" />
+    <ClCompile Include="src\rendering\technique\technique_normal_as_colour.cpp" />
+    <ClCompile Include="src\util\objImporter.cpp" />
+    <ClCompile Include="src\util\resource_file.cpp" />
+    <ClCompile Include="src\util\texture.cpp" />
+    <ClCompile Include="src\vision\abstract_vision.cpp" />
+    <ClCompile Include="src\vision\dummy_vision.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="src\resources\meshes\hand.mtl" />
+    <None Include="src\resources\shaders\geometry.fs" />
+    <None Include="src\resources\shaders\geometry.vs" />
+    <None Include="src\resources\shaders\light.fs" />
+    <None Include="src\resources\shaders\light.vs" />
+    <None Include="src\resources\shaders\normal_as_colour.fs" />
+    <None Include="src\resources\shaders\normal_as_colour.vs" />
+    <None Include="src\resources\shaders\shadowVolume.fs" />
+    <None Include="src\resources\shaders\shadowVolume.gs" />
+    <None Include="src\resources\shaders\shadowVolume.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\application.hpp" />
+    <ClInclude Include="src\application_config.hpp" />
+    <ClInclude Include="src\data\input_layer.hpp" />
+    <ClInclude Include="src\data\tripple_buffer.hpp" />
+    <ClInclude Include="src\data\world_config.hpp" />
+    <ClInclude Include="src\data\world.hpp" />
+    <ClInclude Include="src\data\world_remote.hpp" />
+    <ClInclude Include="src\rendering\abstract_renderer.hpp" />
+    <ClInclude Include="src\rendering\controller\cloud_controller.hpp" />
+    <ClInclude Include="src\rendering\controller\caught_star_controller.hpp" />
+    <ClInclude Include="src\rendering\controller\controller_base.hpp" />
+    <ClInclude Include="src\rendering\controller\data_controller.hpp" />
+    <ClInclude Include="src\rendering\controller\periodic_rotation_controller.hpp" />
+    <ClInclude Include="src\rendering\controller\sub_cloud_controller.hpp" />
+    <ClInclude Include="src\rendering\debug_renderer.hpp" />
+    <ClInclude Include="src\rendering\abstract_user_input.hpp" />
+    <ClInclude Include="src\rendering\debug_user_input.hpp" />
+    <ClInclude Include="src\rendering\model\cloud_model.hpp" />
+    <ClInclude Include="src\rendering\mesh.hpp" />
+    <ClInclude Include="src\rendering\model\graphic_model_base.hpp" />
+    <ClInclude Include="src\rendering\remote_renderer_server.hpp" />
+    <ClInclude Include="src\rendering\technique\background_technique.hpp" />
+    <ClInclude Include="src\rendering\technique\geometryBuffer.hpp" />
+    <ClInclude Include="src\rendering\lights.hpp" />
+    <ClInclude Include="src\rendering\model\hand_model.hpp" />
+    <ClInclude Include="src\rendering\model\model_base.hpp" />
+    <ClInclude Include="src\rendering\model\star_model.hpp" />
+    <ClInclude Include="src\rendering\model_listing_renderer.hpp" />
+    <ClInclude Include="src\rendering\release_renderer.hpp" />
+    <ClInclude Include="src\rendering\technique\LightTechnique.hpp" />
+    <ClInclude Include="src\rendering\technique\ShadowVolume.hpp" />
+    <ClInclude Include="src\rendering\technique\technique.hpp" />
+    <ClInclude Include="src\rendering\technique\technique_normal_as_colour.hpp" />
+    <ClInclude Include="src\rendering\view\cloud_geometry.hpp" />
+    <ClInclude Include="src\rendering\view\cloud_view.hpp" />
+    <ClInclude Include="src\rendering\view\hand_geometry.hpp" />
+    <ClInclude Include="src\rendering\view\hand_view.hpp" />
+    <ClInclude Include="src\rendering\view\star_geometry.hpp" />
+    <ClInclude Include="src\rendering\view\star_view.hpp" />
+    <ClInclude Include="src\rendering\view\view_base.hpp" />
+    <ClInclude Include="src\rendering\view\view_geometry_base.hpp" />
+    <ClInclude Include="src\rendering\window.hpp" />
+    <ClInclude Include="src\util\bezier.hpp" />
+    <ClInclude Include="src\util\objImporter.hpp" />
+    <ClInclude Include="src\util\resource_file.hpp" />
+    <ClInclude Include="src\util\spline_curve.hpp" />
+    <ClInclude Include="src\util\texture.hpp" />
+    <ClInclude Include="src\vision\abstract_vision.hpp" />
+    <ClInclude Include="src\vision\dummy_vision.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="src\resources\meshes\hand.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="src\resources\meshes\lightingSphere.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="src\resources\meshes\star.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\resources\starrynight.png">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Image>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D212F91F-5F4A-4757-9EBA-CA3EA546B69A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>kp2016</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\glm.0.9.7.1\build\native\glm.targets" Condition="Exists('packages\glm.0.9.7.1\build\native\glm.targets')" />
+    <Import Project="packages\glfw.redist.3.1.2\build\native\glfw.redist.targets" Condition="Exists('packages\glfw.redist.3.1.2\build\native\glfw.redist.targets')" />
+    <Import Project="packages\glfw.3.1.2\build\native\glfw.targets" Condition="Exists('packages\glfw.3.1.2\build\native\glfw.targets')" />
+    <Import Project="packages\glew.v140.1.12.0\build\native\glew.v140.targets" Condition="Exists('packages\glew.v140.1.12.0\build\native\glew.v140.targets')" />
+    <Import Project="packages\libpng.redist.1.6.20.1\build\native\libpng.redist.targets" Condition="Exists('packages\libpng.redist.1.6.20.1\build\native\libpng.redist.targets')" />
+    <Import Project="packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets" Condition="Exists('packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets')" />
+    <Import Project="packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets" Condition="Exists('packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets')" />
+    <Import Project="packages\libpng.1.6.20.1\build\native\libpng.targets" Condition="Exists('packages\libpng.1.6.20.1\build\native\libpng.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\glm.0.9.7.1\build\native\glm.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glm.0.9.7.1\build\native\glm.targets'))" />
+    <Error Condition="!Exists('packages\glfw.redist.3.1.2\build\native\glfw.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glfw.redist.3.1.2\build\native\glfw.redist.targets'))" />
+    <Error Condition="!Exists('packages\glfw.3.1.2\build\native\glfw.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glfw.3.1.2\build\native\glfw.targets'))" />
+    <Error Condition="!Exists('packages\glew.v140.1.12.0\build\native\glew.v140.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glew.v140.1.12.0\build\native\glew.v140.targets'))" />
+    <Error Condition="!Exists('packages\libpng.redist.1.6.20.1\build\native\libpng.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\libpng.redist.1.6.20.1\build\native\libpng.redist.targets'))" />
+    <Error Condition="!Exists('packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets'))" />
+    <Error Condition="!Exists('packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets'))" />
+    <Error Condition="!Exists('packages\libpng.1.6.20.1\build\native\libpng.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\libpng.1.6.20.1\build\native\libpng.targets'))" />
+  </Target>
+</Project>
