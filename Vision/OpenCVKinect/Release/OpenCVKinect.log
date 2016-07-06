@@ -1,0 +1,22 @@
+﻿  main.cpp
+main.cpp(155): warning C4244: '=': conversion from 'const int' to 'float', possible loss of data
+main.cpp(199): warning C4244: 'argument': conversion from 'double' to 'const int', possible loss of data
+main.cpp(268): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+main.cpp(269): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+main.cpp(307): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+main.cpp(318): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+main.cpp(319): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+main.cpp(320): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+main.cpp(331): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+main.cpp(332): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+main.cpp(332): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+main.cpp(333): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+main.cpp(333): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+main.cpp(334): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+main.cpp(334): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+  Generating code
+  1 of 402 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    8 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  OpenCVKinect.vcxproj -> C:\Users\Yang\Downloads\OpenCVKinect-master test\OpenCVKinect-master\Release\OpenCVKinect.exe
