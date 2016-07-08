@@ -3,10 +3,9 @@
 uniform sampler2D textureSampler;
 
 in vec2 vsTextureCoord;
-
-out vec4 final_color;
+out vec3 fsColor;
 
 void main()
 {
-	final_color = vec4(texture(textureSampler, vsTextureCoord).rgb, 1.0);
+	fsColor = texture(textureSampler, vsTextureCoord).rgb;
 }

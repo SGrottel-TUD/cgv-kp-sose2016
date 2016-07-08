@@ -38,6 +38,7 @@
     <ClCompile Include="src\rendering\mesh.cpp" />
     <ClCompile Include="src\rendering\postProcessingFramebuffer.cpp" />
     <ClCompile Include="src\rendering\technique\background_technique.cpp" />
+    <ClCompile Include="src\rendering\technique\cloud_tech.cpp" />
     <ClCompile Include="src\rendering\technique\directionalLight.cpp" />
     <ClCompile Include="src\rendering\technique\gaussianBlur.cpp" />
     <ClCompile Include="src\rendering\geometryBuffer.cpp" />
@@ -45,7 +46,9 @@
     <ClCompile Include="src\rendering\model_listing_renderer.cpp" />
     <ClCompile Include="src\rendering\release_renderer.cpp" />
     <ClCompile Include="src\rendering\technique\geometry.cpp" />
+    <ClCompile Include="src\rendering\technique\spotLight.cpp" />
     <ClCompile Include="src\rendering\technique\ssao.cpp" />
+    <ClCompile Include="src\rendering\technique\star.cpp" />
     <ClCompile Include="src\rendering\technique\technique.cpp" />
     <ClCompile Include="src\rendering\window.cpp" />
     <ClCompile Include="src\rendering\technique\technique_normal_as_colour.cpp" />
@@ -58,15 +61,23 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="src\resources\meshes\hand.mtl" />
+    <None Include="src\resources\meshes\sphere.mtl" />
+    <None Include="src\resources\meshes\star.mtl" />
+    <None Include="src\resources\shaders\background.fs" />
+    <None Include="src\resources\shaders\background.vs" />
+    <None Include="src\resources\shaders\cloud.fs" />
+    <None Include="src\resources\shaders\cloud.vs" />
+    <None Include="src\resources\shaders\directionalLight.fs" />
+    <None Include="src\resources\shaders\gaussianBlur.fs" />
     <None Include="src\resources\shaders\geometry.fs" />
     <None Include="src\resources\shaders\geometry.vs" />
-    <None Include="src\resources\shaders\light.fs" />
-    <None Include="src\resources\shaders\light.vs" />
     <None Include="src\resources\shaders\normal_as_colour.fs" />
     <None Include="src\resources\shaders\normal_as_colour.vs" />
-    <None Include="src\resources\shaders\shadowVolume.fs" />
-    <None Include="src\resources\shaders\shadowVolume.gs" />
-    <None Include="src\resources\shaders\shadowVolume.vs" />
+    <None Include="src\resources\shaders\quad.vs" />
+    <None Include="src\resources\shaders\spotLight.fs" />
+    <None Include="src\resources\shaders\ssao.fs" />
+    <None Include="src\resources\shaders\star.fs" />
+    <None Include="src\resources\shaders\star.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\application.hpp" />
@@ -90,6 +101,7 @@
     <ClInclude Include="src\rendering\model\graphic_model_base.hpp" />
     <ClInclude Include="src\rendering\postProcessingFramebuffer.hpp" />
     <ClInclude Include="src\rendering\technique\background_technique.hpp" />
+    <ClInclude Include="src\rendering\technique\cloud_tech.hpp" />
     <ClInclude Include="src\rendering\technique\directionalLight.hpp" />
     <ClInclude Include="src\rendering\technique\gaussianBlur.hpp" />
     <ClInclude Include="src\rendering\geometryBuffer.hpp" />
@@ -100,7 +112,9 @@
     <ClInclude Include="src\rendering\model_listing_renderer.hpp" />
     <ClInclude Include="src\rendering\release_renderer.hpp" />
     <ClInclude Include="src\rendering\technique\geometry.hpp" />
+    <ClInclude Include="src\rendering\technique\spotLight.hpp" />
     <ClInclude Include="src\rendering\technique\ssao.hpp" />
+    <ClInclude Include="src\rendering\technique\star.hpp" />
     <ClInclude Include="src\rendering\technique\technique.hpp" />
     <ClInclude Include="src\rendering\technique\technique_normal_as_colour.hpp" />
     <ClInclude Include="src\rendering\view\cloud_view.hpp" />
@@ -121,7 +135,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </Object>
-    <Object Include="src\resources\meshes\lightingSphere.obj">
+    <Object Include="src\resources\meshes\quad.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="src\resources\meshes\sphere.obj">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </Object>
@@ -131,9 +149,12 @@
     </Object>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="src\resources\starrynight.png">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </Image>
+    <Image Include="src\resources\textures\hand.png" />
+    <Image Include="src\resources\textures\sky5.png" />
+    <Image Include="src\resources\textures\sky_night5.png" />
+    <Image Include="src\resources\textures\sphere.png" />
+    <Image Include="src\resources\textures\star.png" />
+    <Image Include="src\resources\textures\starrynight.png" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D212F91F-5F4A-4757-9EBA-CA3EA546B69A}</ProjectGuid>

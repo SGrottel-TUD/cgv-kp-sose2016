@@ -9,9 +9,12 @@
 #include "postProcessingFramebuffer.hpp"
 #include "technique/geometry.hpp"
 #include "technique/directionalLight.hpp"
+#include "technique/spotLight.hpp"
 #include "technique/ssao.hpp"
 #include "technique/gaussianBlur.hpp"
 #include "technique/background_technique.hpp"
+#include "technique/star.hpp"
+#include "technique/cloud_tech.hpp"
 #include "lights.hpp"
 #include "mesh.hpp"
 #include "model/model_base.hpp"
@@ -44,44 +47,56 @@ namespace cgvkp
 			void setStereoParameters(float eyeSeparation, float zZeroParallax);
 
 			inline float getDistance() const { return distance; }
-			inline float getAspect() const { return aspect; }
+			inline float getAspect() const { return static_cast<float>(framebufferWidth) / framebufferHeight; }
 
 			inline void add_model(model::model_base::ptr const& model) { models.push_back(model); }
 			inline void remove_model(model::model_base::ptr const& model) { models.remove(model); }
 			inline void add_view(view::cloud_view::ptr const& v) { cloudViews.push_back(v); }
 			inline void add_view(view::hand_view::ptr const& v) { handViews.push_back(v); }
 			inline void add_view(view::star_view::ptr const& v) { starViews.push_back(v); }
-			inline void add_controller(controller::controller_base::ptr const& controller) { new_controllers.push_back(controller); }
+			inline void add_controller(controller::controller_base::ptr const& controller) { controllers.push_back(controller); }
 
 		protected:
 			virtual bool init_impl(window const& wnd);
 			virtual void deinit_impl();
 
 		private:
-
 			void calculateViewProjection();
 			void renderScene(glm::mat4 const& projection) const;
 
+			// Rendering steps
+			void fillGeometryBuffer(glm::mat4 const& projection) const;
+			void addAmbientLight() const;
+			void addDirectionalLight(DirectionalLight const& light) const;
+			void addBackground() const;
+			void addStarLights(glm::mat4 const& projection) const;
+			void addStars(glm::mat4 const& projection) const;
+			void addClouds(glm::mat4 const& projection) const;
+
+			GLsizei windowWidth;
+			GLsizei windowHeight;
+			GLsizei framebufferWidth;
+			GLsizei framebufferHeight;
 			glm::mat4 viewMatrix;
 			glm::mat4 leftProjection;	// Holds the projection matrix in mono mode.
 			glm::mat4 rightProjection;
 			CameraMode cameraMode;
-			GLsizei framebufferWidth;
-			GLsizei framebufferHeight;
 			float eyeSeparation;
 			float zZeroParallax;
 
 			float distance;
-			float aspect;
 
 			GeometryBuffer gbuffer;
 			PostProcessingFramebuffer postProcessing;
 			GeometryTechnique geometryPass;
 			DirectionalLightTechnique directionalLightPass;
+			SpotLightTechnique spotLightPass;
 			SSAOTechnique ssaoPass;
 			GaussianBlurTechnique gaussianBlur;
 			background_technique background;
-			const Mesh* pQuad;
+			StarTechnique starPass;
+			CloudTechnique cloudPass;
+			Mesh const * pQuad;
 
 			glm::vec3 ambientLight;
 			DirectionalLight directionalLight;
@@ -97,7 +112,7 @@ namespace cgvkp
 			std::list<view::hand_view::ptr> handViews;
 			std::list<view::star_view::ptr> starViews;
 
-			std::list<controller::controller_base::ptr> controllers, new_controllers;
+			std::list<controller::controller_base::ptr> controllers;
 		};
 	}
 }

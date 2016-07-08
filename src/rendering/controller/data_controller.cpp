@@ -27,8 +27,8 @@ namespace controller {
     void data_controller::update(double seconds, std::shared_ptr<abstract_user_input> input)
     {
         // Iterate through stars
-        auto active_models = std::vector<int>();
-        for (auto data_star : data.get_stars())
+		std::vector<int> active_models;
+        for (auto const& data_star : data.get_stars())
         {
             active_models.push_back(data_star->id);
             if (stars.count(data_star->id) == 0) {
@@ -37,6 +37,7 @@ namespace controller {
 #endif
                 // We need to create this star
                 auto star = std::make_shared<model::star_model>();
+				star->id = data_star->id;
                 renderer->add_model(star);
 
                 // And its view

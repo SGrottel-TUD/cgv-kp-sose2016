@@ -35,16 +35,24 @@ namespace cgvkp
 		struct PointLight : public Light
 		{
 		public:
-			inline PointLight() : constantAttenuation(1), linearAttenuation(0), exponentialAttenuation(0) {}
-			void calculateWorld();
+			inline PointLight() : attenuation(1, 0, 0) {}
+			float calculateMaxDistance() const;
 
 			glm::vec3 position;
+			glm::vec3 attenuation;	// vec3(constant, linear, exponential)
+		};
 
-			float constantAttenuation;
-			float linearAttenuation;
-			float exponentialAttenuation;
 
-			glm::mat4 world;
+
+		/* Spot light */
+
+		struct SpotLight : public PointLight
+		{
+		public:
+			SpotLight() : cutoff(0) {}
+
+			float cutoff;
+			glm::vec3 direction;
 		};
 	}
 }
