@@ -2,19 +2,7 @@
 
 bool cgvkp::rendering::GeometryTechnique::init()
 {
-	if (!Technique::init())
-	{
-		return false;
-	}
-	if (!addShader(GL_VERTEX_SHADER, "shaders/geometry.vs"))
-	{
-		return false;
-	}
-	if (!addShader(GL_FRAGMENT_SHADER, "shaders/geometry.fs"))
-	{
-		return false;
-	}
-	if (!link())
+	if (!Technique::init("geometry.vs", "geometry.fs"))
 	{
 		return false;
 	}

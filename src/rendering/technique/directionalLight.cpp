@@ -4,19 +4,7 @@
 
 bool cgvkp::rendering::DirectionalLightTechnique::init()
 {
-	if (!Technique::init())
-	{
-		return false;
-	}
-	if (!addShader(GL_VERTEX_SHADER, "shaders/quad.vs"))
-	{
-		return false;
-	}
-	if (!addShader(GL_FRAGMENT_SHADER, "shaders/directionalLight.fs"))
-	{
-		return false;
-	}
-	if (!link())
+	if (!Technique::init("quad.vs", "directionalLight.fs"))
 	{
 		return false;
 	}

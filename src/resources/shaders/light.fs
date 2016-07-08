@@ -20,7 +20,7 @@ uniform PointLight light;
 uniform ivec2 screenSize;
 uniform vec3 eyePosition;
 
-layout(location = 0) out vec4 fsColor;
+layout (location = 0) out vec4 fsColor;
 
 vec3 calculateLight(vec3 positionWorld, vec3 normalWorld, vec2 material)    // material = vec2(specularPower, specularIntensity)
 {

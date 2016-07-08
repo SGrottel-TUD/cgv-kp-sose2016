@@ -3,19 +3,7 @@
 
 bool cgvkp::rendering::GaussianBlurTechnique::init()
 {
-	if (!Technique::init())
-	{
-		return false;
-	}
-	if (!addShader(GL_VERTEX_SHADER, "shaders/quad.vs"))
-	{
-		return false;
-	}
-	if (!addShader(GL_FRAGMENT_SHADER, "shaders/gaussianBlur.fs"))
-	{
-		return false;
-	}
-	if (!link())
+	if (!Technique::init("quad.vs", "gaussianBlur.fs"))
 	{
 		return false;
 	}

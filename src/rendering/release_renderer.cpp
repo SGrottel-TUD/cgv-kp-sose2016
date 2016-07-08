@@ -1,15 +1,12 @@
+#include <glm/gtx/transform.hpp>
+#include <iostream>
 #include "release_renderer.hpp"
 #include "data/world.hpp"
-#include "glm/gtx/transform.hpp"
-#include "view/star_view.hpp"
-#include "view/hand_view.hpp"
-#include <iostream>
 #include "controller/data_controller.hpp"
 #include "controller/cloud_controller.hpp"
 
 cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world const& data)
-	: cgvkp::rendering::abstract_renderer(data),
-	framebufferWidth(0), framebufferHeight(0), cameraMode(mono), fps_counter_elapsed(0.0), rendered_frames(0u)
+	: cgvkp::rendering::abstract_renderer(data), windowWidth(0), windowHeight(0), framebufferWidth(0), framebufferHeight(0), cameraMode(mono), fps_counter_elapsed(0.0), rendered_frames(0u)
 {
 	pQuad = &meshes.insert({ "quad", Mesh() }).first->second;
 	Mesh const& cloudMesh = meshes.insert({ "sphere", Mesh() }).first->second;
@@ -34,10 +31,11 @@ bool cgvkp::rendering::release_renderer::init_impl(window const& wnd)
 		!postProcessing.init(2) ||
 		!geometryPass.init() ||
 		!directionalLightPass.init() ||
+		!spotLightPass.init() ||
 		!ssaoPass.init() ||
 		!gaussianBlur.init() ||
-		!background.init()
-		)
+		!background.init() ||
+		!starPass.init())
 	{
 		return false;
 	}
@@ -64,9 +62,27 @@ void cgvkp::rendering::release_renderer::deinit_impl()
 	gaussianBlur.deinit();
 	ssaoPass.deinit();
 	directionalLightPass.deinit();
+	spotLightPass.deinit();
 	geometryPass.deinit();
 	gbuffer.deinit();
 	postProcessing.deinit();
+	starPass.deinit();
+}
+
+void cgvkp::rendering::release_renderer::setCameraMode(CameraMode mode)
+{
+	cameraMode = mode;
+	windowWidth = 0;	// Reset window width. The test in the render method will do the rest.
+}
+
+void cgvkp::rendering::release_renderer::setStereoParameters(float _eyeSeparation, float _zZeroParallax)
+{
+	eyeSeparation = _eyeSeparation;
+	zZeroParallax = _zZeroParallax;
+	if (framebufferWidth != 0 && framebufferHeight != 0)
+	{
+		calculateViewProjection();
+	}
 }
 
 void cgvkp::rendering::release_renderer::calculateViewProjection()
@@ -74,12 +90,12 @@ void cgvkp::rendering::release_renderer::calculateViewProjection()
 	float fovy = glm::quarter_pi<float>();
 	float tanHalfFovy = tan(fovy / 2);
 
-	aspect = (cameraMode == stereo ? framebufferWidth / 2.0f : static_cast<float>(framebufferWidth)) / framebufferHeight;
+	float aspect = static_cast<float>(framebufferWidth) / framebufferHeight;
 
 	// View
 	float w = data.get_config().width();
 	float h = data.get_config().height();
-	float k = 1.0f / 3;
+	float k = 1.0f / 2;
 
 	distance = (w + 0.5f) / (2 * aspect * tanHalfFovy);	// Distance to the front of the game area. 0.5f is a bias.
 
@@ -133,12 +149,14 @@ void cgvkp::rendering::release_renderer::calculateViewProjection()
 void cgvkp::rendering::release_renderer::render(window const& wnd)
 {
 	wnd.make_current();
-	if (wnd.get_size(framebufferWidth, framebufferHeight))
+	if (wnd.get_size(windowWidth, windowHeight))
 	{
+		framebufferWidth = cameraMode == stereo ? windowWidth / 2 : windowWidth;
+		framebufferHeight = windowHeight;
 		if (framebufferWidth != 0 && framebufferHeight != 0)
 		{
-			gbuffer.resize(cameraMode == mono ? framebufferWidth : framebufferWidth / 2, framebufferHeight);
-			postProcessing.resize(cameraMode == mono ? framebufferWidth : framebufferWidth / 2, framebufferHeight);
+			gbuffer.resize(framebufferWidth, framebufferHeight);
+			postProcessing.resize(framebufferWidth, framebufferHeight);
 			calculateViewProjection();
 		}
 	}
@@ -161,11 +179,6 @@ void cgvkp::rendering::release_renderer::render(window const& wnd)
 	}
 #endif
 
-	if (new_controllers.size())
-	{
-		controllers.insert(controllers.end(), new_controllers.begin(), new_controllers.end());
-		new_controllers.clear();
-	}
 	// Remove views and controllers without model
 	for (auto it = cloudViews.begin(); it != cloudViews.end();)
 	{
@@ -213,30 +226,37 @@ void cgvkp::rendering::release_renderer::render(window const& wnd)
 		}
 	}
 
+	glViewport(0, 0, framebufferWidth, framebufferHeight);
+
+	// Render left image in stereo or single image in mono.
+	renderScene(leftProjection);
+	gbuffer.bindForReadingFinal();
+	glBlitFramebuffer(0, 0, framebufferWidth, framebufferHeight, 0, 0, framebufferWidth, framebufferHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+
 	if (cameraMode == stereo)
 	{
-		glViewport(0, 0, framebufferWidth / 2, framebufferHeight);
-
-		// Render left image.
-		renderScene(leftProjection);
-		gbuffer.bindForReadingFinal();
-		glBlitFramebuffer(0, 0, framebufferWidth / 2, framebufferHeight, 0, 0, framebufferWidth / 2, framebufferHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-
 		// Render right image.
 		renderScene(rightProjection);
 		gbuffer.bindForReadingFinal();
-		glBlitFramebuffer(0, 0, framebufferWidth / 2, framebufferHeight, framebufferWidth / 2, 0, framebufferWidth, framebufferHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-	}
-	else	// mono
-	{
-		glViewport(0, 0, framebufferWidth, framebufferHeight);
-		renderScene(leftProjection);
-		gbuffer.bindForReadingFinal();
-		glBlitFramebuffer(0, 0, framebufferWidth, framebufferHeight, 0, 0, framebufferWidth, framebufferHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+		glBlitFramebuffer(0, 0, framebufferWidth, framebufferHeight, framebufferWidth, 0, 2 * framebufferWidth, framebufferHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	}
 }
 
 void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection) const
+{
+	fillGeometryBuffer(projection);
+
+	glBlendEquation(GL_FUNC_ADD);
+	glBlendFunc(GL_ONE, GL_ONE);
+
+	addAmbientLight();
+	addDirectionalLight(directionalLight);
+	addBackground();
+	addStarLights(projection);
+	addStars(projection);
+}
+
+void cgvkp::rendering::release_renderer::fillGeometryBuffer(glm::mat4 const& projection) const
 {
 	gbuffer.bindForWritingGeometry();
 	geometryPass.use();
@@ -244,7 +264,7 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 	glDepthMask(GL_TRUE);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Render a quad with a very low z value in view space to not get wrong results during the ambient occlusion.
+	// Render a quad with a very low z value in view space to not get wrong results during post processing.
 	geometryPass.setWorldView(glm::translate(glm::vec3(0, 0, -1000)));
 	geometryPass.setWorldViewProjection(glm::mat4(1));
 	pQuad->render();
@@ -253,7 +273,7 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 
 	for (auto const& c : cloudViews)
 	{
-		auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(c->get_model());
+		auto graphic_model = c->get_model();
 		if (graphic_model == nullptr) continue;
 		geometryPass.setWorldView(viewMatrix * graphic_model->model_matrix);
 		geometryPass.setWorldViewProjection(projection * viewMatrix * graphic_model->model_matrix);
@@ -261,28 +281,19 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 	}
 	for (auto const& v : handViews)
 	{
-		auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(v->get_model());
+		auto graphic_model = v->get_model();
 		if (graphic_model == nullptr) continue;
 		geometryPass.setWorldView(viewMatrix * graphic_model->model_matrix);
 		geometryPass.setWorldViewProjection(projection * viewMatrix * graphic_model->model_matrix);
 		v->render();
 	}
-	for (auto const& s : starViews)
-	{
-		auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(s->get_model());
-		if (graphic_model == nullptr) continue;
-		geometryPass.setWorldView(viewMatrix * graphic_model->model_matrix);
-		geometryPass.setWorldViewProjection(projection * viewMatrix * graphic_model->model_matrix);
-		s->render();
-	}
 
 	glDepthMask(GL_FALSE);
+}
+
+void cgvkp::rendering::release_renderer::addAmbientLight() const
+{
 	glDisable(GL_DEPTH_TEST);
-
-	glBlendEquation(GL_FUNC_ADD);
-	glBlendFunc(GL_ONE, GL_ONE);
-
-	// Ambient light
 	gbuffer.bindForReadingGeometry();
 	postProcessing.nextPass(0, 0);
 	ssaoPass.use();
@@ -300,40 +311,74 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 	gaussianBlur.setDirection(GaussianBlurTechnique::vertical);
 	gaussianBlur.setBlurSize(framebufferHeight);
 	pQuad->render();
+}
 
-	// Directional Light
+void cgvkp::rendering::release_renderer::addDirectionalLight(DirectionalLight const& light) const
+{
+	glEnable(GL_BLEND);
 	gbuffer.bindForReadingGeometry();
 	gbuffer.bindForWritingFinal();
 	directionalLightPass.use();
+
 	directionalLightPass.setLight(directionalLight);
-
-	glEnable(GL_BLEND);
 	pQuad->render();
-	glDisable(GL_BLEND);
+}
 
-	// Background
+void cgvkp::rendering::release_renderer::addBackground() const
+{
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_EQUAL);
+	glDisable(GL_BLEND);
 	background.use();
-	background.setScreenSize(cameraMode == mono ? framebufferWidth : framebufferWidth / 2, framebufferHeight);
+
+	background.setScreenSize(framebufferWidth, framebufferHeight);
 	background.render();
 	pQuad->render();
+
 	glDepthFunc(GL_LESS);
+}
+
+void cgvkp::rendering::release_renderer::addStarLights(glm::mat4 const& projection) const
+{
 	glDisable(GL_DEPTH_TEST);
-}
+	glEnable(GL_BLEND);
+	gbuffer.bindForReadingGeometry();
+	spotLightPass.use();
 
-void cgvkp::rendering::release_renderer::setCameraMode(CameraMode mode)
-{
-	cameraMode = mode;
-	framebufferWidth = 0;	// Reset framebuffer width. The test in the render method will do the rest.
-}
+	SpotLight starLight;
+	starLight.color = glm::vec3(0.9608f, 0.5059f, 0.1255f);	// average color in the star texture.
+	starLight.diffuseIntensity = 1;
+	starLight.direction = glm::vec3(0, -1, 0);	// in world space
+	starLight.attenuation = glm::vec3(1, 0, 2);	// constant, linear, exponential
+	starLight.cutoff = glm::quarter_pi<float>();
 
-void cgvkp::rendering::release_renderer::setStereoParameters(float _eyeSeparation, float _zZeroParallax)
-{
-	eyeSeparation = _eyeSeparation;
-	zZeroParallax = _zZeroParallax;
-	if (framebufferWidth != 0 && framebufferHeight != 0)
+	for (auto const& s : starViews)
 	{
-		calculateViewProjection();
+		if (!s->has_model()) continue;
+
+		starLight.position = glm::vec3(s->get_model()->model_matrix[3]);
+		spotLightPass.setLight(starLight, viewMatrix, projection);
+		pQuad->render();
+	}
+}
+
+void cgvkp::rendering::release_renderer::addStars(glm::mat4 const& projection) const
+{
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
+	starPass.use();
+
+	float t = static_cast<float>(glfwGetTime()) / 8;
+	for (auto const& s : starViews)
+	{
+		auto model = s->get_model();
+		if (model == nullptr) continue;
+
+		glm::vec2 offset = glm::vec2(cos(model->id), sin(model->id)) * t;
+		offset.x -= static_cast<long>(offset.x);
+		offset.y -= static_cast<long>(offset.y);
+		starPass.setTextureCoordOffset(offset);
+		starPass.setWorldViewProjection(projection * viewMatrix * model->model_matrix);
+		s->render();
 	}
 }
