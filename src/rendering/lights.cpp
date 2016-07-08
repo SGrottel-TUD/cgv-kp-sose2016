@@ -1,7 +1,7 @@
 #include <glm/gtx/transform.hpp>
 #include "lights.hpp"
 
-void cgvkp::rendering::PointLight::calculateWorld()
+float cgvkp::rendering::PointLight::calculateMaxDistance() const
 {
 	/*
 	 * 0 <= itensity <= 1
@@ -21,7 +21,5 @@ void cgvkp::rendering::PointLight::calculateWorld()
 	float maxColor = color.r > color.g ? color.r : color.g;
 	maxColor = maxColor > color.b ? maxColor : color.b;
 
-	float radius = (-linearAttenuation + sqrt(linearAttenuation * linearAttenuation - 4 * exponentialAttenuation * (constantAttenuation - maxColor * diffuseIntensity / threshold))) / (2 * exponentialAttenuation);
-
-	world = glm::translate(position) * glm::scale(glm::vec3(radius));
+	return (-attenuation[1] + sqrt(attenuation[1] * attenuation[1] - 4 * attenuation[2] * (attenuation[0] - maxColor * diffuseIntensity / threshold))) / (2 * attenuation[2]);
 }

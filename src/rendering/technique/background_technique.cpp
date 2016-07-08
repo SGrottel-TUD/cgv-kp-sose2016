@@ -4,31 +4,15 @@ namespace cgvkp {
 namespace rendering {
     bool background_technique::init()
     {
-        if (!Technique::init())
-        {
-            return false;
-        }
-        if (!addShader(GL_VERTEX_SHADER, "shaders/background.vs"))
-        {
-            return false;
-        }
-        if (!addShader(GL_FRAGMENT_SHADER, "shaders/background.fs"))
-        {
-            return false;
-        }
-        if (!link())
+        if (!Technique::init("background.vs", "background.fs"))
         {
             return false;
         }
 
-		screenSizeLocation = getUniformLocation("screenSize");
+		scaleLocation = getUniformLocation("scale");
 
         texture = util::texture::from_png("starrynight.png");
         if (!texture->uploaded()) return false;
-
-		use();
-		GLint texSizeLocation = getUniformLocation("textureSize");
-		glUniform2i(texSizeLocation, static_cast<GLint>(texture->width()), static_cast<GLint>(texture->height()));
 
         return true;
     }
@@ -40,7 +24,7 @@ namespace rendering {
 
 	void background_technique::setScreenSize(GLsizei width, GLsizei height) const
 	{
-		glUniform2i(screenSizeLocation, width, height);
+		glUniform2f(scaleLocation, static_cast<float>(width) / texture->width(), static_cast<float>(height) / texture->height());
 	}
 
     void background_technique::render() const

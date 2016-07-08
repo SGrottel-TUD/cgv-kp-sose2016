@@ -4,7 +4,7 @@
 #include "technique.hpp"
 #include "util/resource_file.hpp"
 
-bool cgvkp::rendering::Technique::init()
+bool cgvkp::rendering::Technique::init(char const* vertexShader, char const* geometryShader, char const* fragmentShader)
 {
 	program = glCreateProgram();
 	if (!program)
@@ -12,6 +12,25 @@ bool cgvkp::rendering::Technique::init()
 #if defined(_DEBUG) || defined(DEBUG)
 		std::cerr << "Could not create a program." << std::endl;
 #endif
+		return false;
+	}
+	if (!addShader(GL_VERTEX_SHADER, vertexShader))
+	{
+		return false;
+	}
+	if (geometryShader)
+	{
+		if (!addShader(GL_GEOMETRY_SHADER, geometryShader))
+		{
+			return false;
+		}
+	}
+	if (!addShader(GL_FRAGMENT_SHADER, fragmentShader))
+	{
+		return false;
+	}
+	if (!link())
+	{
 		return false;
 	}
 
@@ -34,11 +53,25 @@ void cgvkp::rendering::Technique::deinit()
 	shaders.clear();
 }
 
+GLint cgvkp::rendering::Technique::getUniformLocation(GLchar const* pName) const
+{
+	GLint location = glGetUniformLocation(program, pName);
+
+#if defined(_DEBUG) || defined(DEBUG)
+	if (location == invalidLocation)
+	{
+		std::cerr << "Could not find location for uniform \"" << pName << "\"." << std::endl;
+	}
+#endif
+
+	return location;
+}
+
 bool cgvkp::rendering::Technique::addShader(GLenum shaderType, char const* pFilename)
 {
 	// Get shader source.
 	std::string source;
-	if (!util::resource_file::read_file_as_text(util::resource_file::find_resource_file(pFilename), source))
+	if (!util::resource_file::read_file_as_text(util::resource_file::find_resource_file(std::string("shaders/") + pFilename), source))
 	{
 #if defined(_DEBUG) || defined(DEBUG)
 		std::cerr << "Could not read file \"" << pFilename << "\"." << std::endl;
@@ -86,20 +119,6 @@ bool cgvkp::rendering::Technique::addShader(GLenum shaderType, char const* pFile
 	glAttachShader(program, shader);
 
 	return true;
-}
-
-GLint cgvkp::rendering::Technique::getUniformLocation(GLchar const* pName) const
-{
-	GLint location = glGetUniformLocation(program, pName);
-
-#if defined(_DEBUG) || defined(DEBUG)
-	if (location == invalidLocation)
-	{
-		std::cerr << "Could not find location for uniform \"" << pName << "\"." << std::endl;
-	}
-#endif
-
-	return location;
 }
 
 bool cgvkp::rendering::Technique::link()

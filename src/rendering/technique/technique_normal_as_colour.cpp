@@ -7,19 +7,7 @@ cgvkp::rendering::technique_normal_as_colour::technique_normal_as_colour()
 
 bool cgvkp::rendering::technique_normal_as_colour::init()
 {
-	if (!Technique::init())
-	{
-		return false;
-	}
-	if (!addShader(GL_VERTEX_SHADER, "shaders/normal_as_colour.vs"))
-	{
-		return false;
-	}
-	if (!addShader(GL_FRAGMENT_SHADER, "shaders/normal_as_colour.fs"))
-	{
-		return false;
-	}
-	if (!link())
+	if (!Technique::init("normal_as_colour.vs", "normal_as_colour.fs"))
 	{
 		return false;
 	}

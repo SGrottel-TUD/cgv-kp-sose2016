@@ -16,7 +16,7 @@ namespace cgvkp
 			void setScreenSize(GLsizei width, GLsizei height) const;
 
 		private:
-			GLint screenSizeLocation;
+			GLint scaleLocation;
 			std::shared_ptr<util::texture> texture;
 		};
 	}

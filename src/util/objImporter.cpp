@@ -472,10 +472,6 @@ bool cgvkp::util::ObjImporter::readTexturePathFromMtl(std::string const& filenam
 		if (type == "map_Kd")
 		{
 			ss >> texturePath;
-			// Adapt directory
-			size_t sep = filename.find_last_of("\\/");
-			if (sep != std::string::npos)
-				texturePath = filename.substr(0, sep) + filename[sep] + texturePath;
 #if defined(_DEBUG) || defined(DEBUG)
 			std::cout << "Got texture path: " << texturePath << std::endl;
 #endif

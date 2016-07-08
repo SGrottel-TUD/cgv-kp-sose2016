@@ -3,10 +3,9 @@
 uniform mat4 worldView;
 uniform mat4 worldViewProjection;
 
-layout(location = 0) in vec3 inPosition;
-layout(location = 1) in vec3 inNormal;
-layout(location = 2) in vec2 inTextureCoord;
-
+layout (location = 0) in vec3 inPosition;
+layout (location = 1) in vec3 inNormal;
+layout (location = 2) in vec2 inTextureCoord;
 out vec3 vsPositionView;
 out vec3 vsNormalView;
 out vec2 vsTextureCoord;

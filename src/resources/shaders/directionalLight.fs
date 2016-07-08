@@ -24,7 +24,7 @@ void main()
 {
 	fsColor = vec3(0.0, 0.0, 0.0);
 
-	vec3 position = normalize(texture(maps.positionView, vsTextureCoord).xyz);
+	vec3 position = texture(maps.positionView, vsTextureCoord).xyz;
 	vec3 normal = normalize(texture(maps.normalView, vsTextureCoord).xyz);
 	vec3 diffuseColor = texture(maps.diffuseColor, vsTextureCoord).xyz;
 	vec2 material = texture(maps.material, vsTextureCoord).xy;    // = vec2(specularPower, specularIntensity)
@@ -36,7 +36,7 @@ void main()
 		fsColor += diffuseColor * light.diffuseColor * diffuseFactor;
 
 		// specular
-		float specularFactor = -dot(position, reflect(light.direction, normal));
+		float specularFactor = -dot(normalize(position), reflect(light.direction, normal));
 		if(specularFactor > 0.0)
 		{
 			specularFactor = pow(specularFactor, material.x);
