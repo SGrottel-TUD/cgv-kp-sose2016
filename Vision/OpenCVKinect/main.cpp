@@ -33,7 +33,7 @@
 #include "opencv2\imgproc\imgproc.hpp"
 #include <objbase.h>
 #include <Windows.h>
-
+#include <stdio.h>
 
 
 using namespace cv;
@@ -148,8 +148,9 @@ std::vector<vector<int>> modeSeeking(const std::vector<vector<int>>& distributio
 
 	// set input data
 	float* data = new float[n*dim];
-
+#pragma omp parallel for
 	for (int i = 0; i < n; i++)
+#pragma omp parallel for
 		for (int j = 0; j < dim; j++)
 		{
 			data[i * dim + j] = distribution[i][j];
@@ -172,8 +173,10 @@ std::vector<vector<int>> modeSeeking(const std::vector<vector<int>>& distributio
 	vector<int> newSuppPoint;
 	
 	cout << n << endl;
+	#pragma omp parallel for
 	for (int i = 0; i < n; i++)
 	{
+	#pragma omp parallel for
 		for (int j = 0; j < dim; j++)
 		{
 			mode[j] = 0.f;
@@ -183,8 +186,8 @@ std::vector<vector<int>> modeSeeking(const std::vector<vector<int>>& distributio
 		//cout << "newsupppoint" << endl;
 		ms.FindMode(mode, point);
 		bool modeFound = false;
-
-		for (unsigned j = 0; j < modes.size(); j++)
+		#pragma omp parallel for
+		for (int j = 0; j < modes.size(); j++)
 		{
 			if (compareModes(modes[j], mode, dim, tolerance))
 			{
@@ -246,14 +249,13 @@ int main()
 		std::cout << dataStream[0].at<ushort>(50, 10) << std::endl;
 
 
-
+/*
 		//------------------------------face tracking--------------------------------------
 
 		if (!face_cascade.load("C:/Users/Yang/Downloads/OpenCVKinect-master test/OpenCVKinect-master/OpenCVKinect/haarcascade_frontalface_alt.xml")) { printf("--(!)Error loading face\n"); return -1; };
 		if (!eyes_cascade.load("C:/Users/Yang/Downloads/OpenCVKinect-master test/OpenCVKinect-master/OpenCVKinect/haarcascade_eye_tree_eyeglasses.xml")) { printf("--(!)Error loading\n"); return -1; };
 
-		cv::Mat frame = dataStream[C_COLOR_STREAM];
-		cv::Mat depthframe = dataStream[C_DEPTH_STREAM];
+		
 		std::vector<Rect> faces;
 		Mat frame_gray;
 
@@ -285,8 +287,10 @@ int main()
 			int radius = cvRound((eyes[j].width + eyes[j].height)*0.25);
 			circle(frame, center, radius, Scalar(255, 0, 0), 4, 8, 0);
 			}
-			*/
+			
 		}
+		*/
+	
 		//-- Show what you got
 		//imshow(window_name, frame);
 
@@ -308,9 +312,10 @@ int main()
 		vector<vector<int>> modes;
 		//long pointCloudStream[640*480][3];
 		float current = 0;
-
-		for (int y = 0; y < imageDepth - 1; y++) {
-			for (int x = 0; x < imageWidth - 1; x++) {
+		#pragma omp parallel for
+		for (int y = 0; y < (int)imageDepth - 1; y++) {
+		#pragma omp parallel for
+			for (int x = 0; x < (int)imageWidth - 1; x++) {
 				ushort depth = dataStream[0].at<ushort>(y, x);
 				//std::cout <<  << std::endl;
 				if (depth != NULL) {
@@ -344,7 +349,8 @@ int main()
 		//cv::imshow("Colorized Depth", colorizeDepth(dataStream[C_DEPTH_STREAM], 0));
 		
 		
-
+		cv::Mat frame = dataStream[C_COLOR_STREAM];
+		cv::Mat depthframe = dataStream[C_DEPTH_STREAM];
 		
 
 		
