@@ -34,7 +34,7 @@
 #include <objbase.h>
 #include <Windows.h>
 #include <stdio.h>
-
+#include <omp.h>
 
 using namespace cv;
 using namespace std;
@@ -176,7 +176,6 @@ std::vector<vector<int>> modeSeeking(const std::vector<vector<int>>& distributio
 	#pragma omp parallel for
 	for (int i = 0; i < n; i++)
 	{
-	#pragma omp parallel for
 		for (int j = 0; j < dim; j++)
 		{
 			mode[j] = 0.f;
@@ -186,7 +185,6 @@ std::vector<vector<int>> modeSeeking(const std::vector<vector<int>>& distributio
 		//cout << "newsupppoint" << endl;
 		ms.FindMode(mode, point);
 		bool modeFound = false;
-		#pragma omp parallel for
 		for (int j = 0; j < modes.size(); j++)
 		{
 			if (compareModes(modes[j], mode, dim, tolerance))
@@ -314,7 +312,6 @@ int main()
 		float current = 0;
 		#pragma omp parallel for
 		for (int y = 0; y < (int)imageDepth - 1; y++) {
-		#pragma omp parallel for
 			for (int x = 0; x < (int)imageWidth - 1; x++) {
 				ushort depth = dataStream[0].at<ushort>(y, x);
 				//std::cout <<  << std::endl;
