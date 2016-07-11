@@ -1,15 +1,12 @@
 #version 330 core
 
-layout(location = 0) in vec2 inPosition;
+uniform vec2 scale;
 
-uniform ivec2 textureSize;
-uniform ivec2 screenSize;
-
+layout (location = 0) in vec3 inPosition;
 out vec2 vsTextureCoord;
 
 void main()
 {
-	gl_Position = vec4(inPosition, 0.0, 1.0);
-	vec2 aspects = (1.0 * screenSize) / textureSize;
-	vsTextureCoord = ((inPosition + vec2(1.0, 1.0)) / 2.0)*aspects;
+	gl_Position = vec4(inPosition, 1.0);
+	vsTextureCoord = (inPosition.xy + vec2(1.0)) * 0.5 * scale;
 }

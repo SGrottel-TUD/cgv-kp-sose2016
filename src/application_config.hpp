@@ -36,7 +36,7 @@ namespace cgvkp {
 		int windowWidth;
 		int windowHeight;
 		bool fullscreen;
-		rendering::camera_mode cameraMode;
+		rendering::release_renderer::CameraMode cameraMode;
 		float eyeSeparation;
 		float zZeroParallax;
 

@@ -9,7 +9,7 @@
 # Faces: 320
 #
 ####
-mtllib ./sphere.obj.mtl
+mtllib sphere.mtl
 
 vn 0.000000 0.850651 0.525731
 v 0.000000 0.850651 0.525731

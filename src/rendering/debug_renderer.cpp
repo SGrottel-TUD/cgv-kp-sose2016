@@ -1,7 +1,8 @@
+#include <GL/glew.h>
+#include <iostream>
 #include "debug_renderer.hpp"
 #include "data/world.hpp"
-#include "GL/glew.h"
-#include <iostream>
+#include "window.hpp"
 
 using namespace cgvkp;
 

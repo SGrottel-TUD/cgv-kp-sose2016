@@ -1,11 +1,12 @@
-#include "rendering/window.hpp"
 #include <iostream>
-#include "rendering/abstract_user_input.hpp"
+#include <GL/glew.h>
+#include "abstract_user_input.hpp"
+#include "window.hpp"
 
 using namespace cgvkp;
 
-namespace {
-
+namespace
+{
     void APIENTRY my_ogl_debug_func(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam) {
         const char * type_str = "Default";
         const char *sever_str = "Default";
@@ -27,77 +28,66 @@ namespace {
 
         std::cerr << "ogl_dbg: " << type_str << ", " << sever_str << ", " << message << std::endl;
     }
-
 }
 
-rendering::window::window(unsigned int w, unsigned int h, const char* title) 
-        : handle(nullptr), user_input(), fullscreen(false), windowed_width(w), windowed_height(h), windowed_x(0), windowed_y(0) {
-    ctor_impl(nullptr, w, h, title);
+rendering::window::window(unsigned int w, unsigned int h, const char* title /* = "CGV KP SoSe2016" */, GLFWmonitor* fullscreen /* = nullptr */)
+{
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // ogl 3.3 core
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	this->title = title;
+	if (!create_window(w, h, title, fullscreen))
+	{
+		return;
+	}
+
+	::glewExperimental = GL_TRUE;
+	GLenum err = ::glewInit();
+	if (err != GLEW_OK) {
+		glfwDestroyWindow(handle);
+		handle = nullptr;
+		std::cerr << "glewInit failed" << std::endl;
+		return;
+	}
+	if (!::glewIsSupported("GL_VERSION_3_3")) {
+		glfwDestroyWindow(handle);
+		handle = nullptr;
+		std::cerr << "glewIsSupported(GL_VERSION_3_3) failed" << std::endl;
+		return;
+	}
+
+#ifdef GL_KHR_debug
+	if (glewIsSupported("GL_KHR_debug")) {
+		glDebugMessageCallback((GLDEBUGPROC)&my_ogl_debug_func, this);
+		glEnable(GL_DEBUG_OUTPUT);
+	}
+#elif GL_ARB_debug_output
+	if (glewIsSupported("GL_ARB_debug_output")) {
+		glDebugMessageCallbackARB((GLDEBUGPROCARB)&my_ogl_debug_func, this);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+	}
+#endif
 }
 
-rendering::window::window(GLFWmonitor* fullscreen, unsigned int w, unsigned int h, const char* title)
-        : handle(nullptr), user_input() {
-    ctor_impl(fullscreen, w, h, title);
-}
-
-rendering::window::~window() {
-    dtor_impl();
-}
-
-void rendering::window::close() {
-    ::glfwSetWindowShouldClose(this->handle, true);
-}
-
-bool rendering::window::is_alive() const {
-    return (handle != nullptr)
-        && (!::glfwWindowShouldClose(handle));
-}
-
-void rendering::window::do_events() {
-    if (!is_alive()) return;
-    ::glfwPollEvents();
-
-    //// Keys
-    //keys.update(handle);
-
-    //// Cursor
-    //glm::dvec2 position;
-    //::glfwGetCursorPos(handle, &position.x, &position.y);
-    //mouse_pos.x = static_cast<float>(position.x);
-    //mouse_pos.y = static_cast<float>(position.y);
-
-    //unsigned int w, h;
-    //get_size(w, h);
-    //if (h < 1) h = 1;
-    //update_mouse_pos(static_cast<float>(w), static_cast<float>(h));
-
-    //if (::glfwGetMouseButton(handle, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
-    //    if (!is_mouse_captured()) {
-    //        capture_mouse();
-    //    }
-    //}
-}
-
-void rendering::window::make_current() const {
+rendering::window::~window()
+{
+	user_input.reset();
 	if (handle != nullptr)
 	{
-		::glfwMakeContextCurrent(handle);
+		glfwDestroyWindow(handle);
 	}
 }
 
-void rendering::window::swap_buffers() const {
-    if (!is_alive()) return;
-    ::glfwSwapBuffers(handle);
-}
-
-bool rendering::window::register_key_callback(int key, std::function<void()> callback, on_event ev /* = OnDown */)
+bool rendering::window::register_key_callback(int key, std::function<void()> const& callback, OnEvent ev /* = OnDown */)
 {
 	if (key > GLFW_KEY_LAST)
 	{
 		return false;
 	}
 
-	key_events& k = keys[key];
+	auto& k = keys[key];
 
 	if (ev & OnPress)
 	{
@@ -126,81 +116,6 @@ bool rendering::window::get_size(int &out_width, int &out_height) const {
     return rv;
 }
 
-void rendering::window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-	rendering::window* w = static_cast<rendering::window*>(glfwGetWindowUserPointer(window));
-	if (key <= GLFW_KEY_LAST)
-	{
-		key_events const& k = w->keys[key];
-		if (action == GLFW_PRESS && k.onPress)
-		{
-			k.onPress();
-		}
-		else if (action == GLFW_REPEAT && k.onRepeat)
-		{
-			k.onRepeat();
-		}
-		else if (action == GLFW_RELEASE && k.onRelease)
-		{
-			k.onRelease();
-		}
-	}
-}
-
-void rendering::window::mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-    rendering::window *that = static_cast<rendering::window*>(::glfwGetWindowUserPointer(window));
-    if (that->user_input) that->user_input->mouse_button(window, button, action, mods);
-}
-
-void rendering::window::mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    rendering::window *that = static_cast<rendering::window*>(::glfwGetWindowUserPointer(window));
-    if (that->user_input) that->user_input->mouse_wheel(window, xoffset, yoffset);
-}
-
-void rendering::window::ctor_impl(GLFWmonitor* fullscreen, unsigned int w, unsigned int h, const char* title) {
-    ::glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // ogl 3.3 core
-    ::glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    ::glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    ::glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	this->title = title;
-	create_window(w, h, title, fullscreen);
-
-    ::glewExperimental = GL_TRUE;
-    GLenum err = ::glewInit();
-    if (err != GLEW_OK) {
-        dtor_impl();
-        std::cerr << "glewInit failed" << std::endl;
-        return;
-    }
-    if (!::glewIsSupported("GL_VERSION_3_3")) {
-        dtor_impl();
-        std::cerr << "glewIsSupported(GL_VERSION_3_3) failed" << std::endl;
-        return;
-    }
-
-#ifdef GL_KHR_debug
-    if (glewIsSupported("GL_KHR_debug")) {
-        glDebugMessageCallback((GLDEBUGPROC)&my_ogl_debug_func, this);
-        glEnable(GL_DEBUG_OUTPUT);
-    }
-#elif GL_ARB_debug_output
-    if (glewIsSupported("GL_ARB_debug_output")) {
-        glDebugMessageCallbackARB((GLDEBUGPROCARB)&my_ogl_debug_func, this);
-        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
-    }
-#endif
-
-}
-
-void rendering::window::dtor_impl() {
-    user_input.reset();
-    if (handle != nullptr) {
-        ::glfwDestroyWindow(handle);
-        handle = nullptr;
-    }
-}
-
 bool rendering::window::create_window(int width, int height, char const* title, GLFWmonitor* fullscreen) {
 	if (fullscreen != nullptr) {
 		const GLFWvidmode* mode = ::glfwGetVideoMode(fullscreen);
@@ -225,14 +140,16 @@ bool rendering::window::create_window(int width, int height, char const* title, 
 
 	this->fullscreen = fullscreen != nullptr;
 
-	::glfwSetWindowUserPointer(handle, this);
+	glfwSetWindowUserPointer(handle, this);
 
-	::glfwSetMouseButtonCallback(handle, window::mouse_button_callback);
-	::glfwSetScrollCallback(handle, window::mouse_scroll_callback);
-	::glfwSetKeyCallback(handle, window::key_callback);
+	glfwSetCursorPosCallback(handle, mousePositionCallback);
+	glfwSetMouseButtonCallback(handle, mouse_button_callback);
+	glfwSetScrollCallback(handle, mouse_scroll_callback);
+	glfwSetKeyCallback(handle, key_callback);
+	glfwSetCharCallback(handle, character_callback);
 
-	::glfwMakeContextCurrent(handle);
-	glfwSwapInterval(1);
+	glfwMakeContextCurrent(handle);
+	//glfwSwapInterval(1);
 
 	return true;
 }
@@ -252,5 +169,80 @@ void rendering::window::toggle_fullscreen() {
 		glfwDestroyWindow(handle);
 
 		create_window(-1, -1, title.c_str(), glfwGetPrimaryMonitor());
+	}
+}
+
+void rendering::window::mousePositionCallback(GLFWwindow* window, double x, double y)
+{
+	rendering::window* w = static_cast<rendering::window*>(glfwGetWindowUserPointer(window));
+	if (w->setMousePosition)
+	{
+		w->setMousePosition(x, y);
+	}
+}
+
+void rendering::window::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+	rendering::window *win = static_cast<rendering::window*>(::glfwGetWindowUserPointer(window));
+	if (win->leftMouseButtonClick && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+	{
+		win->leftMouseButtonClick();
+	}
+	else if (win->user_input)
+	{
+		win->user_input->mouse_button(window, button, action, mods);
+	}
+}
+
+void rendering::window::mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+	rendering::window *that = static_cast<rendering::window*>(::glfwGetWindowUserPointer(window));
+	if (that->user_input) that->user_input->mouse_wheel(window, xoffset, yoffset);
+}
+
+void rendering::window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	rendering::window* w = static_cast<rendering::window*>(glfwGetWindowUserPointer(window));
+
+	if (w->inputCodePoint && key)
+	{
+		if (w->inputCodePoint(0))
+		{
+			if (key > GLFW_KEY_ESCAPE && (action == GLFW_PRESS || action == GLFW_REPEAT))
+			{
+				switch (key)
+				{
+				case GLFW_KEY_BACKSPACE:
+					w->inputCodePoint(0x08);
+					break;
+				}
+			}
+			return;
+		}
+	}
+
+	if (key <= GLFW_KEY_LAST)
+	{
+		auto const& k = w->keys[key];
+		if (action == GLFW_PRESS && k.onPress)
+		{
+			k.onPress();
+		}
+		else if (action == GLFW_REPEAT && k.onRepeat)
+		{
+			k.onRepeat();
+		}
+		else if (action == GLFW_RELEASE && k.onRelease)
+		{
+			k.onRelease();
+		}
+	}
+}
+
+void rendering::window::character_callback(GLFWwindow* window, unsigned int codepoint)
+{
+	rendering::window* w = static_cast<rendering::window*>(glfwGetWindowUserPointer(window));
+	if (w->inputCodePoint)
+	{
+		w->inputCodePoint(codepoint);
 	}
 }

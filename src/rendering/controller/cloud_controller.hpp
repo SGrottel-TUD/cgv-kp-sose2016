@@ -16,7 +16,7 @@ namespace controller {
 
     class cloud_controller : public controller_base {
     public:
-        cloud_controller(release_renderer* renderer, const data::world& data);
+        cloud_controller(release_renderer* renderer, const data::world& data, Mesh const& mesh);
         virtual ~cloud_controller();
 
         // Answer if the object has a model

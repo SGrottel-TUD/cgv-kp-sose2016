@@ -47,7 +47,7 @@ void application::run()
 	}
 	else
 	{
-		release_renderer = std::make_shared<rendering::release_renderer>(data);
+		release_renderer = std::make_shared<rendering::release_renderer>(data, *release_window);
 		if (!release_renderer || !release_renderer->init(*release_window))
 		{
 			std::cout << "Failed to create Release renderer" << std::endl;
@@ -56,16 +56,16 @@ void application::run()
 		}
 		else
 		{
-			release_renderer->set_camera_mode(config.cameraMode);
-			release_renderer->set_stereo_parameters(config.eyeSeparation, config.zZeroParallax);
+			release_renderer->setCameraMode(config.cameraMode);
+			release_renderer->setStereoParameters(config.eyeSeparation, config.zZeroParallax);
 
 			release_window->register_key_callback(GLFW_KEY_F, std::bind(&application::toggle_fullscreen, this), rendering::window::OnRelease);
 			release_window->register_key_callback(GLFW_KEY_DOWN, std::bind(&application::increase_zzero_parallax, this, -0.1f), rendering::window::OnPress | rendering::window::OnRepeat);
 			release_window->register_key_callback(GLFW_KEY_UP, std::bind(&application::increase_zzero_parallax, this, 0.1f), rendering::window::OnPress | rendering::window::OnRepeat);
 			release_window->register_key_callback(GLFW_KEY_LEFT, std::bind(&application::increase_eye_separation, this, -0.001f), rendering::window::OnPress | rendering::window::OnRepeat);
 			release_window->register_key_callback(GLFW_KEY_RIGHT, std::bind(&application::increase_eye_separation, this, 0.001f), rendering::window::OnPress | rendering::window::OnRepeat);
-			release_window->register_key_callback(GLFW_KEY_M, std::bind(&application::set_camera_mode, this, rendering::mono));
-			release_window->register_key_callback(GLFW_KEY_S, std::bind(&application::set_camera_mode, this, rendering::stereo));
+			release_window->register_key_callback(GLFW_KEY_M, std::bind(&application::set_camera_mode, this, rendering::release_renderer::mono));
+			release_window->register_key_callback(GLFW_KEY_S, std::bind(&application::set_camera_mode, this, rendering::release_renderer::stereo));
 		}
 	}
 
@@ -220,10 +220,10 @@ void application::toggle_fullscreen()
 	if (release_renderer)
 	{
 		release_window->make_current();
-		release_renderer->lost_context();
+		release_renderer->deinit();
 		release_window->toggle_fullscreen();
 		config.fullscreen = !config.fullscreen;
-		release_renderer->restore_context(*release_window);
+		release_renderer->init(*release_window);
 	}
 }
 
@@ -237,7 +237,7 @@ void application::increase_eye_separation(float val)
 	
 	if(release_renderer)
 	{
-		release_renderer->set_stereo_parameters(config.eyeSeparation, config.zZeroParallax);
+		release_renderer->setStereoParameters(config.eyeSeparation, config.zZeroParallax);
 	}
 }
 
@@ -251,16 +251,16 @@ void application::increase_zzero_parallax(float val)
 
 	if (release_renderer)
 	{
-		release_renderer->set_stereo_parameters(config.eyeSeparation, config.zZeroParallax);
+		release_renderer->setStereoParameters(config.eyeSeparation, config.zZeroParallax);
 	}
 }
 
-void application::set_camera_mode(rendering::camera_mode mode)
+void application::set_camera_mode(rendering::release_renderer::CameraMode mode)
 {
 	config.cameraMode = mode;
 
 	if (release_renderer)
 	{
-		release_renderer->set_camera_mode(config.cameraMode);
+		release_renderer->setCameraMode(config.cameraMode);
 	}
 }

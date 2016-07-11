@@ -10,14 +10,17 @@
 cgvkp::rendering::model_listing_renderer::model_listing_renderer(const ::cgvkp::data::world& data)
 	: cgvkp::rendering::abstract_renderer(data),
     star_model(std::make_shared<model::star_model>()),
-    star_view(std::make_shared<view::star_view>()),
+    star_view(std::make_shared<view::star_view>(starMesh)),
     hand_model(std::make_shared<model::hand_model>()),
-    hand_view(std::make_shared<view::hand_view>()) {
+    hand_view(std::make_shared<view::hand_view>(handMesh)) {
 }
 cgvkp::rendering::model_listing_renderer::~model_listing_renderer() {}
 
 bool cgvkp::rendering::model_listing_renderer::init_impl(const window& wnd) {
     wnd.make_current();
+
+	handMesh.init("hand");
+	starMesh.init("star");
 
 	::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -34,27 +37,25 @@ bool cgvkp::rendering::model_listing_renderer::init_impl(const window& wnd) {
         glm::scale(glm::vec3(2.5f)) *
         star_model->model_matrix;
     star_view->set_model(star_model);
-    star_view->init();
 
     hand_model->model_matrix =
         glm::translate(glm::vec3(0.5f, 0.0f, 0.0f)) *
         glm::scale(glm::vec3(2.0f)) *
         hand_model->model_matrix;
     hand_view->set_model(hand_model);
-    hand_view->init();
 
     std::cout << "Model listing renderer initialized" << std::endl;
     return true;
 }
 void cgvkp::rendering::model_listing_renderer::deinit_impl() {
-    star_view->deinit();
     star_view.reset();
     star_model.reset();
 
-    hand_view->deinit();
     hand_view.reset();
     hand_model.reset();
 
+	handMesh.deinit();
+	starMesh.deinit();
     technique1.deinit();
     bg.deinit();
 }

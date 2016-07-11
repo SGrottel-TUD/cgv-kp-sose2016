@@ -1,10 +1,7 @@
 #pragma once
 
 #include <GL/glew.h>
-#include <glm/mat4x4.hpp>
 #include <list>
-#include <string>
-#include "rendering/view/view_base.hpp"
 
 namespace cgvkp
 {
@@ -13,22 +10,22 @@ namespace cgvkp
 		class Technique
 		{
 		public:
-			virtual ~Technique();
+			virtual inline ~Technique() { deinit(); }
 			virtual void deinit();
-			void setWorldViewProjection(glm::mat4x4 const& worldViewProjection) const;
 			inline void use() const { glUseProgram(program); }
 
 		protected:
-			Technique();
-			bool addShader(GLenum shaderType, std::string const& filename);
-			GLint getUniformLocation(GLchar const* name) const;
-			bool init();
-			bool link();
+			inline Technique() : program(0) {}
+			GLint getUniformLocation(GLchar const* pName) const;
+			bool init(char const* vertexShader, char const* geometryShader, char const* fragmentShader);
+			inline bool init(char const* vertexShader, char const* fragmentShader) { return init(vertexShader, nullptr, fragmentShader); }
 
 			static GLint const invalidLocation = -1;
-			GLint worldViewProjectionLocation;
 
 		private:
+			bool addShader(GLenum shaderType, char const* pFilename);
+			bool link();
+
 			GLuint program;
 			std::list<GLuint> shaders;
 		};

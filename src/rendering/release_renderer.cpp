@@ -1,69 +1,125 @@
+#include <glm/gtx/transform.hpp>
+#include <iostream>
 #include "release_renderer.hpp"
 #include "data/world.hpp"
-#include "glm/gtx/transform.hpp"
-#include "view/star_view.hpp"
-#include "view/hand_view.hpp"
-#include <iostream>
 #include "controller/data_controller.hpp"
 #include "controller/cloud_controller.hpp"
+#include "window.hpp"
 
-cgvkp::rendering::release_renderer::release_renderer(const ::cgvkp::data::world& data)
-    : cgvkp::rendering::abstract_renderer(data),
-	framebufferWidth(0), framebufferHeight(0), cameraMode(mono), fps_counter_elapsed(0.0), rendered_frames(0u) {
+cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world & data, window& wnd)
+	: abstract_renderer(data), windowWidth(0), windowHeight(0), framebufferWidth(0), framebufferHeight(0), cameraMode(mono), gui(data, "CartoonRegular.ttf"), fps_counter_elapsed(0.0), rendered_frames(0u)
+{
+	pQuad = &meshes.insert({ "quad", Mesh() }).first->second;
+	Mesh const& cloudMesh = meshes.insert({ "sphere", Mesh() }).first->second;
+	Mesh const& starMesh = meshes.insert({ "star", Mesh() }).first->second;
+	Mesh const& handMesh = meshes.insert({ "hand", Mesh() }).first->second;
+
+	// Create and add data, cloud controller
+	controllers.push_back(std::make_shared<controller::data_controller>(this, data, handMesh, starMesh));
+	controllers.push_back(std::make_shared<controller::cloud_controller>(this, data, cloudMesh));
+
+	// Lights
+	ambientLight = glm::vec3(0.1, 0.1, 0.5) * 0.25f;
+	directionalLight.color = glm::vec3(1, 1, 1);
+	directionalLight.diffuseIntensity = 0.5f;
+	directionalLight.direction = glm::normalize(glm::vec3(0, -2, -1));	// in view space.
+
+	// Gui
+	wnd.setMousePositionCallback([&](double x, double y) { gui.updateMousePosition(static_cast<float>(x), static_cast<float>(y)); });
+	wnd.setLeftMouseButtonCallback(std::bind(&Gui::click, &gui));
+	wnd.setInputCodePointCallback(std::bind(&Gui::inputCodePoint, &gui, std::placeholders::_1));
+	gui.setExitCallback(std::bind(&window::close, &wnd));
+	gui.setHighscoresCallback([]() { return std::list<Score>(); });
+	gui.setScoreCallback(std::bind(&data::world::get_score, &data));
+	gui.setFPSCallback([&]() { return fps; });
+	gui.loadMenu();
 }
-cgvkp::rendering::release_renderer::~release_renderer(){}
 
-bool cgvkp::rendering::release_renderer::init_impl(const window& wnd) {
-	if (!restore_context(wnd))
+bool cgvkp::rendering::release_renderer::init_impl(window const& wnd)
+{
+	wnd.make_current();
+
+	if (!gbuffer.init() ||
+		!postProcessing.init(2) ||
+		!geometryPass.init() ||
+		!directionalLightPass.init() ||
+		!spotLightPass.init() ||
+		!ssaoPass.init() ||
+		!gaussianBlur.init() ||
+		!background.init() ||
+		!starPass.init() ||
+		!gui.init())
 	{
 		return false;
 	}
 
-    // Create and add data, cloud controller
-    controllers.push_back(std::make_shared<controller::data_controller>(this, data));
-	controllers.push_back(std::make_shared<controller::cloud_controller>(this, data));
-
-    // Create a cached hand view to avoid delay on first hand appearance.
-    auto hand_view = std::make_shared<view::hand_view>();
-    hand_view->init();
-    cached_views.push_back(hand_view);
-
-	// light source
-	PointLight p1;
-	p1.position = glm::vec3(0, 1.5f, 0);
-	p1.color = glm::vec3(0.1f, 0.1, 0.5f);
-	p1.ambientIntensity = 0.25f;
-	p1.diffuseIntensity = 0.8f;
-	p1.constantAttenuation = 0;
-	p1.linearAttenuation = 0;
-	p1.exponentialAttenuation = 0.3f;
-	p1.calculateWorld();
-	pointLights.push_back(p1);
+	for (auto& pair : meshes)
+	{
+		pair.second.init(pair.first);
+	}
 
 	return true;
 }
 
 void cgvkp::rendering::release_renderer::deinit_impl()
 {
-	lost_context();
+	glBindVertexArray(0);
+	glUseProgram(0);
+
+	for (auto& pair : meshes)
+	{
+		pair.second.deinit();
+	}
+
+	background.deinit();
+	gaussianBlur.deinit();
+	ssaoPass.deinit();
+	directionalLightPass.deinit();
+	spotLightPass.deinit();
+	geometryPass.deinit();
+	gbuffer.deinit();
+	postProcessing.deinit();
+	starPass.deinit();
+	gui.deinit();
+}
+
+void cgvkp::rendering::release_renderer::setCameraMode(CameraMode mode)
+{
+	cameraMode = mode;
+	windowWidth = 0;	// Reset window width. The test in the render method will do the rest.
+}
+
+void cgvkp::rendering::release_renderer::setStereoParameters(float _eyeSeparation, float _zZeroParallax)
+{
+	eyeSeparation = _eyeSeparation;
+	zZeroParallax = _zZeroParallax;
+	if (zZeroParallax < 0.01f)	// zNear
+	{
+		zZeroParallax = 0.01f;
+	}
+	if (framebufferWidth != 0 && framebufferHeight != 0)
+	{
+		calculateViewProjection();
+		gui.setSize(framebufferWidth, framebufferHeight, glm::quarter_pi<float>(), cameraMode == stereo ? zZeroParallax : 10);
+	}
 }
 
 void cgvkp::rendering::release_renderer::calculateViewProjection()
 {
-	float fovy = glm::quarter_pi<float>();
-	float tanHalfFovy = tan(fovy / 2);
-
-	if(framebufferWidth == 0 || framebufferHeight == 0)
+	if (framebufferWidth == 0 || framebufferHeight == 0)
 	{
 		return;
 	}
 
-	aspect = static_cast<float>(framebufferWidth / (cameraMode == stereo ? 2 : 1)) / framebufferHeight;
+	float fovy = glm::quarter_pi<float>();
+	float tanHalfFovy = tan(fovy / 2);
+
+	float aspect = static_cast<float>(framebufferWidth) / framebufferHeight;
 
 	// View
 	float w = data.get_config().width();
 	float h = data.get_config().height();
-	float k = 1.0f / 3;
+	float k = 1.0f / 2;
 
 	distance = (w + 0.5f) / (2 * aspect * tanHalfFovy);	// Distance to the front of the game area. 0.5f is a bias.
 
@@ -85,12 +141,13 @@ void cgvkp::rendering::release_renderer::calculateViewProjection()
 	viewMatrix = glm::lookAt(position, lookAt, glm::vec3(0, 1, 0));
 
 	// Projection
-	float zNear = distance * cos(fovy / 2) - 1;	// Estimated minimum depth.
+	float zNear = 0.01f;
 	if (zNear < 0.01f)
 	{
 		zNear = 0.01f;
 	}
 	float zFar = distance + h + 2;	// Estimated maximum depth.
+	zFar = 100;
 	if (cameraMode == stereo)
 	{
 		glm::vec3 translation = glm::vec3(eyeSeparation * tanHalfFovy * zZeroParallax * aspect, 0.0f, 0.0f);
@@ -114,13 +171,20 @@ void cgvkp::rendering::release_renderer::calculateViewProjection()
 	}
 }
 
-void cgvkp::rendering::release_renderer::render(const window& wnd)
+void cgvkp::rendering::release_renderer::render(window const& wnd)
 {
 	wnd.make_current();
-	if (wnd.get_size(framebufferWidth, framebufferHeight))
+	if (wnd.get_size(windowWidth, windowHeight))
 	{
-		gbuffer.resize(framebufferWidth, framebufferHeight);
-		calculateViewProjection();
+		framebufferWidth = cameraMode == stereo ? windowWidth / 2 : windowWidth;
+		framebufferHeight = windowHeight;
+		if (framebufferWidth != 0 && framebufferHeight != 0)
+		{
+			gbuffer.resize(framebufferWidth, framebufferHeight);
+			postProcessing.resize(framebufferWidth, framebufferHeight);
+            gui.setSize(framebufferWidth, framebufferHeight, glm::quarter_pi<float>(), cameraMode == stereo ? zZeroParallax : 10);
+			calculateViewProjection();
+		}
 	}
 	if (framebufferWidth == 0 || framebufferHeight == 0)
 	{
@@ -128,280 +192,232 @@ void cgvkp::rendering::release_renderer::render(const window& wnd)
 	}
 
 	std::chrono::high_resolution_clock::time_point now_time = std::chrono::high_resolution_clock::now();
-	double elapsed = std::chrono::duration<double>(now_time - last_time).count();
+	double elapsed = std::chrono::duration<float>(now_time - last_time).count();
 	last_time = now_time;
 	fps_counter_elapsed += elapsed;
 	++rendered_frames;
-	if (fps_counter_elapsed >= 2.0)
+	if (fps_counter_elapsed >= 0.5f)
 	{
-#if (DEBUG || _DEBUG)
-		std::cout << "FPS: " << rendered_frames / fps_counter_elapsed << std::endl;
-#endif
-		fps_counter_elapsed = 0.0;
-		rendered_frames = 0u;
+		fps = static_cast<int>(rendered_frames / fps_counter_elapsed);
+		fps_counter_elapsed = 0;
+		rendered_frames = 0;
 	}
 
-	for (controller::controller_base::ptr controller : controllers) {
-		if (!controller->has_model()) continue;
-		controller->update(elapsed, wnd.get_user_input_object());
+	// Remove views and controllers without model
+	for (auto it = cloudViews.begin(); it != cloudViews.end();)
+	{
+		if (!(*it)->has_model())
+		{
+			it = cloudViews.erase(it);
+		}
+		else
+		{
+			++it;
+		}
 	}
-    controllers.insert(controllers.end(), new_controllers.begin(), new_controllers.end());
-    new_controllers.clear();
-    // Remove views and controllers without model
-    for (auto it = views.begin(); it != views.end();)
-    {
-        if (!it->get()->has_model())
-        {
-            it->get()->deinit();
-            it = views.erase(it);
-        }
-        else
-        {
-            ++it;
-        }
-    }
-    for (auto it = controllers.begin(); it != controllers.end();)
-    {
-        if (!it->get()->has_model())
-        {
-            it = controllers.erase(it);
-        }
-        else
-        {
-            ++it;
-        }
-    }
+	for (auto it = handViews.begin(); it != handViews.end();)
+	{
+		if (!(*it)->has_model())
+		{
+			it = handViews.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+	for (auto it = starViews.begin(); it != starViews.end();)
+	{
+		if (!(*it)->has_model())
+		{
+			it = starViews.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+	for (auto it = controllers.begin(); it != controllers.end();)
+	{
+		if (!(*it)->has_model())
+		{
+			it = controllers.erase(it);
+		}
+		else
+		{
+			(*it)->update(elapsed, wnd.get_user_input_object());
+			++it;
+		}
+	}
+
+	glViewport(0, 0, framebufferWidth, framebufferHeight);
+
+	// Render left image in stereo or single image in mono.
+	renderScene(leftProjection);
+	gbuffer.bindForReadingFinal();
+	glBlitFramebuffer(0, 0, framebufferWidth, framebufferHeight, 0, 0, framebufferWidth, framebufferHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+
 	if (cameraMode == stereo)
 	{
-		glEnable(GL_SCISSOR_TEST);
-
-		// Render only to the left half.
-		glViewport(0, 0, framebufferWidth / 2, framebufferHeight);
-		glScissor(0, 0, framebufferWidth / 2, framebufferHeight);
-		renderScene(leftProjection);
-
-		// Render only to the right half.
-		glViewport(framebufferWidth / 2, 0, framebufferWidth / 2, framebufferHeight);
-		glScissor(framebufferWidth / 2, 0, framebufferWidth / 2, framebufferHeight);
+		// Render right image.
 		renderScene(rightProjection);
-
-		// reset
-		glDisable(GL_SCISSOR_TEST);
-	}
-	else	// mono
-	{
-		glViewport(0, 0, framebufferWidth, framebufferHeight);
-		renderScene(leftProjection);
+		gbuffer.bindForReadingFinal();
+		glBlitFramebuffer(0, 0, framebufferWidth, framebufferHeight, framebufferWidth, 0, 2 * framebufferWidth, framebufferHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	}
 }
 
-void cgvkp::rendering::release_renderer::renderScene(glm::mat4x4 const& projection) const
+void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection) const
 {
-	gbuffer.bindForGeometryPass();
+	gbuffer.bindForWritingFinal();
+	glClear(GL_COLOR_BUFFER_BIT);
 
-	glEnable(GL_DEPTH_TEST);
+	fillGeometryBuffer(projection);
+
+	glBlendEquation(GL_FUNC_ADD);
+
+	addAmbientLight();
+	addDirectionalLight(directionalLight);
+	addBackground();
+	addStarLights(projection);
+	addStars(projection);
+	gui.render(projection);
+}
+
+void cgvkp::rendering::release_renderer::fillGeometryBuffer(glm::mat4 const& projection) const
+{
+	gbuffer.bindForWritingGeometry();
+	geometryPass.use();
+
 	glDepthMask(GL_TRUE);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	background.use();
-	background.setScreenSize(cameraMode == mono ? framebufferWidth : framebufferWidth / 2, framebufferHeight);
-    background.render();
+	// Render a quad with a very low z value in view space to not get wrong results during post processing.
+	geometryPass.setWorldView(glm::translate(glm::vec3(0, 0, -1000)));
+	geometryPass.setWorldViewProjection(glm::mat4(1));
+	pQuad->render();
 
-	glm::vec3 ambientLight(0, 0, 0);
-	for (auto const& light : pointLights)
+	glEnable(GL_DEPTH_TEST);
+
+	for (auto const& c : cloudViews)
 	{
-		ambientLight += light.ambientIntensity * light.color;
-	}
-
-	geometryPass.use();
-	geometryPass.setAmbientLight(ambientLight);
-	for (view::view_base::ptr v : views)
-	{
-        geometryPass.renderView(v, projection * viewMatrix);
-	}
-	glDepthMask(GL_FALSE);
-
-    // Render lights
-    renderLights(projection);
-
-	// Copy final image into default framebuffer
-	gbuffer.bindForFinalPass();
-	glBlitFramebuffer(0, 0, framebufferWidth, framebufferHeight, 0, 0, framebufferWidth, framebufferHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-}
-
-void cgvkp::rendering::release_renderer::renderLights(glm::mat4x4 const& projection) const
-{
-	// Render lights
-	glEnable(GL_STENCIL_TEST);
-	glCullFace(GL_FRONT);
-	glEnable(GL_BLEND);
-	glBlendEquation(GL_FUNC_ADD);
-	glBlendFunc(GL_ONE, GL_ONE);
-	glEnable(GL_DEPTH_CLAMP);
-
-	PointLight pointLight;
-	pointLight.color = glm::vec3(1, 1, 0.6f);
-	pointLight.ambientIntensity = 0.25f;
-	pointLight.diffuseIntensity = 0.2f;
-	pointLight.constantAttenuation = 0;
-	pointLight.linearAttenuation = 0;
-	pointLight.exponentialAttenuation = 0.3f;
-	for (auto const& view : views)
-	{
-		if (!view->is_valid() || !view->has_model() || !view->light_source()) continue;
-		auto graphic_model = std::dynamic_pointer_cast<model::graphic_model_base>(view->get_model());
+		auto graphic_model = c->get_model();
 		if (graphic_model == nullptr) continue;
-		pointLight.position = glm::vec3(graphic_model->model_matrix[3]);
-		pointLight.calculateWorld();
-		renderPointLight(pointLight, projection);
+		geometryPass.setWorldView(viewMatrix * graphic_model->model_matrix);
+		geometryPass.setWorldViewProjection(projection * viewMatrix * graphic_model->model_matrix);
+		c->render();
 	}
-	glDisable(GL_DEPTH_CLAMP);
+	for (auto const& v : handViews)
+	{
+		auto graphic_model = v->get_model();
+		if (graphic_model == nullptr) continue;
+		geometryPass.setWorldView(viewMatrix * graphic_model->model_matrix);
+		geometryPass.setWorldViewProjection(projection * viewMatrix * graphic_model->model_matrix);
+		v->render();
+	}
+
+	glDepthMask(GL_FALSE);
+}
+
+void cgvkp::rendering::release_renderer::addAmbientLight() const
+{
+	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
-	glCullFace(GL_BACK);
-	glDisable(GL_STENCIL_TEST);
+	glBlendFunc(GL_ONE, GL_ONE);
+
+	gbuffer.bindForReadingGeometry();
+	postProcessing.nextPass(0, 0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	ssaoPass.use();
+	ssaoPass.setAmbientLight(ambientLight);
+	pQuad->render();
+
+	postProcessing.nextPass(1);
+	gbuffer.bindForWritingFinal();
+	gaussianBlur.use();
+	gaussianBlur.setDirection(GaussianBlurTechnique::horizontal);
+	gaussianBlur.setBlurSize(framebufferWidth);
+	pQuad->render();
+
+	postProcessing.finalPass(1);
+	gbuffer.bindForWritingFinal();
+	gaussianBlur.setDirection(GaussianBlurTechnique::vertical);
+	gaussianBlur.setBlurSize(framebufferHeight);
+	glEnable(GL_BLEND);
+	pQuad->render();
 }
 
-void cgvkp::rendering::release_renderer::renderPointLight(PointLight const& pointLight, glm::mat4x4 const& projection) const
+void cgvkp::rendering::release_renderer::addDirectionalLight(DirectionalLight const& light) const
 {
-    // Render shadow volumes.
-    glDrawBuffer(GL_NONE);
-    glClear(GL_STENCIL_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
+	gbuffer.bindForReadingGeometry();
+	gbuffer.bindForWritingFinal();
+	directionalLightPass.use();
 
-    glStencilFunc(GL_ALWAYS, 0, 0xff);
-    glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
-    glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
-
-    shadowVolumePass.use();
-    shadowVolumePass.setLightPosition(pointLight.position);
-    shadowVolumePass.setViewProjection(projection * viewMatrix);
-    for (view::view_base::ptr v : views)
-    {
-        shadowVolumePass.renderView(v);
-    }
-
-    glEnable(GL_CULL_FACE);
-
-    // Render objects not in shadow.
-    gbuffer.bindForLightPass();
-    lightPass.use();
-    lightPass.setScreenSize(framebufferWidth, framebufferHeight);
-    lightPass.setEyePosition(viewMatrix[3].x, viewMatrix[3].y, viewMatrix[3].z);
-    lightPass.setMaps();
-
-    glDisable(GL_DEPTH_TEST);
-
-    glStencilFunc(GL_EQUAL, 0x0, 0xff);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
-    lightPass.setWorldViewProjection(projection * viewMatrix * pointLight.world);
-    lightPass.setLight(pointLight);
-    lightingSphere.render();
+	directionalLightPass.setLight(directionalLight);
+	pQuad->render();
 }
 
-void cgvkp::rendering::release_renderer::set_camera_mode(cgvkp::rendering::camera_mode mode)
+void cgvkp::rendering::release_renderer::addBackground() const
 {
-	cameraMode = mode;
-	calculateViewProjection();
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_EQUAL);
+	glDisable(GL_BLEND);
+	gbuffer.bindForWritingFinal();
+	background.use();
+
+	background.setScreenSize(framebufferWidth, framebufferHeight);
+	background.render();
+	pQuad->render();
+
+	glDepthFunc(GL_LESS);
 }
 
-void cgvkp::rendering::release_renderer::set_stereo_parameters(float eye_separation, float zzero_parallax)
+void cgvkp::rendering::release_renderer::addStarLights(glm::mat4 const& projection) const
 {
-	eyeSeparation = eye_separation;
-	zZeroParallax = zzero_parallax;
-	calculateViewProjection();
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
+	gbuffer.bindForReadingGeometry();
+	gbuffer.bindForWritingFinal();
+	spotLightPass.use();
+
+	SpotLight starLight;
+	starLight.color = glm::vec3(0.9608f, 0.5059f, 0.1255f);	// average color in the star texture.
+	starLight.diffuseIntensity = 1;
+	starLight.direction = glm::vec3(0, -1, 0);	// in world space
+	starLight.attenuation = glm::vec3(1, 0, 2);	// constant, linear, exponential
+	starLight.cutoff = glm::quarter_pi<float>();
+
+	for (auto const& s : starViews)
+	{
+		if (!s->has_model()) continue;
+
+		starLight.position = glm::vec3(s->get_model()->model_matrix[3]);
+		spotLightPass.setLight(starLight, viewMatrix, projection);
+		pQuad->render();
+	}
 }
 
-void cgvkp::rendering::release_renderer::lost_context()
+void cgvkp::rendering::release_renderer::addStars(glm::mat4 const& projection) const
 {
-	glBindVertexArray(0);
-	glUseProgram(0);
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
+	gbuffer.bindForWritingFinal();
+	starPass.use();
 
-    for (auto view : views)
-    {
-        view->deinit();
-    }
-	for (auto view : cached_views)
+	float t = static_cast<float>(glfwGetTime()) / 8;
+	for (auto const& s : starViews)
 	{
-		view->deinit();
+		auto model = s->get_model();
+		if (model == nullptr) continue;
+
+		glm::vec2 offset = glm::vec2(cos(model->id), sin(model->id)) * t;
+		offset.x -= static_cast<long>(offset.x);
+		offset.y -= static_cast<long>(offset.y);
+		starPass.setTextureCoordOffset(offset);
+		starPass.setWorldViewProjection(projection * viewMatrix * model->model_matrix);
+		s->render();
 	}
-
-    background.deinit();
-	lightingSphere.deinit();
-	geometryPass.deinit();
-	shadowVolumePass.deinit();
-	lightPass.deinit();
-	gbuffer.deinit();
-}
-
-bool cgvkp::rendering::release_renderer::restore_context(window const& wnd)
-{
-	wnd.make_current();
-
-	if (!gbuffer.init())
-	{
-		return false;
-	}
-
-	if (!geometryPass.init())
-	{
-		return false;
-	}
-	if (!shadowVolumePass.init())
-	{
-		return false;
-	}
-	if (!lightPass.init())
-	{
-		return false;
-	}
-
-	if (!lightingSphere.init("meshes/lightingSphere.obj"))
-	{
-		return false;
-	}
-    if (!background.init())
-    {
-        return false;
-    }
-
-	for (auto view : cached_views)
-	{
-		view->init();
-	}
-	for (auto view : views)
-	{
-		view->init();
-	}
-
-	return true;
-}
-
-void cgvkp::rendering::release_renderer::add_model(model::model_base::ptr model) {
-	models.push_back(model);
-}
-
-void cgvkp::rendering::release_renderer::remove_model(model::model_base::ptr model) {
-	auto it = std::find(models.begin(), models.end(), model);
-	if (it != models.end())
-	{
-		models.erase(it);
-	}
-}
-
-void cgvkp::rendering::release_renderer::add_view(view::view_base::ptr view) {
-	views.push_back(view);
-}
-
-void cgvkp::rendering::release_renderer::add_controller(controller::controller_base::ptr controller) {
-	new_controllers.push_back(controller);
-}
-
-float cgvkp::rendering::release_renderer::getDistance() {
-	return distance;
-}
-
-float cgvkp::rendering::release_renderer::getAspect() {
-	return aspect;
 }

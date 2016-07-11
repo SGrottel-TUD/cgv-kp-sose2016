@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -25,6 +25,11 @@
     <ClCompile Include="src\data\world_config.cpp" />
     <ClCompile Include="src\data\world.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\poly2tri\poly2tri\common\shapes.cc" />
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\advancing_front.cc" />
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\cdt.cc" />
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\sweep.cc" />
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\sweep_context.cc" />
     <ClCompile Include="src\rendering\abstract_renderer.cpp" />
     <ClCompile Include="src\rendering\controller\cloud_controller.cpp" />
     <ClCompile Include="src\rendering\controller\caught_star_controller.cpp" />
@@ -35,25 +40,24 @@
     <ClCompile Include="src\rendering\debug_renderer.cpp" />
     <ClCompile Include="src\rendering\abstract_user_input.cpp" />
     <ClCompile Include="src\rendering\debug_user_input.cpp" />
+    <ClCompile Include="src\rendering\font.cpp" />
+    <ClCompile Include="src\rendering\gui.cpp" />
     <ClCompile Include="src\rendering\mesh.cpp" />
-    <ClCompile Include="src\rendering\model\graphic_model_base.cpp" />
+    <ClCompile Include="src\rendering\postProcessingFramebuffer.cpp" />
     <ClCompile Include="src\rendering\remote_renderer_server.cpp" />
     <ClCompile Include="src\rendering\technique\background_technique.cpp" />
-    <ClCompile Include="src\rendering\technique\geometryBuffer.cpp" />
+    <ClCompile Include="src\rendering\technique\fontTechnique.cpp" />
+    <ClCompile Include="src\rendering\technique\directionalLight.cpp" />
+    <ClCompile Include="src\rendering\technique\gaussianBlur.cpp" />
+    <ClCompile Include="src\rendering\geometryBuffer.cpp" />
     <ClCompile Include="src\rendering\lights.cpp" />
-    <ClCompile Include="src\rendering\model\model_base.cpp" />
     <ClCompile Include="src\rendering\model_listing_renderer.cpp" />
     <ClCompile Include="src\rendering\release_renderer.cpp" />
-    <ClCompile Include="src\rendering\technique\LightTechnique.cpp" />
-    <ClCompile Include="src\rendering\technique\ShadowVolume.cpp" />
+    <ClCompile Include="src\rendering\technique\geometry.cpp" />
+    <ClCompile Include="src\rendering\technique\spotLight.cpp" />
+    <ClCompile Include="src\rendering\technique\ssao.cpp" />
+    <ClCompile Include="src\rendering\technique\star.cpp" />
     <ClCompile Include="src\rendering\technique\technique.cpp" />
-    <ClCompile Include="src\rendering\view\cloud_geometry.cpp" />
-    <ClCompile Include="src\rendering\view\cloud_view.cpp" />
-    <ClCompile Include="src\rendering\view\hand_geometry.cpp" />
-    <ClCompile Include="src\rendering\view\hand_view.cpp" />
-    <ClCompile Include="src\rendering\view\star_geometry.cpp" />
-    <ClCompile Include="src\rendering\view\star_view.cpp" />
-    <ClCompile Include="src\rendering\view\view_base.cpp" />
     <ClCompile Include="src\rendering\window.cpp" />
     <ClCompile Include="src\rendering\technique\technique_normal_as_colour.cpp" />
     <ClCompile Include="src\util\objImporter.cpp" />
@@ -63,17 +67,25 @@
     <ClCompile Include="src\vision\dummy_vision.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="src\resources\meshes\hand.mtl" />
+    <None Include="src\resources\meshes\sphere.mtl" />
+    <None Include="src\resources\meshes\star.mtl" />
+    <None Include="src\resources\shaders\background.fs" />
+    <None Include="src\resources\shaders\background.vs" />
+    <None Include="src\resources\shaders\directionalLight.fs" />
+    <None Include="src\resources\shaders\gaussianBlur.fs" />
     <None Include="src\resources\shaders\geometry.fs" />
     <None Include="src\resources\shaders\geometry.vs" />
-    <None Include="src\resources\shaders\light.fs" />
-    <None Include="src\resources\shaders\light.vs" />
     <None Include="src\resources\shaders\normal_as_colour.fs" />
     <None Include="src\resources\shaders\normal_as_colour.vs" />
-    <None Include="src\resources\shaders\shadowVolume.fs" />
-    <None Include="src\resources\shaders\shadowVolume.gs" />
-    <None Include="src\resources\shaders\shadowVolume.vs" />
+    <None Include="src\resources\shaders\quad.vs" />
+    <None Include="src\resources\shaders\spotLight.fs" />
+    <None Include="src\resources\shaders\ssao.fs" />
+    <None Include="src\resources\shaders\star.fs" />
+    <None Include="src\resources\shaders\star.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\application.hpp" />
@@ -93,30 +105,35 @@
     <ClInclude Include="src\rendering\debug_renderer.hpp" />
     <ClInclude Include="src\rendering\abstract_user_input.hpp" />
     <ClInclude Include="src\rendering\debug_user_input.hpp" />
+    <ClInclude Include="src\rendering\font.hpp" />
+    <ClInclude Include="src\rendering\gui.hpp" />
+    <ClInclude Include="src\rendering\GuiElements.hpp" />
     <ClInclude Include="src\rendering\model\cloud_model.hpp" />
     <ClInclude Include="src\rendering\mesh.hpp" />
     <ClInclude Include="src\rendering\model\graphic_model_base.hpp" />
     <ClInclude Include="src\rendering\remote_renderer_server.hpp" />
+    <ClInclude Include="src\rendering\postProcessingFramebuffer.hpp" />
     <ClInclude Include="src\rendering\technique\background_technique.hpp" />
-    <ClInclude Include="src\rendering\technique\geometryBuffer.hpp" />
+    <ClInclude Include="src\rendering\technique\fontTechnique.hpp" />
+    <ClInclude Include="src\rendering\technique\directionalLight.hpp" />
+    <ClInclude Include="src\rendering\technique\gaussianBlur.hpp" />
+    <ClInclude Include="src\rendering\geometryBuffer.hpp" />
     <ClInclude Include="src\rendering\lights.hpp" />
     <ClInclude Include="src\rendering\model\hand_model.hpp" />
     <ClInclude Include="src\rendering\model\model_base.hpp" />
     <ClInclude Include="src\rendering\model\star_model.hpp" />
     <ClInclude Include="src\rendering\model_listing_renderer.hpp" />
     <ClInclude Include="src\rendering\release_renderer.hpp" />
-    <ClInclude Include="src\rendering\technique\LightTechnique.hpp" />
-    <ClInclude Include="src\rendering\technique\ShadowVolume.hpp" />
+    <ClInclude Include="src\rendering\technique\geometry.hpp" />
+    <ClInclude Include="src\rendering\technique\spotLight.hpp" />
+    <ClInclude Include="src\rendering\technique\ssao.hpp" />
+    <ClInclude Include="src\rendering\technique\star.hpp" />
     <ClInclude Include="src\rendering\technique\technique.hpp" />
     <ClInclude Include="src\rendering\technique\technique_normal_as_colour.hpp" />
-    <ClInclude Include="src\rendering\view\cloud_geometry.hpp" />
     <ClInclude Include="src\rendering\view\cloud_view.hpp" />
-    <ClInclude Include="src\rendering\view\hand_geometry.hpp" />
     <ClInclude Include="src\rendering\view\hand_view.hpp" />
-    <ClInclude Include="src\rendering\view\star_geometry.hpp" />
     <ClInclude Include="src\rendering\view\star_view.hpp" />
     <ClInclude Include="src\rendering\view\view_base.hpp" />
-    <ClInclude Include="src\rendering\view\view_geometry_base.hpp" />
     <ClInclude Include="src\rendering\window.hpp" />
     <ClInclude Include="src\util\bezier.hpp" />
     <ClInclude Include="src\util\objImporter.hpp" />
@@ -131,7 +148,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </Object>
-    <Object Include="src\resources\meshes\lightingSphere.obj">
+    <Object Include="src\resources\meshes\quad.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="src\resources\meshes\sphere.obj">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </Object>
@@ -141,9 +162,12 @@
     </Object>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="src\resources\starrynight.png">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </Image>
+    <Image Include="src\resources\textures\hand.png" />
+    <Image Include="src\resources\textures\sky5.png" />
+    <Image Include="src\resources\textures\sky_night5.png" />
+    <Image Include="src\resources\textures\sphere.png" />
+    <Image Include="src\resources\textures\star.png" />
+    <Image Include="src\resources\textures\starrynight.png" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D212F91F-5F4A-4757-9EBA-CA3EA546B69A}</ProjectGuid>
@@ -291,6 +315,7 @@
     <Import Project="packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets" Condition="Exists('packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets')" />
     <Import Project="packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets" Condition="Exists('packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets')" />
     <Import Project="packages\libpng.1.6.20.1\build\native\libpng.targets" Condition="Exists('packages\libpng.1.6.20.1\build\native\libpng.targets')" />
+    <Import Project="packages\freetype2.2.6.0.1\build\native\freetype2.targets" Condition="Exists('packages\freetype2.2.6.0.1\build\native\freetype2.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -304,5 +329,6 @@
     <Error Condition="!Exists('packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets'))" />
     <Error Condition="!Exists('packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets'))" />
     <Error Condition="!Exists('packages\libpng.1.6.20.1\build\native\libpng.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\libpng.1.6.20.1\build\native\libpng.targets'))" />
+    <Error Condition="!Exists('packages\freetype2.2.6.0.1\build\native\freetype2.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\freetype2.2.6.0.1\build\native\freetype2.targets'))" />
   </Target>
 </Project>
