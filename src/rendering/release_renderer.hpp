@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <GL/glew.h>
 #include <glm/mat4x4.hpp>
 #include <list>
 #include <unordered_map>
@@ -21,6 +22,7 @@
 #include "view/hand_view.hpp"
 #include "view/star_view.hpp"
 #include "controller/controller_base.hpp"
+#include "gui.hpp"
 
 namespace cgvkp
 {
@@ -39,7 +41,7 @@ namespace cgvkp
 				stereo = 1
 			};
 
-			release_renderer(data::world const& data);
+			release_renderer(data::world const& data, window& wnd);
 			virtual void render(window const& wnd);
 
 			void setCameraMode(CameraMode mode);
@@ -75,6 +77,10 @@ namespace cgvkp
 			GLsizei windowHeight;
 			GLsizei framebufferWidth;
 			GLsizei framebufferHeight;
+			float fovy;
+			float zNear;
+			float zFar;
+
 			glm::mat4 viewMatrix;
 			glm::mat4 leftProjection;	// Holds the projection matrix in mono mode.
 			glm::mat4 rightProjection;
@@ -101,6 +107,7 @@ namespace cgvkp
 			std::chrono::high_resolution_clock::time_point last_time;
 			double fps_counter_elapsed;
 			unsigned int rendered_frames;
+			int fps;
 
 			std::unordered_map<char const*, Mesh> meshes;
 
@@ -110,6 +117,8 @@ namespace cgvkp
 			std::list<view::star_view::ptr> starViews;
 
 			std::list<controller::controller_base::ptr> controllers;
+
+			Gui gui;
 		};
 	}
 }

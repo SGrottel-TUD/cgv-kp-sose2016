@@ -4,9 +4,10 @@
 #include "data/world.hpp"
 #include "controller/data_controller.hpp"
 #include "controller/cloud_controller.hpp"
+#include "window.hpp"
 
-cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world const& data)
-	: cgvkp::rendering::abstract_renderer(data), windowWidth(0), windowHeight(0), framebufferWidth(0), framebufferHeight(0), cameraMode(mono), fps_counter_elapsed(0.0), rendered_frames(0u)
+cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world const& data, window& wnd)
+	: abstract_renderer(data), windowWidth(0), windowHeight(0), framebufferWidth(0), framebufferHeight(0), cameraMode(mono), gui("CartoonRegular.ttf"), fps_counter_elapsed(0.0), rendered_frames(0u)
 {
 	pQuad = &meshes.insert({ "quad", Mesh() }).first->second;
 	Mesh const& cloudMesh = meshes.insert({ "sphere", Mesh() }).first->second;
@@ -17,10 +18,21 @@ cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world const&
 	controllers.push_back(std::make_shared<controller::data_controller>(this, data, handMesh, starMesh));
 	controllers.push_back(std::make_shared<controller::cloud_controller>(this, data, cloudMesh));
 
+	// Lights
 	ambientLight = glm::vec3(0.1, 0.1, 0.5) * 0.25f;
 	directionalLight.color = glm::vec3(1, 1, 1);
 	directionalLight.diffuseIntensity = 0.5f;
 	directionalLight.direction = glm::normalize(glm::vec3(0, -2, -1));	// in view space.
+
+	// Gui
+	wnd.setMousePositionCallback([&](double x, double y) { gui.updateMousePosition(static_cast<float>(x), static_cast<float>(y)); });
+	wnd.setLeftMouseButtonCallback(std::bind(&Gui::click, &gui));
+	wnd.setInputCodePointCallback(std::bind(&Gui::inputCodePoint, &gui, std::placeholders::_1));
+	gui.setExitCallback(std::bind(&window::close, &wnd));
+	gui.setHighscoresCallback([]() { return std::list<Score>(); });
+	gui.setScoreCallback(std::bind(&data::world::get_score, &data));
+	gui.setFPSCallback([&]() { return fps; });
+	gui.loadMenu();
 }
 
 bool cgvkp::rendering::release_renderer::init_impl(window const& wnd)
@@ -35,7 +47,8 @@ bool cgvkp::rendering::release_renderer::init_impl(window const& wnd)
 		!ssaoPass.init() ||
 		!gaussianBlur.init() ||
 		!background.init() ||
-		!starPass.init())
+		!starPass.init() ||
+		!gui.init())
 	{
 		return false;
 	}
@@ -67,6 +80,7 @@ void cgvkp::rendering::release_renderer::deinit_impl()
 	gbuffer.deinit();
 	postProcessing.deinit();
 	starPass.deinit();
+	gui.deinit();
 }
 
 void cgvkp::rendering::release_renderer::setCameraMode(CameraMode mode)
@@ -79,14 +93,24 @@ void cgvkp::rendering::release_renderer::setStereoParameters(float _eyeSeparatio
 {
 	eyeSeparation = _eyeSeparation;
 	zZeroParallax = _zZeroParallax;
+	if (zZeroParallax < 0.01f)	// zNear
+	{
+		zZeroParallax = 0.01f;
+	}
 	if (framebufferWidth != 0 && framebufferHeight != 0)
 	{
 		calculateViewProjection();
+		gui.setSize(framebufferWidth, framebufferHeight, glm::quarter_pi<float>(), cameraMode == stereo ? zZeroParallax : 10);
 	}
 }
 
 void cgvkp::rendering::release_renderer::calculateViewProjection()
 {
+	if (framebufferWidth == 0 || framebufferHeight == 0)
+	{
+		return;
+	}
+
 	float fovy = glm::quarter_pi<float>();
 	float tanHalfFovy = tan(fovy / 2);
 
@@ -117,12 +141,13 @@ void cgvkp::rendering::release_renderer::calculateViewProjection()
 	viewMatrix = glm::lookAt(position, lookAt, glm::vec3(0, 1, 0));
 
 	// Projection
-	float zNear = distance * cos(fovy / 2) - 1;	// Estimated minimum depth.
+	float zNear = 0.01f;
 	if (zNear < 0.01f)
 	{
 		zNear = 0.01f;
 	}
 	float zFar = distance + h + 2;	// Estimated maximum depth.
+	zFar = 100;
 	if (cameraMode == stereo)
 	{
 		glm::vec3 translation = glm::vec3(eyeSeparation * tanHalfFovy * zZeroParallax * aspect, 0.0f, 0.0f);
@@ -157,6 +182,7 @@ void cgvkp::rendering::release_renderer::render(window const& wnd)
 		{
 			gbuffer.resize(framebufferWidth, framebufferHeight);
 			postProcessing.resize(framebufferWidth, framebufferHeight);
+            gui.setSize(framebufferWidth, framebufferHeight, glm::quarter_pi<float>(), cameraMode == stereo ? zZeroParallax : 10);
 			calculateViewProjection();
 		}
 	}
@@ -166,18 +192,16 @@ void cgvkp::rendering::release_renderer::render(window const& wnd)
 	}
 
 	std::chrono::high_resolution_clock::time_point now_time = std::chrono::high_resolution_clock::now();
-	double elapsed = std::chrono::duration<double>(now_time - last_time).count();
+	double elapsed = std::chrono::duration<float>(now_time - last_time).count();
 	last_time = now_time;
-#if defined(DEBUG) || defined(_DEBUG)
 	fps_counter_elapsed += elapsed;
 	++rendered_frames;
-	if (fps_counter_elapsed >= 2.0)
+	if (fps_counter_elapsed >= 0.5f)
 	{
-		std::cout << "FPS: " << rendered_frames / fps_counter_elapsed << std::endl;
-		fps_counter_elapsed = 0.0;
-		rendered_frames = 0u;
+		fps = static_cast<int>(rendered_frames / fps_counter_elapsed);
+		fps_counter_elapsed = 0;
+		rendered_frames = 0;
 	}
-#endif
 
 	// Remove views and controllers without model
 	for (auto it = cloudViews.begin(); it != cloudViews.end();)
@@ -244,16 +268,19 @@ void cgvkp::rendering::release_renderer::render(window const& wnd)
 
 void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection) const
 {
+	gbuffer.bindForWritingFinal();
+	glClear(GL_COLOR_BUFFER_BIT);
+
 	fillGeometryBuffer(projection);
 
 	glBlendEquation(GL_FUNC_ADD);
-	glBlendFunc(GL_ONE, GL_ONE);
 
 	addAmbientLight();
 	addDirectionalLight(directionalLight);
 	addBackground();
 	addStarLights(projection);
 	addStars(projection);
+	gui.render(projection);
 }
 
 void cgvkp::rendering::release_renderer::fillGeometryBuffer(glm::mat4 const& projection) const
@@ -294,13 +321,18 @@ void cgvkp::rendering::release_renderer::fillGeometryBuffer(glm::mat4 const& pro
 void cgvkp::rendering::release_renderer::addAmbientLight() const
 {
 	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
+
 	gbuffer.bindForReadingGeometry();
 	postProcessing.nextPass(0, 0);
+	glClear(GL_COLOR_BUFFER_BIT);
 	ssaoPass.use();
 	ssaoPass.setAmbientLight(ambientLight);
 	pQuad->render();
 
 	postProcessing.nextPass(1);
+	gbuffer.bindForWritingFinal();
 	gaussianBlur.use();
 	gaussianBlur.setDirection(GaussianBlurTechnique::horizontal);
 	gaussianBlur.setBlurSize(framebufferWidth);
@@ -310,12 +342,15 @@ void cgvkp::rendering::release_renderer::addAmbientLight() const
 	gbuffer.bindForWritingFinal();
 	gaussianBlur.setDirection(GaussianBlurTechnique::vertical);
 	gaussianBlur.setBlurSize(framebufferHeight);
+	glEnable(GL_BLEND);
 	pQuad->render();
 }
 
 void cgvkp::rendering::release_renderer::addDirectionalLight(DirectionalLight const& light) const
 {
+	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
 	gbuffer.bindForReadingGeometry();
 	gbuffer.bindForWritingFinal();
 	directionalLightPass.use();
@@ -329,6 +364,7 @@ void cgvkp::rendering::release_renderer::addBackground() const
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_EQUAL);
 	glDisable(GL_BLEND);
+	gbuffer.bindForWritingFinal();
 	background.use();
 
 	background.setScreenSize(framebufferWidth, framebufferHeight);
@@ -342,7 +378,9 @@ void cgvkp::rendering::release_renderer::addStarLights(glm::mat4 const& projecti
 {
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
 	gbuffer.bindForReadingGeometry();
+	gbuffer.bindForWritingFinal();
 	spotLightPass.use();
 
 	SpotLight starLight;
@@ -366,6 +404,7 @@ void cgvkp::rendering::release_renderer::addStars(glm::mat4 const& projection) c
 {
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
+	gbuffer.bindForWritingFinal();
 	starPass.use();
 
 	float t = static_cast<float>(glfwGetTime()) / 8;

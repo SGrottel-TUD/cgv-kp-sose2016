@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -95,6 +95,9 @@
     </Filter>
     <Filter Include="Resource Files\textures">
       <UniqueIdentifier>{1658f313-07b8-45df-9f2c-4937419d8cd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rendering\poly2tri">
+      <UniqueIdentifier>{4d93d0f3-e480-4b62-b6a4-e7b58d9ee78f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -208,6 +211,30 @@
     </ClCompile>
     <ClCompile Include="src\rendering\technique\spotLight.cpp">
       <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\font.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\sweep_context.cc">
+      <Filter>rendering\poly2tri</Filter>
+    </ClCompile>
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\sweep.cc">
+      <Filter>rendering\poly2tri</Filter>
+    </ClCompile>
+    <ClCompile Include="src\poly2tri\poly2tri\common\shapes.cc">
+      <Filter>rendering\poly2tri</Filter>
+    </ClCompile>
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\cdt.cc">
+      <Filter>rendering\poly2tri</Filter>
+    </ClCompile>
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\advancing_front.cc">
+      <Filter>rendering\poly2tri</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\gui.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\fontTechnique.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -381,6 +408,18 @@
     </ClInclude>
     <ClInclude Include="src\util\spline_curve.hpp">
       <Filter>util\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\guiElements.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\font.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\gui.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\fontTechnique.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\technique\ssao.hpp">
       <Filter>rendering\technique\Header Files</Filter>

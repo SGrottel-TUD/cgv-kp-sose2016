@@ -47,7 +47,7 @@ void application::run()
 	}
 	else
 	{
-		release_renderer = std::make_shared<rendering::release_renderer>(data);
+		release_renderer = std::make_shared<rendering::release_renderer>(data, *release_window);
 		if (!release_renderer || !release_renderer->init(*release_window))
 		{
 			std::cout << "Failed to create Release renderer" << std::endl;

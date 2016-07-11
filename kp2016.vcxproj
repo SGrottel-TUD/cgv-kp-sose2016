@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -25,6 +25,11 @@
     <ClCompile Include="src\data\world_config.cpp" />
     <ClCompile Include="src\data\world.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\poly2tri\poly2tri\common\shapes.cc" />
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\advancing_front.cc" />
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\cdt.cc" />
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\sweep.cc" />
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\sweep_context.cc" />
     <ClCompile Include="src\rendering\abstract_renderer.cpp" />
     <ClCompile Include="src\rendering\controller\cloud_controller.cpp" />
     <ClCompile Include="src\rendering\controller\caught_star_controller.cpp" />
@@ -35,9 +40,12 @@
     <ClCompile Include="src\rendering\debug_renderer.cpp" />
     <ClCompile Include="src\rendering\abstract_user_input.cpp" />
     <ClCompile Include="src\rendering\debug_user_input.cpp" />
+    <ClCompile Include="src\rendering\font.cpp" />
+    <ClCompile Include="src\rendering\gui.cpp" />
     <ClCompile Include="src\rendering\mesh.cpp" />
     <ClCompile Include="src\rendering\postProcessingFramebuffer.cpp" />
     <ClCompile Include="src\rendering\technique\background_technique.cpp" />
+    <ClCompile Include="src\rendering\technique\fontTechnique.cpp" />
     <ClCompile Include="src\rendering\technique\directionalLight.cpp" />
     <ClCompile Include="src\rendering\technique\gaussianBlur.cpp" />
     <ClCompile Include="src\rendering\geometryBuffer.cpp" />
@@ -58,7 +66,9 @@
     <ClCompile Include="src\vision\dummy_vision.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="src\resources\meshes\hand.mtl" />
     <None Include="src\resources\meshes\sphere.mtl" />
     <None Include="src\resources\meshes\star.mtl" />
@@ -93,11 +103,15 @@
     <ClInclude Include="src\rendering\debug_renderer.hpp" />
     <ClInclude Include="src\rendering\abstract_user_input.hpp" />
     <ClInclude Include="src\rendering\debug_user_input.hpp" />
+    <ClInclude Include="src\rendering\font.hpp" />
+    <ClInclude Include="src\rendering\gui.hpp" />
+    <ClInclude Include="src\rendering\GuiElements.hpp" />
     <ClInclude Include="src\rendering\model\cloud_model.hpp" />
     <ClInclude Include="src\rendering\mesh.hpp" />
     <ClInclude Include="src\rendering\model\graphic_model_base.hpp" />
     <ClInclude Include="src\rendering\postProcessingFramebuffer.hpp" />
     <ClInclude Include="src\rendering\technique\background_technique.hpp" />
+    <ClInclude Include="src\rendering\technique\fontTechnique.hpp" />
     <ClInclude Include="src\rendering\technique\directionalLight.hpp" />
     <ClInclude Include="src\rendering\technique\gaussianBlur.hpp" />
     <ClInclude Include="src\rendering\geometryBuffer.hpp" />
@@ -297,6 +311,7 @@
     <Import Project="packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets" Condition="Exists('packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets')" />
     <Import Project="packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets" Condition="Exists('packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets')" />
     <Import Project="packages\libpng.1.6.20.1\build\native\libpng.targets" Condition="Exists('packages\libpng.1.6.20.1\build\native\libpng.targets')" />
+    <Import Project="packages\freetype2.2.6.0.1\build\native\freetype2.targets" Condition="Exists('packages\freetype2.2.6.0.1\build\native\freetype2.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -310,5 +325,6 @@
     <Error Condition="!Exists('packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets'))" />
     <Error Condition="!Exists('packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets'))" />
     <Error Condition="!Exists('packages\libpng.1.6.20.1\build\native\libpng.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\libpng.1.6.20.1\build\native\libpng.targets'))" />
+    <Error Condition="!Exists('packages\freetype2.2.6.0.1\build\native\freetype2.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\freetype2.2.6.0.1\build\native\freetype2.targets'))" />
   </Target>
 </Project>
