@@ -131,8 +131,8 @@ namespace controller {
 			for (auto data_hand : data.get_hands()) {
 				glm::vec3 hand_position = glm::vec3(data_hand->x, trans_height(data_hand->height), -data_hand->y);
 				auto hand_to_cloud = glm::vec3(cloud->model_matrix[3]) - hand_position;
-				auto distance = glm::length(hand_to_cloud)*1.2;
-				cloud->speed += (cloud->speed)*(1 / std::pow(distance,2));
+				auto distance = glm::length(hand_to_cloud) * 1.2f;
+				cloud->speed += (cloud->speed)*(1.0f / std::pow(distance, 2.0f));
 
 			}
 
