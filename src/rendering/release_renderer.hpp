@@ -39,7 +39,7 @@ namespace cgvkp
 				stereo = 1
 			};
 
-			release_renderer(data::world const& data, window& wnd);
+			release_renderer(data::world & data, window& wnd);
 			virtual void render(window const& wnd);
 
 			void setCameraMode(CameraMode mode);

@@ -37,6 +37,8 @@ void cgvkp::rendering::Gui::loadMenu()
 {
 	clear();
 
+    data.set_game_mode(::cgvkp::data::world::game_mode::paused);
+
 	createButton("Spielen", std::bind(&Gui::loadScore, this), center, glm::vec2(0, normalFontSize));
 	createButton("Highscore", std::bind(&Gui::loadHighscore, this), center);
 	createButton("Beenden", exit, center, glm::vec2(0, -normalFontSize));
@@ -47,6 +49,8 @@ void cgvkp::rendering::Gui::loadMenu()
 void cgvkp::rendering::Gui::loadScore()
 {
 	clear();
+
+    data.set_game_mode(::cgvkp::data::world::game_mode::running);
 
 	createLabel([&]() { return std::to_string(getScore()); }, top | right);
 
