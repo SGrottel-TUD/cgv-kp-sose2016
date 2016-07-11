@@ -5,6 +5,7 @@
 #include "font.hpp"
 #include "guiElements.hpp"
 #include "technique/fontTechnique.hpp"
+#include "data/world.hpp"
 
 namespace cgvkp
 {
@@ -19,7 +20,7 @@ namespace cgvkp
 		class Gui
 		{
 		public:
-			inline Gui(char const* pFontFilename) : font(pFontFilename), framebufferWidth(0), framebufferHeight(0), pHoveredButton(nullptr), pActiveInput(nullptr) {}
+			inline Gui(::cgvkp::data::world & data, char const* pFontFilename) : data(data), font(pFontFilename), framebufferWidth(0), framebufferHeight(0), pHoveredButton(nullptr), pActiveInput(nullptr) {}
 			inline ~Gui() { deinit(); }
 			bool init();
 			inline void deinit() { font.deinit(); fontPass.deinit(); }
@@ -52,6 +53,8 @@ namespace cgvkp
 			glm::vec2 render(Label const& label, glm::mat4 const& projectionMatrix) const;
 			void render(Button const& button, glm::mat4 const& projectionMatrix) const;
 			void render(Input const& input, glm::mat4 const& projectionMatrix) const;
+
+            ::cgvkp::data::world & data;
 
 			Font font;
 			float framebufferWidth;

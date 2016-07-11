@@ -6,8 +6,8 @@
 #include "controller/cloud_controller.hpp"
 #include "window.hpp"
 
-cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world const& data, window& wnd)
-	: abstract_renderer(data), windowWidth(0), windowHeight(0), framebufferWidth(0), framebufferHeight(0), cameraMode(mono), gui("CartoonRegular.ttf"), fps_counter_elapsed(0.0), rendered_frames(0u)
+cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world & data, window& wnd)
+	: abstract_renderer(data), windowWidth(0), windowHeight(0), framebufferWidth(0), framebufferHeight(0), cameraMode(mono), gui(data, "CartoonRegular.ttf"), fps_counter_elapsed(0.0), rendered_frames(0u)
 {
 	pQuad = &meshes.insert({ "quad", Mesh() }).first->second;
 	Mesh const& cloudMesh = meshes.insert({ "sphere", Mesh() }).first->second;
