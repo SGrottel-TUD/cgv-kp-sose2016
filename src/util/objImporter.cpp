@@ -74,7 +74,7 @@ cgvkp::util::ObjImporter::~ObjImporter()
 
 bool cgvkp::util::ObjImporter::load(char const* pMeshname, bool withAdjacencies)
 {
-	std::ifstream file(resource_file::find_resource_file(std::string("meshes/") + pMeshname + ".obj"));
+	std::ifstream file(resource_file::getResourcePath("meshes", std::string(pMeshname) + ".obj"));
 
 	if (!file.good())
 	{

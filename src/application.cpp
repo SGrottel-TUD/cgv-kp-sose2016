@@ -47,7 +47,7 @@ void application::run()
 	}
 	else
 	{
-		release_renderer = std::make_shared<rendering::release_renderer>(data);
+		release_renderer = std::make_shared<rendering::release_renderer>(data, *release_window);
 		if (!release_renderer || !release_renderer->init(*release_window))
 		{
 			std::cout << "Failed to create Release renderer" << std::endl;
@@ -66,9 +66,6 @@ void application::run()
 			release_window->register_key_callback(GLFW_KEY_RIGHT, std::bind(&application::increase_eye_separation, this, 0.001f), rendering::window::OnPress | rendering::window::OnRepeat);
 			release_window->register_key_callback(GLFW_KEY_M, std::bind(&application::set_camera_mode, this, rendering::release_renderer::mono));
 			release_window->register_key_callback(GLFW_KEY_S, std::bind(&application::set_camera_mode, this, rendering::release_renderer::stereo));
-			release_window->setMousePositionCallback([&](double x, double y) { release_renderer->gui.updateMousePosition(static_cast<float>(x), static_cast<float>(y)); });
-			release_window->setLeftMouseButtonCallback(std::bind(&rendering::Gui::click, &release_renderer->gui));
-			release_window->setInputCodePointCallback(std::bind(&rendering::Gui::inputCodePoint, &release_renderer->gui, std::placeholders::_1));
 		}
 	}
 

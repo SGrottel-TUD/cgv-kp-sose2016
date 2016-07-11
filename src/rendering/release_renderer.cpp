@@ -8,9 +8,8 @@
 #include "controller/cloud_controller.hpp"
 #include "window.hpp"
 
-cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world const& data)
-	: cgvkp::rendering::abstract_renderer(data),
-	framebufferWidth(0), framebufferHeight(0), cameraMode(mono), fps_counter_elapsed(0.0), rendered_frames(0u)
+cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world const& data, window& wnd)
+	: abstract_renderer(data), framebufferWidth(0), framebufferHeight(0), cameraMode(mono), gui("CartoonRegular.ttf"), fps_counter_elapsed(0.0), rendered_frames(0u)
 {
 	pQuad = &meshes.insert({ "quad", Mesh() }).first->second;
 	Mesh const& cloudMesh = meshes.insert({ "sphere", Mesh() }).first->second;
@@ -21,10 +20,21 @@ cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world const&
 	controllers.push_back(std::make_shared<controller::data_controller>(this, data, handMesh, starMesh));
 	controllers.push_back(std::make_shared<controller::cloud_controller>(this, data, cloudMesh));
 
+	// Lights
 	ambientLight = glm::vec3(0.1, 0.1, 0.5) * 0.25f;
 	directionalLight.color = glm::vec3(1, 1, 1);
 	directionalLight.diffuseIntensity = 0.5f;
 	directionalLight.direction = glm::normalize(glm::vec3(0, -2, -1));	// in view space.
+
+	// Gui
+	wnd.setMousePositionCallback([&](double x, double y) { gui.updateMousePosition(static_cast<float>(x), static_cast<float>(y)); });
+	wnd.setLeftMouseButtonCallback(std::bind(&Gui::click, &gui));
+	wnd.setInputCodePointCallback(std::bind(&Gui::inputCodePoint, &gui, std::placeholders::_1));
+	gui.setExitCallback(std::bind(&window::close, &wnd));
+	gui.setHighscoresCallback([]() { return std::list<Score>(); });
+	gui.setScoreCallback(std::bind(&data::world::get_score, &data));
+	gui.setFPSCallback([&]() { return fps; });
+	gui.loadMenu();
 }
 
 bool cgvkp::rendering::release_renderer::init_impl(window const& wnd)
@@ -47,11 +57,6 @@ bool cgvkp::rendering::release_renderer::init_impl(window const& wnd)
 	{
 		pair.second.init(pair.first);
 	}
-
-	gui.setExitCallback([&]() { wnd.close(); });
-	gui.setHighscoresCallback([]() { return std::list<Score>(); });
-	gui.setScoreCallback(std::bind(&data::world::get_score, &data));
-	gui.loadMenu();
 
 	return true;
 }
@@ -86,7 +91,7 @@ void cgvkp::rendering::release_renderer::calculateViewProjection()
 	float fovy = glm::quarter_pi<float>();
 	float tanHalfFovy = tan(fovy / 2);
 
-	aspect = (cameraMode == stereo ? framebufferWidth / 2.0f : static_cast<float>(framebufferWidth)) / framebufferHeight;
+	float aspect = (cameraMode == stereo ? framebufferWidth / 2.0f : static_cast<float>(framebufferWidth)) / framebufferHeight;
 
 	// View
 	float w = data.get_config().width();
@@ -162,18 +167,16 @@ void cgvkp::rendering::release_renderer::render(window const& wnd)
 	}
 
 	std::chrono::high_resolution_clock::time_point now_time = std::chrono::high_resolution_clock::now();
-	double elapsed = std::chrono::duration<double>(now_time - last_time).count();
+	double elapsed = std::chrono::duration<float>(now_time - last_time).count();
 	last_time = now_time;
-#if defined(DEBUG) || defined(_DEBUG)
 	fps_counter_elapsed += elapsed;
 	++rendered_frames;
-	if (fps_counter_elapsed >= 2.0)
+	if (fps_counter_elapsed >= 0.5f)
 	{
-		std::cout << "FPS: " << rendered_frames / fps_counter_elapsed << std::endl;
-		fps_counter_elapsed = 0.0;
-		rendered_frames = 0u;
+		fps = static_cast<int>(rendered_frames / fps_counter_elapsed);
+		fps_counter_elapsed = 0;
+		rendered_frames = 0;
 	}
-#endif
 
 	if (new_controllers.size())
 	{

@@ -39,14 +39,14 @@ namespace cgvkp
 				stereo = 1
 			};
 
-			release_renderer(data::world const& data);
+			release_renderer(data::world const& data, window& wnd);
 			virtual void render(window const& wnd);
 
 			void setCameraMode(CameraMode mode);
 			void setStereoParameters(float eyeSeparation, float zZeroParallax);
 
 			inline float getDistance() const { return distance; }
-			inline float getAspect() const { return aspect; }
+			inline float getAspect() const { return static_cast<float>(framebufferWidth) / framebufferHeight; }
 
 			inline void add_model(model::model_base::ptr const& model) { models.push_back(model); }
 			inline void remove_model(model::model_base::ptr const& model) { models.remove(model); }
@@ -55,28 +55,29 @@ namespace cgvkp
 			inline void add_view(view::star_view::ptr const& v) { starViews.push_back(v); }
 			inline void add_controller(controller::controller_base::ptr const& controller) { new_controllers.push_back(controller); }
 
-			Gui gui;
-
 		protected:
 			virtual bool init_impl(window const& wnd);
 			virtual void deinit_impl();
 
 		private:
-
 			void calculateViewProjection();
 			void renderScene(glm::mat4 const& projection) const;
 
+			GLsizei windowWidth;
+			GLsizei windowHeight;
+			GLsizei framebufferWidth;
+			GLsizei framebufferHeight;
+			float fovy;
+			float zNear;
+			float zFar;
 			glm::mat4 viewMatrix;
 			glm::mat4 leftProjection;	// Holds the projection matrix in mono mode.
 			glm::mat4 rightProjection;
 			CameraMode cameraMode;
-			GLsizei framebufferWidth;
-			GLsizei framebufferHeight;
 			float eyeSeparation;
 			float zZeroParallax;
 
 			float distance;
-			float aspect;
 
 			GeometryBuffer gbuffer;
 			PostProcessingFramebuffer postProcessing;
@@ -93,6 +94,7 @@ namespace cgvkp
 			std::chrono::high_resolution_clock::time_point last_time;
 			double fps_counter_elapsed;
 			unsigned int rendered_frames;
+			int fps;
 
 			std::unordered_map<char const*, Mesh> meshes;
 
@@ -102,6 +104,8 @@ namespace cgvkp
 			std::list<view::star_view::ptr> starViews;
 
 			std::list<controller::controller_base::ptr> controllers, new_controllers;
+
+			Gui gui;
 		};
 	}
 }

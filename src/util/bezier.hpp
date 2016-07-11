@@ -25,10 +25,8 @@ namespace cgvkp
 
 		template<typename T>
 		Bezier<T>::Bezier(int _degree, std::vector<T> const& inputPoints)
-			: length(0)
+			: length(0), degree(_degree)
 		{
-			degree = _degree;
-
 			if (degree < 2)
 			{
 				throw std::exception("Degree must be greater than 1.");

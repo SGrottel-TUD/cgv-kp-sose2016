@@ -2,24 +2,22 @@
 #include <iostream>
 #endif
 #include "font.hpp"
-#include <math.h>
 #include "util/bezier.hpp"
-#include <fstream>
 #include <ftoutln.h>
 #include "util/resource_file.hpp"
 #include "poly2tri/poly2tri/poly2tri.h"
 
-cgvkp::rendering::Font::Font()
+struct Contour
+{
+	int start;
+	int num;
+	bool clockwise;
+	glm::vec2 min;
+	glm::vec2 max;
+};
+
+cgvkp::rendering::Font::Font(char const* pFilename)
 	: library(nullptr), face(nullptr)
-{
-}
-
-cgvkp::rendering::Font::~Font()
-{
-	deinit();
-}
-
-bool cgvkp::rendering::Font::init(char const* filename, FT_ULong startCodePoint, FT_ULong lastCodePoint)
 {
 	// Initialize library.
 	FT_Error error = FT_Init_FreeType(&library);
@@ -28,43 +26,34 @@ bool cgvkp::rendering::Font::init(char const* filename, FT_ULong startCodePoint,
 #if defined(_DEBUG) || defined(DEBUG)
 		std::cerr << "Could not initialize FreeType library (error code: " << error << ")." << std::endl;
 #endif
-		return false;
+		return;
 	}
 
 	// Load face.
-	error = FT_New_Face(library, util::resource_file::find_resource_file(filename).c_str(), 0, &face);
+	error = FT_New_Face(library, util::resource_file::getResourcePath("fonts", pFilename).c_str(), 0, &face);
 	if (error == FT_Err_Unknown_File_Format)
 	{
 #if defined(_DEBUG) || defined(DEBUG)
-		std::cerr << '"' << filename << "\" has an unsupported file format." << std::endl;
+		std::cerr << '"' << pFilename << "\" has an unsupported file format." << std::endl;
 #endif
-		return false;
+		return;
 	}
 	else if (error)
 	{
 #if defined(_DEBUG) || defined(DEBUG)
-		std::cerr << "An error occured loading \"" << filename << "\" (error code: " << error << ")." << std::endl;
+		std::cerr << "An error occured loading \"" << pFilename << "\" (error code: " << error << ")." << std::endl;
 #endif
-		return false;
 	}
 
-	for (; startCodePoint <= lastCodePoint; ++startCodePoint)
+	for (FT_ULong codePoint = ' '; codePoint <= '~'; ++codePoint)
 	{
-		loadGlyph(startCodePoint);
+		loadGlyph(codePoint);
 	}
-
-	return true;
 }
 
-void cgvkp::rendering::Font::deinit()
+cgvkp::rendering::Font::~Font()
 {
-	for (auto const& g : glyphs)
-	{
-		glDeleteVertexArrays(1, &g.second.vertexArray);
-		glDeleteBuffers(1, &g.second.vertexBuffer);
-		glDeleteBuffers(1, &g.second.indexBuffer);
-	}
-	glyphs.clear();
+	deinit();
 
 	if (face)
 	{
@@ -78,19 +67,69 @@ void cgvkp::rendering::Font::deinit()
 	}
 }
 
+bool cgvkp::rendering::Font::init()
+{
+	if (!library)
+	{
+		return false;
+	}
+
+	for(auto& pair : glyphs)
+	{
+		glGenVertexArrays(1, &pair.second.vertexArray);
+		glBindVertexArray(pair.second.vertexArray);
+
+		glGenBuffers(1, &pair.second.vertexBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, pair.second.vertexBuffer);
+		glBufferData(GL_ARRAY_BUFFER, pair.second.vertices.size() * sizeof(glm::vec3), pair.second.vertices.data(), GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+		glGenBuffers(1, &pair.second.indexBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pair.second.indexBuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, pair.second.indices.size() * sizeof(int), pair.second.indices.data(), GL_STATIC_DRAW);
+
+		glBindVertexArray(0);
+
+		pair.second.numIndices = static_cast<GLsizei>(pair.second.indices.size());
+	}
+
+	return true;
+}
+
+void cgvkp::rendering::Font::deinit()
+{
+	for (auto& g : glyphs)
+	{
+		glDeleteVertexArrays(1, &g.second.vertexArray);
+		g.second.vertexArray = GL_NONE;
+		glDeleteBuffers(1, &g.second.vertexBuffer);
+		g.second.vertexBuffer = GL_NONE;
+		glDeleteBuffers(1, &g.second.indexBuffer);
+		g.second.indexBuffer = GL_NONE;
+	}
+}
+
+float cgvkp::rendering::Font::getWidth(FT_ULong codePoint, float fontSize) const
+{
+	auto it = glyphs.find(codePoint);
+	if (it != glyphs.end())
+	{
+		return it->second.width * fontSize;
+	}
+	
+	return 0;
+}
+
 float cgvkp::rendering::Font::getWidth(char const* str, float fontSize) const
 {
 	float width = 0;
 	for (; *str; ++str)
 	{
-		auto it = glyphs.find(*str);
-		if (it != glyphs.end())
-		{
-			width += it->second.width;
-		}
+		width += getWidth(*str, fontSize);
 	}
 
-	return width * fontSize;
+	return width;
 }
 
 float cgvkp::rendering::Font::render(FT_ULong codePoint) const
@@ -128,15 +167,19 @@ bool cgvkp::rendering::Font::loadGlyph(FT_ULong codePoint)
 		return false;
 	}
 
-
 	FT_Outline& outline = face->glyph->outline;
 	FT_Pos deltaX = face->glyph->metrics.horiBearingX;
 	FT_Pos deltaY = -face->bbox.yMin;
 	float scale = 1.0f / face->units_per_EM;
 
+	Glyph& glyph = glyphs.insert({ codePoint, Glyph() }).first->second;
+	glyph.width = face->glyph->linearHoriAdvance * scale;
+
 
 	// Contours are closed paths.
 	// Outside contours of an outline are oriented in clock-wise direction, as defined in the TrueType specification.
+	std::vector<Contour> contours;
+	std::vector<glm::vec2> vertices;
 	int iPoint = 0;
 	for (int iCountour = 0; iCountour < outline.n_contours; ++iCountour)
 	{
@@ -165,7 +208,7 @@ bool cgvkp::rendering::Font::loadGlyph(FT_ULong codePoint)
 			{
 				onPoints.push_back(point);
 				curvePoints.push_back(point);
-				addCurve(curvePoints, contour, conic);
+				addCurve(curvePoints, contour, conic, vertices);
 				curvePoints.clear();
 				conic = false;
 				curvePoints.push_back(point);
@@ -179,51 +222,29 @@ bool cgvkp::rendering::Font::loadGlyph(FT_ULong codePoint)
 
 		//add last curve vec
 		curvePoints.push_back(firstPoint);
-		addCurve(curvePoints, contour, conic);
+		addCurve(curvePoints, contour, conic, vertices);
 
 		contour.clockwise = getClockwise(onPoints);
 		contours.push_back(contour);
 	}
-	
-	std::vector<glm::vec3> vertices;
+
 	std::vector<int> indices;
-	triangulate(vertices, indices);
-
-	Glyph glyph;
-	glyph.width = static_cast<float>(face->glyph->linearHoriAdvance * scale);
-	
-	glGenVertexArrays(1, &glyph.vertexArray);
-	glBindVertexArray(glyph.vertexArray);
-	
-	glGenBuffers(1, &glyph.vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, glyph.vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-
-	glGenBuffers(1, &glyph.indexBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glyph.indexBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(int), indices.data(), GL_STATIC_DRAW);
-
-	glBindVertexArray(0);
-
-	glyph.numIndices = static_cast<GLsizei>(indices.size());
-
-	glyphs.insert({ codePoint, glyph });
+	triangulate(contours, vertices, indices);
+	convertTo3D(glyph, contours, vertices, indices);
 
 	return true;
 }
 
-void cgvkp::rendering::Font::addCurve(std::vector<glm::vec2> const& contourVertices, Contour& contour, bool conic)
+void cgvkp::rendering::Font::addCurve(std::vector<glm::vec2> const& curvePoints, Contour& contour, bool conic, std::vector<glm::vec2>& vertices) const
 {
-	if (contourVertices.size() == 2)
+	if (curvePoints.size() == 2)
 	{	
-		vertices.push_back(contourVertices.front());
+		vertices.push_back(curvePoints.front());
 		contour.num += 1;
 	}
 	else 
 	{
-		util::Bezier<glm::vec2> bezier(conic ? 2 : 3, contourVertices);
+		util::Bezier<glm::vec2> bezier(conic ? 2 : 3, curvePoints);
 		int samplingRate = static_cast<int>(bezier.getLength() * 40); // length * density in one unit
 		
 		for (int i = 0; i < samplingRate; ++i)
@@ -279,22 +300,7 @@ bool cgvkp::rendering::Font::getClockwise(std::vector<glm::vec2> const& onPoints
 	return count < 0;
 }
 
-void cgvkp::rendering::Font::save(char const* filename)
-{
-	std::ofstream output(filename);
-	for (int i = 0; i < vertices.size(); i++)
-	{
-		output << "v " << vertices[i].x << " " << vertices[i].y << " " << "1.0" << std::endl;
-	}
-
-	for (int i = 0; i < indices.size(); i = i + 3)
-	{
-		output << "f " << indices[i] + 1 << " " << indices[i + 1] + 1 << " " << indices[i + 2] + 1 << std::endl;
-	}
-	output.close();
-}
-
-void cgvkp::rendering::Font::triangulate(std::vector<glm::vec3>& glyphVert, std::vector<int>& glyphInd)
+void cgvkp::rendering::Font::triangulate(std::vector<Contour> const& contours, std::vector<glm::vec2>& vertices, std::vector<int>& indices) const
 {
 	struct ContourNode
 	{
@@ -315,7 +321,7 @@ void cgvkp::rendering::Font::triangulate(std::vector<glm::vec3>& glyphVert, std:
 	p2t::CDT* cdt = nullptr;
 
 
-	for (int i = 0; i < contours.size(); i++)
+	for (size_t i = 0; i < contours.size(); ++i)
 	{
 		//std::cout << ' ' << (contours[i].clockwise ? "c" : "cc");
 		//outlines ---------------------------------------
@@ -374,36 +380,27 @@ void cgvkp::rendering::Font::triangulate(std::vector<glm::vec3>& glyphVert, std:
 			points.clear();
 		}
 	}
-	//save("output.obj");
-	ConvertTo3D(glyphVert, glyphInd);
-
 }
 
 
-void cgvkp::rendering::Font::ConvertTo3D(std::vector<glm::vec3>& glyphVert, std::vector<int>& glyphInd)
+void cgvkp::rendering::Font::convertTo3D(Glyph& glyph, std::vector<Contour> const& contours, std::vector<glm::vec2> const& vertices, std::vector<int> const& indices) const
 {
 	int vs = static_cast<int>(vertices.size());
 
-	// add front vertices, indices
+	// Add front vertices, indices.
 	for (auto const& v : vertices)
 	{
-		glyphVert.emplace_back(v.x, v.y, 0);
+		glyph.vertices.emplace_back(v, 0);
 	}
-	glyphInd.insert(glyphInd.end(), indices.begin(), indices.end());
+	glyph.indices.insert(glyph.indices.end(), indices.begin(), indices.end());
 	
-	// add back vertices
+	// Add back vertices.
 	for (auto const& v : vertices)
 	{
-		glyphVert.emplace_back(v.x, v.y, -0.2);
+		glyph.vertices.emplace_back(v, -1);
 	}
 
-	// add back indices
-	/*for (int i = 0; i < indices.size(); i = i++)
-	{
-		glyphInd.push_back(indices[i] + static_cast<int>(vs));
-	}*/
-
-	// bind side vertices
+	// Connect vertices on the side.
 	for (auto const& contour : contours)
 	{
 		for (int i = 0; i < contour.num; ++i)
@@ -411,16 +408,13 @@ void cgvkp::rendering::Font::ConvertTo3D(std::vector<glm::vec3>& glyphVert, std:
 			int k = i + contour.start;
 			int l = ((i + 1) % contour.num) + contour.start;
 
-			glyphInd.push_back(k);
-			glyphInd.push_back(l);
-			glyphInd.push_back(k + vs);
+			glyph.indices.push_back(k);
+			glyph.indices.push_back(l);
+			glyph.indices.push_back(k + vs);
 			
-			glyphInd.push_back(k + vs);
-			glyphInd.push_back(l);
-			glyphInd.push_back(l + vs);
+			glyph.indices.push_back(k + vs);
+			glyph.indices.push_back(l);
+			glyph.indices.push_back(l + vs);
 		}
 	}
-	contours.clear();
-	vertices.clear();
-	indices.clear();
 }
