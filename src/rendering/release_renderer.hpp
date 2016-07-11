@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <GL/glew.h>
 #include <glm/mat4x4.hpp>
 #include <list>
 #include <unordered_map>
@@ -14,7 +15,7 @@
 #include "technique/gaussianBlur.hpp"
 #include "technique/background_technique.hpp"
 #include "technique/star.hpp"
-#include "technique/cloud_tech.hpp"
+#include "technique/spriteGeometry.hpp"
 #include "lights.hpp"
 #include "mesh.hpp"
 #include "model/model_base.hpp"
@@ -22,6 +23,7 @@
 #include "view/hand_view.hpp"
 #include "view/star_view.hpp"
 #include "controller/controller_base.hpp"
+#include "gui.hpp"
 
 namespace cgvkp
 {
@@ -40,7 +42,7 @@ namespace cgvkp
 				stereo = 1
 			};
 
-			release_renderer(data::world const& data);
+			release_renderer(data::world const& data, window& wnd);
 			virtual void render(window const& wnd);
 
 			void setCameraMode(CameraMode mode);
@@ -71,12 +73,15 @@ namespace cgvkp
 			void addBackground() const;
 			void addStarLights(glm::mat4 const& projection) const;
 			void addStars(glm::mat4 const& projection) const;
-			void addClouds(glm::mat4 const& projection) const;
 
 			GLsizei windowWidth;
 			GLsizei windowHeight;
 			GLsizei framebufferWidth;
 			GLsizei framebufferHeight;
+			float fovy;
+			float zNear;
+			float zFar;
+
 			glm::mat4 viewMatrix;
 			glm::mat4 leftProjection;	// Holds the projection matrix in mono mode.
 			glm::mat4 rightProjection;
@@ -95,7 +100,7 @@ namespace cgvkp
 			GaussianBlurTechnique gaussianBlur;
 			background_technique background;
 			StarTechnique starPass;
-			CloudTechnique cloudPass;
+			SpriteGeometryTechnique spriteGeometryPass;
 			Mesh const * pQuad;
 
 			glm::vec3 ambientLight;
@@ -104,6 +109,7 @@ namespace cgvkp
 			std::chrono::high_resolution_clock::time_point last_time;
 			double fps_counter_elapsed;
 			unsigned int rendered_frames;
+			int fps;
 
 			std::unordered_map<char const*, Mesh> meshes;
 
@@ -113,6 +119,8 @@ namespace cgvkp
 			std::list<view::star_view::ptr> starViews;
 
 			std::list<controller::controller_base::ptr> controllers;
+
+			Gui gui;
 		};
 	}
 }

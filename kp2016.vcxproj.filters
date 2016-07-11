@@ -96,6 +96,9 @@
     <Filter Include="Resource Files\textures">
       <UniqueIdentifier>{1658f313-07b8-45df-9f2c-4937419d8cd9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="rendering\poly2tri">
+      <UniqueIdentifier>{4d93d0f3-e480-4b62-b6a4-e7b58d9ee78f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -209,8 +212,32 @@
     <ClCompile Include="src\rendering\technique\spotLight.cpp">
       <Filter>rendering\technique\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\technique\cloud_tech.cpp">
+    <ClCompile Include="src\rendering\font.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\sweep_context.cc">
+      <Filter>rendering\poly2tri</Filter>
+    </ClCompile>
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\sweep.cc">
+      <Filter>rendering\poly2tri</Filter>
+    </ClCompile>
+    <ClCompile Include="src\poly2tri\poly2tri\common\shapes.cc">
+      <Filter>rendering\poly2tri</Filter>
+    </ClCompile>
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\cdt.cc">
+      <Filter>rendering\poly2tri</Filter>
+    </ClCompile>
+    <ClCompile Include="src\poly2tri\poly2tri\sweep\advancing_front.cc">
+      <Filter>rendering\poly2tri</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\gui.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\fontTechnique.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\spriteGeometry.cpp">
+      <Filter>rendering\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -262,12 +289,6 @@
     </None>
     <None Include="src\resources\meshes\star.mtl">
       <Filter>Resource Files\meshes</Filter>
-    </None>
-    <None Include="src\resources\shaders\cloud.fs">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="src\resources\shaders\cloud.vs">
-      <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -391,6 +412,18 @@
     <ClInclude Include="src\util\spline_curve.hpp">
       <Filter>util\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\rendering\guiElements.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\font.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\gui.hpp">
+      <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\fontTechnique.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\rendering\technique\ssao.hpp">
       <Filter>rendering\technique\Header Files</Filter>
     </ClInclude>
@@ -415,7 +448,7 @@
     <ClInclude Include="src\rendering\technique\spotLight.hpp">
       <Filter>rendering\technique\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\rendering\technique\cloud_tech.hpp">
+    <ClInclude Include="src\rendering\technique\spriteGeometry.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
