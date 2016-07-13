@@ -246,6 +246,11 @@ int main()
 		dataStream = myKin.getData();
 		std::cout << dataStream[0].at<ushort>(50, 10) << std::endl;
 
+		cv::Rect myROI(100, 100, 300, 300);
+		cv::vector<cv::Mat> cuttedStream;
+		cv::Mat cuttedMat = dataStream[0](myROI);
+		cuttedStream.push_back(cuttedMat);
+
 
 /*
 		//------------------------------face tracking--------------------------------------
@@ -301,18 +306,18 @@ int main()
 		
 
 		float imageWidth = 640;
-		float imageDepth = 480;
+		float imageHeight = 480;
 		float focalLength = 585;
 
 		float dim = 3;
-		float size = imageDepth*imageWidth;
+		float size = imageHeight*imageWidth;
 		vector< vector<int> > pointCloudStream(size, vector<int>(dim));
 		vector<vector<int>> modes;
 		//long pointCloudStream[640*480][3];
-		float current = 0;
-		#pragma omp parallel for
-		for (int y = 0; y < (int)imageDepth - 1; y++) {
-			for (int x = 0; x < (int)imageWidth - 1; x++) {
+		int current = 0;
+		//#pragma omp parallel for
+		for (int y = 0; y < imageHeight - 1; y++) {
+			for (int x = 0; x < imageWidth - 1; x++) {
 				ushort depth = dataStream[0].at<ushort>(y, x);
 				//std::cout <<  << std::endl;
 				if (depth != NULL) {
@@ -340,10 +345,16 @@ int main()
 			}
 		}
 
+ 
+		//cv::InputArray cuttedArray = new InputArray(&pointCloudStream);
+
+
+		
+
 		//modes = modeSeeking(pointCloudStream);
 		
 
-		//cv::imshow("Colorized Depth", colorizeDepth(dataStream[C_DEPTH_STREAM], 0));
+		cv::imshow("Colorized Depth", colorizeDepth(cuttedStream[C_DEPTH_STREAM], 0));
 		
 		
 		cv::Mat frame = dataStream[C_COLOR_STREAM];
@@ -351,7 +362,7 @@ int main()
 		
 
 		
-		cv::imshow("Color", frame);
+		//cv::imshow("Color", frame);
 		//cv::imshow("Depth_Color", depthframe);
 
 
