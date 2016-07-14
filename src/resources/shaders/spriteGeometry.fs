@@ -13,7 +13,7 @@ layout (location = 3) out vec2 fsMaterial;
 void main()
 {
 	fsDiffuse = texture(diffuseSampler, vsTextureCoord);
-	fsPositionView = vec4(vsPositionView, 1.0);
-	fsNormalView = vec4(0.0, 1.0, 0.0, 1.0);
+	fsPositionView = vec4(vsPositionView, fsDiffuse.a);
+	fsNormalView = vec4(0.0, 1.0, 0.0, fsDiffuse.a);
 	fsMaterial = material;
 }

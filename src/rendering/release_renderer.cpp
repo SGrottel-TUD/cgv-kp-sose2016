@@ -274,16 +274,13 @@ void cgvkp::rendering::release_renderer::render(window const& wnd)
 
 void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection) const
 {
-	gbuffer.bindForWritingFinal();
-	glClear(GL_COLOR_BUFFER_BIT);
-
 	fillGeometryBuffer(projection);
 
 	glBlendEquation(GL_FUNC_ADD);
 
-	//addAmbientLight();
-	//addDirectionalLight(directionalLight);
-	//addBackground();
+	setBackground();
+	addAmbientLight();
+	addDirectionalLight(directionalLight);
 	addStarLights(projection);
 	addStars(projection);
 	gui.render(projection);
@@ -341,7 +338,7 @@ void cgvkp::rendering::release_renderer::addAmbientLight() const
 {
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
-	glBlendFunc(GL_ONE, GL_ONE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	gbuffer.bindForReadingGeometry();
 	postProcessing.nextPass(0, 0);
@@ -351,7 +348,6 @@ void cgvkp::rendering::release_renderer::addAmbientLight() const
 	pQuad->render();
 
 	postProcessing.nextPass(1);
-	gbuffer.bindForWritingFinal();
 	gaussianBlur.use();
 	gaussianBlur.setDirection(GaussianBlurTechnique::horizontal);
 	gaussianBlur.setBlurSize(framebufferWidth);
@@ -369,20 +365,18 @@ void cgvkp::rendering::release_renderer::addDirectionalLight(DirectionalLight co
 {
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_ONE, GL_ONE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	gbuffer.bindForReadingGeometry();
 	gbuffer.bindForWritingFinal();
 	directionalLightPass.use();
-
 
 	directionalLightPass.setLight(directionalLight);
 	pQuad->render();
 }
 
-void cgvkp::rendering::release_renderer::addBackground() const
+void cgvkp::rendering::release_renderer::setBackground() const
 {
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_EQUAL);
+	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 	gbuffer.bindForWritingFinal();
 	background.use();
@@ -390,8 +384,6 @@ void cgvkp::rendering::release_renderer::addBackground() const
 	background.setScreenSize(framebufferWidth, framebufferHeight);
 	background.render();
 	pQuad->render();
-
-	glDepthFunc(GL_LESS);
 }
 
 void cgvkp::rendering::release_renderer::addStarLights(glm::mat4 const& projection) const

@@ -70,7 +70,7 @@ namespace cgvkp
 			void fillGeometryBuffer(glm::mat4 const& projection) const;
 			void addAmbientLight() const;
 			void addDirectionalLight(DirectionalLight const& light) const;
-			void addBackground() const;
+			void setBackground() const;
 			void addStarLights(glm::mat4 const& projection) const;
 			void addStars(glm::mat4 const& projection) const;
 
