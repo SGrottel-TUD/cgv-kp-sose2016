@@ -94,3 +94,8 @@ void cgvkp::rendering::Mesh::render() const
 	}
 	glDrawElements(indicesMode, indicesCount, indicesType, nullptr);
 }
+
+void cgvkp::rendering::Mesh::instancedRender(std::vector<glm::mat4> model_matrices) const {
+	
+
+}

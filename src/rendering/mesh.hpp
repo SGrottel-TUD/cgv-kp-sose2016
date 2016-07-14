@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <memory>
 #include "util/texture.hpp"
+#include <vector>
 
 namespace cgvkp
 {
@@ -16,6 +17,7 @@ namespace cgvkp
 			bool init(char const* pMeshname, bool withAdjacencies = false);
 			void deinit();
 			void render() const;
+			void instancedRender(std::vector<glm::mat4> model_matrices) const;
 
 		private:
 			enum VertexAttributeLocation
@@ -28,6 +30,7 @@ namespace cgvkp
 
 			GLuint vertexArray;
 			GLuint vertexBuffers[numAttributes];
+			GLuint model_matrices_VBO;
 			GLuint indexBuffer;
 			GLenum indicesMode;
 			GLsizei indicesCount;
