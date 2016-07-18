@@ -87,15 +87,14 @@ void cgvkp::rendering::Mesh::deinit()
 
 void cgvkp::rendering::Mesh::render() const
 {
+	bindForRender();
+	glDrawElements(indicesMode, indicesCount, indicesType, nullptr);
+}
+
+void cgvkp::rendering::Mesh::bindForRender() const {
 	glBindVertexArray(vertexArray);
 	if (texture)
 	{
 		texture->bind_texture();
 	}
-	glDrawElements(indicesMode, indicesCount, indicesType, nullptr);
-}
-
-void cgvkp::rendering::Mesh::instancedRender(std::vector<glm::mat4> model_matrices) const {
-	
-
 }

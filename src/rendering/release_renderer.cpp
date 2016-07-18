@@ -298,6 +298,8 @@ void cgvkp::rendering::release_renderer::fillGeometryBuffer(glm::mat4 const& pro
 
 	glEnable(GL_DEPTH_TEST);
 
+	std::vector<glm::mat4> cloud_model_matrices;
+
 	for (auto const& c : cloudViews)
 	{
 		auto graphic_model = c->get_model();

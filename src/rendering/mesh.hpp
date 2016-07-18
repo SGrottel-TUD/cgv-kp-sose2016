@@ -17,7 +17,7 @@ namespace cgvkp
 			bool init(char const* pMeshname, bool withAdjacencies = false);
 			void deinit();
 			void render() const;
-			void instancedRender(std::vector<glm::mat4> model_matrices) const;
+			void bindForRender() const;
 
 		private:
 			enum VertexAttributeLocation
