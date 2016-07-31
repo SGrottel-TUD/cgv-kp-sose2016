@@ -326,7 +326,7 @@ void cgvkp::rendering::release_renderer::fillGeometryBuffer(glm::mat4 const& pro
 		glm::mat4 world = glm::translate(graphic_model->position) * rotation * glm::toMat4(graphic_model->rotation) * glm::scale(graphic_model->scale);
 		spriteGeometryPass.setWorldView(viewMatrix * world);
 		spriteGeometryPass.setWorldViewProjection(projection * viewMatrix * world);
-		//v->render();
+		v->render();
 	}
 
 }
