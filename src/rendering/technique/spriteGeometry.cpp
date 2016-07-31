@@ -10,10 +10,15 @@ bool cgvkp::rendering::SpriteGeometryTechnique::init()
 	materialLocation = getUniformLocation("material");
 	worldViewLocation = getUniformLocation("worldView");
 	worldViewProjectionLocation = getUniformLocation("worldViewProjection");
+	GLint diffuseSamplerLocation = getUniformLocation("diffuseSampler");
+	GLint depthOffsetSamplerLocation = getUniformLocation("depthOffsetSampler");
+
 
 	if (materialLocation == invalidLocation ||
 		worldViewLocation == invalidLocation ||
-		worldViewProjectionLocation == invalidLocation)
+		worldViewProjectionLocation == invalidLocation ||
+		diffuseSamplerLocation == invalidLocation ||
+		depthOffsetSamplerLocation == invalidLocation)
 	{
 		return false;
 	}

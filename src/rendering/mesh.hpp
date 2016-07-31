@@ -1,5 +1,6 @@
 #pragma once
 
+#include <list>
 #include <GL/glew.h>
 #include <memory>
 #include "util/texture.hpp"
@@ -32,7 +33,7 @@ namespace cgvkp
 			GLenum indicesMode;
 			GLsizei indicesCount;
 			GLenum indicesType;
-			std::shared_ptr<util::texture> texture;
+			std::list<std::shared_ptr<util::texture>> textures;
 		};
 	}
 }

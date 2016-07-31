@@ -2,6 +2,7 @@
 
 uniform vec2 material;
 uniform sampler2D diffuseSampler;
+uniform sampler2D depthOffsetSampler;
 
 in vec3 vsPositionView;
 in vec2 vsTextureCoord;
@@ -12,8 +13,10 @@ layout (location = 3) out vec2 fsMaterial;
 
 void main()
 {
+	vec4 depthOffset = texture(depthOffsetSampler, vsTextureCoord);
 	fsDiffuse = texture(diffuseSampler, vsTextureCoord);
 	fsPositionView = vec4(vsPositionView, fsDiffuse.a);
+	fsPositionView.z += depthOffset.x - 0.5;
 	fsNormalView = vec4(0.0, 1.0, 0.0, fsDiffuse.a);
 	fsMaterial = material;
 }

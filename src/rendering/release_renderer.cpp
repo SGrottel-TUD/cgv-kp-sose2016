@@ -3,7 +3,7 @@
 #include "release_renderer.hpp"
 #include "data/world.hpp"
 #include "controller/data_controller.hpp"
-#include "controller/cloud_controller.hpp"
+#include "controller/cloudController.hpp"
 #include "window.hpp"
 
 cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world const& data, window& wnd)
@@ -18,9 +18,7 @@ cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world const&
 
 	// Create and add data, cloud controller
 	controllers.push_back(std::make_shared<controller::data_controller>(this, data, handMesh, starMesh));
-	controllers.push_back(std::make_shared<controller::cloud_controller>(this, data, cloudMesh));
-
-	cloudViews.sort([](view::cloud_view::ptr const& lhs, view::cloud_view::ptr const& rhs) { return rhs->get_model()->model_matrix[3].z - lhs->get_model()->model_matrix[3].z > glm::epsilon<float>(); });
+	controllers.push_back(std::make_shared<controller::CloudController>(this, data, cloudMesh));
 
 	// Lights
 	ambientLight = glm::vec3(1);//glm::vec3(0.1, 0.1, 0.5);
@@ -62,6 +60,8 @@ bool cgvkp::rendering::release_renderer::init_impl(window const& wnd)
 	{
 		pair.second.init(pair.first);
 	}
+
+	last_time = std::chrono::high_resolution_clock::now();
 
 	return true;
 }
@@ -283,14 +283,8 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 	addDirectionalLight(directionalLight);
 	addStarLights(projection);
 	addStars(projection);
-	gui.render(projection);
-
-	/*glDisable(GL_BLEND);
-	glDisable(GL_DEPTH_TEST);
-	background.use();
-	gbuffer.bindForReadingGeometry();
 	gbuffer.bindForWritingFinal();
-	pQuad->render();*/
+	gui.render(projection);
 }
 
 void cgvkp::rendering::release_renderer::fillGeometryBuffer(glm::mat4 const& projection) const
@@ -318,20 +312,23 @@ void cgvkp::rendering::release_renderer::fillGeometryBuffer(glm::mat4 const& pro
 	}
 
 	// Render clouds as point sprites.
+	glDepthMask(GL_FALSE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	spriteGeometryPass.use();
 
+	float angleToView = acos(viewMatrix[3].z / glm::length(glm::vec3(viewMatrix[3])));
+	glm::mat4 rotation = glm::rotate(angleToView, glm::vec3(1, 0, 0));
 	for (auto const& v : cloudViews)
 	{
 		auto graphic_model = v->get_model();
 		if (graphic_model == nullptr) continue;
-		spriteGeometryPass.setWorldView(viewMatrix * graphic_model->model_matrix);
-		spriteGeometryPass.setWorldViewProjection(projection * viewMatrix * graphic_model->model_matrix);
-		v->render();
+		glm::mat4 world = glm::translate(graphic_model->position) * rotation * glm::toMat4(graphic_model->rotation) * glm::scale(graphic_model->scale);
+		spriteGeometryPass.setWorldView(viewMatrix * world);
+		spriteGeometryPass.setWorldViewProjection(projection * viewMatrix * world);
+		//v->render();
 	}
 
-	glDepthMask(GL_FALSE);
 }
 
 void cgvkp::rendering::release_renderer::addAmbientLight() const
@@ -414,6 +411,8 @@ void cgvkp::rendering::release_renderer::addStarLights(glm::mat4 const& projecti
 
 void cgvkp::rendering::release_renderer::addStars(glm::mat4 const& projection) const
 {
+	glDepthMask(GL_TRUE);
+	glClear(GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 	gbuffer.bindForWritingFinal();
