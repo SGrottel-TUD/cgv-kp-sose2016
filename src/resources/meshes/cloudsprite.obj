@@ -1,10 +1,14 @@
 # Vertices: 4
 # Faces: 2
 
+mtllib ./cloudsprite.obj.mtl
+
 v -1 -1 1
 v 1 -1 1
 v -1 1 1
 v 1 1 1
+
+usemtl material_0
 
 vt 0 0
 vt 1 0

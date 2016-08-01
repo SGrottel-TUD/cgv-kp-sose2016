@@ -15,6 +15,7 @@
 #include "technique/gaussianBlur.hpp"
 #include "technique/background_technique.hpp"
 #include "technique/star.hpp"
+#include "technique/spriteGeometry.hpp"
 #include "lights.hpp"
 #include "mesh.hpp"
 #include "model/model_base.hpp"
@@ -69,7 +70,7 @@ namespace cgvkp
 			void fillGeometryBuffer(glm::mat4 const& projection) const;
 			void addAmbientLight() const;
 			void addDirectionalLight(DirectionalLight const& light) const;
-			void addBackground() const;
+			void setBackground() const;
 			void addStarLights(glm::mat4 const& projection) const;
 			void addStars(glm::mat4 const& projection) const;
 
@@ -99,7 +100,8 @@ namespace cgvkp
 			GaussianBlurTechnique gaussianBlur;
 			background_technique background;
 			StarTechnique starPass;
-			Mesh* pQuad;
+			SpriteGeometryTechnique spriteGeometryPass;
+			Mesh const * pQuad;
 
 			glm::vec3 ambientLight;
 			DirectionalLight directionalLight;

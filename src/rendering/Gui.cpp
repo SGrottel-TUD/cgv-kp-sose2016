@@ -165,7 +165,7 @@ void cgvkp::rendering::Gui::render(glm::mat4 projectionMatrix) const
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
-	glClear(GL_DEPTH_BUFFER_BIT);
+	//glClear(GL_DEPTH_BUFFER_BIT);
 	fontPass.use();
 	projectionMatrix *= guiProjection;
 	for (auto& label : labels)

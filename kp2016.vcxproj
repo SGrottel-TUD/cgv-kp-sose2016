@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -31,9 +31,9 @@
     <ClCompile Include="src\poly2tri\poly2tri\sweep\sweep.cc" />
     <ClCompile Include="src\poly2tri\poly2tri\sweep\sweep_context.cc" />
     <ClCompile Include="src\rendering\abstract_renderer.cpp" />
+    <ClCompile Include="src\rendering\controller\cloudController.cpp" />
     <ClCompile Include="src\rendering\controller\cloud_controller.cpp" />
     <ClCompile Include="src\rendering\controller\caught_star_controller.cpp" />
-    <ClCompile Include="src\rendering\controller\controller_base.cpp" />
     <ClCompile Include="src\rendering\controller\data_controller.cpp" />
     <ClCompile Include="src\rendering\controller\periodic_rotation_controller.cpp" />
     <ClCompile Include="src\rendering\controller\sub_cloud_controller.cpp" />
@@ -45,6 +45,7 @@
     <ClCompile Include="src\rendering\mesh.cpp" />
     <ClCompile Include="src\rendering\postProcessingFramebuffer.cpp" />
     <ClCompile Include="src\rendering\technique\background_technique.cpp" />
+    <ClCompile Include="src\rendering\technique\spriteGeometry.cpp" />
     <ClCompile Include="src\rendering\technique\fontTechnique.cpp" />
     <ClCompile Include="src\rendering\technique\directionalLight.cpp" />
     <ClCompile Include="src\rendering\technique\gaussianBlur.cpp" />
@@ -94,6 +95,7 @@
     <ClInclude Include="src\data\world_config.hpp" />
     <ClInclude Include="src\data\world.hpp" />
     <ClInclude Include="src\rendering\abstract_renderer.hpp" />
+    <ClInclude Include="src\rendering\controller\cloudController.hpp" />
     <ClInclude Include="src\rendering\controller\cloud_controller.hpp" />
     <ClInclude Include="src\rendering\controller\caught_star_controller.hpp" />
     <ClInclude Include="src\rendering\controller\controller_base.hpp" />
@@ -111,6 +113,7 @@
     <ClInclude Include="src\rendering\model\graphic_model_base.hpp" />
     <ClInclude Include="src\rendering\postProcessingFramebuffer.hpp" />
     <ClInclude Include="src\rendering\technique\background_technique.hpp" />
+    <ClInclude Include="src\rendering\technique\spriteGeometry.hpp" />
     <ClInclude Include="src\rendering\technique\fontTechnique.hpp" />
     <ClInclude Include="src\rendering\technique\directionalLight.hpp" />
     <ClInclude Include="src\rendering\technique\gaussianBlur.hpp" />

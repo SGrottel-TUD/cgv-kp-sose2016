@@ -42,9 +42,9 @@ bool cgvkp::rendering::Mesh::init(char const* pMeshname, bool withAdjacencies /*
 		glBufferData(GL_ARRAY_BUFFER, mesh.getTextureCoordsSize(), mesh.getTextureCoords(), GL_STATIC_DRAW);
 		glEnableVertexAttribArray(textureCoord);
 		glVertexAttribPointer(textureCoord, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
-		if (!mesh.getTexturePath().empty())
+		for(auto const& texturePath : mesh.getTexturePaths())
 		{
-			texture = util::texture::from_png(mesh.getTexturePath());
+			textures.push_back(util::texture::from_png(texturePath));
 		}
 	}
 
@@ -82,15 +82,21 @@ void cgvkp::rendering::Mesh::deinit()
 		glDeleteBuffers(1, &indexBuffer);
 		indexBuffer = 0;
 	}
-	texture.reset();
+	for (auto& pTexture : textures)
+	{
+		pTexture.reset();
+	}
+	textures.clear();
 }
 
 void cgvkp::rendering::Mesh::render() const
 {
 	glBindVertexArray(vertexArray);
-	if (texture)
+	int i = 0;
+	for (auto& pTexture : textures)
 	{
-		texture->bind_texture();
+		glActiveTexture(GL_TEXTURE0 + i++);
+		glBindTexture(GL_TEXTURE_2D, pTexture->id());
 	}
 	glDrawElements(indicesMode, indicesCount, indicesType, nullptr);
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -149,9 +149,6 @@
     <ClCompile Include="src\util\resource_file.cpp">
       <Filter>util\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\controller\controller_base.cpp">
-      <Filter>rendering\controller\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\rendering\controller\data_controller.cpp">
       <Filter>rendering\controller\Source Files</Filter>
     </ClCompile>
@@ -235,6 +232,12 @@
     </ClCompile>
     <ClCompile Include="src\rendering\technique\fontTechnique.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\spriteGeometry.cpp">
+      <Filter>rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\controller\cloudController.cpp">
+      <Filter>rendering\controller\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -444,6 +447,12 @@
     </ClInclude>
     <ClInclude Include="src\rendering\technique\spotLight.hpp">
       <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\spriteGeometry.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\controller\cloudController.hpp">
+      <Filter>rendering\controller\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

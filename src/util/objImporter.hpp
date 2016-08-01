@@ -2,6 +2,7 @@
 
 #include <gl/glew.h>
 #include <glm/common.hpp>
+#include <list>
 #include <string>
 
 namespace cgvkp
@@ -35,7 +36,7 @@ namespace cgvkp
 			inline bool hasNormals() const { return normals != nullptr; }
 			inline bool hasTextureCoords() const { return textureCoords != nullptr; }
 			inline bool isValid() const { return indices != nullptr; }
-            inline std::string getTexturePath() const { return texturePath; }
+			inline std::list<std::string> const& getTexturePaths() const { return texturePaths; }
 
 		private:
 			bool load(char const* pMeshname, bool withAdjacencies);
@@ -50,8 +51,8 @@ namespace cgvkp
 			GLsizei indicesCount;
 			GLenum indicesType;
 			GLsizeiptr indicesSize;
-            std::string texturePath;
 			AABB aabb;
+			std::list<std::string> texturePaths;
 		};
 	}
 }

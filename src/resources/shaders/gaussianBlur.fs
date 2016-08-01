@@ -12,7 +12,7 @@ uniform float blurSize;	// 1 / textureWidth or 1 / textureHeight
 uniform vec2 direction;
 
 in vec2 vsTextureCoord;
-out vec4 color;
+out vec4 fsColor;
 
 void main()
 {
@@ -36,5 +36,5 @@ void main()
 		incrementalGaussian.xy *= incrementalGaussian.yz;
 	}
 
-	color = average / coefficientSum;
+	fsColor = average / coefficientSum;
 }

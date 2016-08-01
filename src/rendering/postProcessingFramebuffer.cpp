@@ -67,7 +67,7 @@ void cgvkp::rendering::PostProcessingFramebuffer::resize(GLsizei width, GLsizei 
 	for (int i = 0; i < numTextures; ++i)
 	{
 		glBindTexture(GL_TEXTURE_2D, pTextures[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
 	}
 }
 

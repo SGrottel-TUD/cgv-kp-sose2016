@@ -120,7 +120,7 @@ void cgvkp::rendering::GeometryBuffer::resize(GLsizei width, GLsizei height) con
 	for (int i = 0; i < numTextures; ++i)
 	{
 		glBindTexture(GL_TEXTURE_2D, textures[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
 	}
 
 	// Depth/Stencil buffer.

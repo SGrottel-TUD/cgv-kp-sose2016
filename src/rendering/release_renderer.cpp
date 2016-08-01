@@ -3,23 +3,25 @@
 #include "release_renderer.hpp"
 #include "data/world.hpp"
 #include "controller/data_controller.hpp"
-#include "controller/cloud_controller.hpp"
+#include "controller/cloudController.hpp"
 #include "window.hpp"
 
 cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world & data, window& wnd)
 	: abstract_renderer(data), windowWidth(0), windowHeight(0), framebufferWidth(0), framebufferHeight(0), cameraMode(mono), gui(data, "CartoonRegular.ttf"), fps_counter_elapsed(0.0), rendered_frames(0u)
 {
-	pQuad = &meshes.insert({ "quad", Mesh() }).first->second;
-	Mesh const& cloudMesh = meshes.insert({ "sphere", Mesh() }).first->second;
+	Mesh const& quadMesh = meshes.insert({ "quad", Mesh() }).first->second;
+	Mesh const& cloudMesh = meshes.insert({ "cloudsprite", Mesh() }).first->second;
 	Mesh const& starMesh = meshes.insert({ "star", Mesh() }).first->second;
 	Mesh const& handMesh = meshes.insert({ "hand", Mesh() }).first->second;
 
+	pQuad = &quadMesh;
+
 	// Create and add data, cloud controller
 	controllers.push_back(std::make_shared<controller::data_controller>(this, data, handMesh, starMesh));
-	controllers.push_back(std::make_shared<controller::cloud_controller>(this, data, cloudMesh));
+	controllers.push_back(std::make_shared<controller::CloudController>(this, data, cloudMesh));
 
 	// Lights
-	ambientLight = glm::vec3(0.1, 0.1, 0.5) * 0.25f;
+	ambientLight = glm::vec3(1);//glm::vec3(0.1, 0.1, 0.5);
 	directionalLight.color = glm::vec3(1, 1, 1);
 	directionalLight.diffuseIntensity = 0.5f;
 	directionalLight.direction = glm::normalize(glm::vec3(0, -2, -1));	// in view space.
@@ -48,6 +50,7 @@ bool cgvkp::rendering::release_renderer::init_impl(window const& wnd)
 		!gaussianBlur.init() ||
 		!background.init() ||
 		!starPass.init() ||
+		!spriteGeometryPass.init() ||
 		!gui.init())
 	{
 		return false;
@@ -57,6 +60,8 @@ bool cgvkp::rendering::release_renderer::init_impl(window const& wnd)
 	{
 		pair.second.init(pair.first);
 	}
+
+	last_time = std::chrono::high_resolution_clock::now();
 
 	return true;
 }
@@ -80,6 +85,7 @@ void cgvkp::rendering::release_renderer::deinit_impl()
 	gbuffer.deinit();
 	postProcessing.deinit();
 	starPass.deinit();
+	spriteGeometryPass.deinit();
 	gui.deinit();
 }
 
@@ -268,18 +274,16 @@ void cgvkp::rendering::release_renderer::render(window const& wnd)
 
 void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection) const
 {
-	gbuffer.bindForWritingFinal();
-	glClear(GL_COLOR_BUFFER_BIT);
-
 	fillGeometryBuffer(projection);
 
 	glBlendEquation(GL_FUNC_ADD);
 
+	setBackground();
 	addAmbientLight();
 	addDirectionalLight(directionalLight);
-	addBackground();
 	addStarLights(projection);
 	addStars(projection);
+	gbuffer.bindForWritingFinal();
 	gui.render(projection);
 }
 
@@ -291,21 +295,13 @@ void cgvkp::rendering::release_renderer::fillGeometryBuffer(glm::mat4 const& pro
 	glDepthMask(GL_TRUE);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Render a quad with a very low z value in view space to not get wrong results during post processing.
-	geometryPass.setWorldView(glm::translate(glm::vec3(0, 0, -1000)));
+	// Render the background with a very low z value in view space to not get wrong results during post processing.
+	geometryPass.setWorldView(glm::translate(glm::vec3(0, 0, -10)));
 	geometryPass.setWorldViewProjection(glm::mat4(1));
+	background.render();
 	pQuad->render();
 
 	glEnable(GL_DEPTH_TEST);
-
-	for (auto const& c : cloudViews)
-	{
-		auto graphic_model = c->get_model();
-		if (graphic_model == nullptr) continue;
-		geometryPass.setWorldView(viewMatrix * graphic_model->model_matrix);
-		geometryPass.setWorldViewProjection(projection * viewMatrix * graphic_model->model_matrix);
-		c->render();
-	}
 	for (auto const& v : handViews)
 	{
 		auto graphic_model = v->get_model();
@@ -315,14 +311,31 @@ void cgvkp::rendering::release_renderer::fillGeometryBuffer(glm::mat4 const& pro
 		v->render();
 	}
 
+	// Render clouds as point sprites.
 	glDepthMask(GL_FALSE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	spriteGeometryPass.use();
+
+	float angleToView = acos(viewMatrix[3].z / glm::length(glm::vec3(viewMatrix[3])));
+	glm::mat4 rotation = glm::rotate(angleToView, glm::vec3(1, 0, 0));
+	for (auto const& v : cloudViews)
+	{
+		auto graphic_model = v->get_model();
+		if (graphic_model == nullptr) continue;
+		glm::mat4 world = glm::translate(graphic_model->position) * rotation * glm::toMat4(graphic_model->rotation) * glm::scale(graphic_model->scale);
+		spriteGeometryPass.setWorldView(viewMatrix * world);
+		spriteGeometryPass.setWorldViewProjection(projection * viewMatrix * world);
+		v->render();
+	}
+
 }
 
 void cgvkp::rendering::release_renderer::addAmbientLight() const
 {
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
-	glBlendFunc(GL_ONE, GL_ONE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	gbuffer.bindForReadingGeometry();
 	postProcessing.nextPass(0, 0);
@@ -332,7 +345,6 @@ void cgvkp::rendering::release_renderer::addAmbientLight() const
 	pQuad->render();
 
 	postProcessing.nextPass(1);
-	gbuffer.bindForWritingFinal();
 	gaussianBlur.use();
 	gaussianBlur.setDirection(GaussianBlurTechnique::horizontal);
 	gaussianBlur.setBlurSize(framebufferWidth);
@@ -350,7 +362,7 @@ void cgvkp::rendering::release_renderer::addDirectionalLight(DirectionalLight co
 {
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_ONE, GL_ONE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	gbuffer.bindForReadingGeometry();
 	gbuffer.bindForWritingFinal();
 	directionalLightPass.use();
@@ -359,10 +371,9 @@ void cgvkp::rendering::release_renderer::addDirectionalLight(DirectionalLight co
 	pQuad->render();
 }
 
-void cgvkp::rendering::release_renderer::addBackground() const
+void cgvkp::rendering::release_renderer::setBackground() const
 {
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_EQUAL);
+	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 	gbuffer.bindForWritingFinal();
 	background.use();
@@ -370,8 +381,6 @@ void cgvkp::rendering::release_renderer::addBackground() const
 	background.setScreenSize(framebufferWidth, framebufferHeight);
 	background.render();
 	pQuad->render();
-
-	glDepthFunc(GL_LESS);
 }
 
 void cgvkp::rendering::release_renderer::addStarLights(glm::mat4 const& projection) const
@@ -402,6 +411,7 @@ void cgvkp::rendering::release_renderer::addStarLights(glm::mat4 const& projecti
 
 void cgvkp::rendering::release_renderer::addStars(glm::mat4 const& projection) const
 {
+	glDepthMask(GL_TRUE);
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 	gbuffer.bindForWritingFinal();
