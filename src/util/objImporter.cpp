@@ -228,7 +228,7 @@ bool cgvkp::util::ObjImporter::load(char const* pMeshname, bool withAdjacencies)
 			ss >> mtlFile;
 			// Adapt directory
 
-			readTexturePathFromMtl("meshes/" + mtlFile);
+			readTexturePathFromMtl(mtlFile);
 		}
 		else if (type == "usemtl")
 		{
@@ -449,7 +449,7 @@ bool cgvkp::util::ObjImporter::load(char const* pMeshname, bool withAdjacencies)
 
 bool cgvkp::util::ObjImporter::readTexturePathFromMtl(std::string const& filename)
 {
-	std::ifstream file(resource_file::find_resource_file(filename));
+	std::ifstream file(resource_file::getResourcePath("meshes", filename));
 
 	if (!file.good())
 	{

@@ -71,7 +71,7 @@ bool cgvkp::rendering::Technique::addShader(GLenum shaderType, char const* pFile
 {
 	// Get shader source.
 	std::string source;
-	if (!util::resource_file::read_file_as_text(util::resource_file::find_resource_file(std::string("shaders/") + pFilename), source))
+	if (!util::resource_file::readTextfile("shaders", pFilename, source))
 	{
 #if defined(_DEBUG) || defined(DEBUG)
 		std::cerr << "Could not read file \"" << pFilename << "\"." << std::endl;
