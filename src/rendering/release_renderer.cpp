@@ -7,21 +7,23 @@
 #include "window.hpp"
 
 cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world & data, window& wnd)
-	: abstract_renderer(data), windowWidth(0), windowHeight(0), framebufferWidth(0), framebufferHeight(0), cameraMode(mono), gui(data, "CartoonRegular.ttf"), fps_counter_elapsed(0.0), rendered_frames(0u)
+	: abstract_renderer(data), windowWidth(0), windowHeight(0), framebufferWidth(0), framebufferHeight(0), cameraMode(mono), gui(data, "CartoonRegular.ttf"), frames(0)
 {
 	Mesh const& quadMesh = meshes.insert({ "quad", Mesh() }).first->second;
 	Mesh const& cloudMesh = meshes.insert({ "cloudsprite", Mesh() }).first->second;
 	Mesh const& starMesh = meshes.insert({ "star", Mesh() }).first->second;
 	Mesh const& handMesh = meshes.insert({ "hand", Mesh() }).first->second;
+	pPyramid = &meshes.insert({ "pyramid", Mesh() }).first->second;
 
 	pQuad = &quadMesh;
 
 	// Create and add data, cloud controller
+	dt = std::chrono::microseconds(1000000 / 60);
 	controllers.push_back(std::make_shared<controller::data_controller>(this, data, handMesh, starMesh));
-	controllers.push_back(std::make_shared<controller::CloudController>(this, data, cloudMesh));
+	controllers.push_back(cloudController = std::make_shared<controller::CloudController>(this, data, cloudMesh));
 
 	// Lights
-	ambientLight = glm::vec3(1);//glm::vec3(0.1, 0.1, 0.5);
+	ambientLight = glm::vec3(0.1, 0.1, 0.5);
 	directionalLight.color = glm::vec3(1, 1, 1);
 	directionalLight.diffuseIntensity = 0.5f;
 	directionalLight.direction = glm::normalize(glm::vec3(0, -2, -1));	// in view space.
@@ -61,7 +63,7 @@ bool cgvkp::rendering::release_renderer::init_impl(window const& wnd)
 		pair.second.init(pair.first);
 	}
 
-	last_time = std::chrono::high_resolution_clock::now();
+	tGame = tLogic = std::chrono::high_resolution_clock::now();
 
 	return true;
 }
@@ -177,38 +179,8 @@ void cgvkp::rendering::release_renderer::calculateViewProjection()
 	}
 }
 
-void cgvkp::rendering::release_renderer::render(window const& wnd)
+void cgvkp::rendering::release_renderer::update(double seconds, std::shared_ptr<abstract_user_input> const& input)
 {
-	wnd.make_current();
-	if (wnd.get_size(windowWidth, windowHeight))
-	{
-		framebufferWidth = cameraMode == stereo ? windowWidth / 2 : windowWidth;
-		framebufferHeight = windowHeight;
-		if (framebufferWidth != 0 && framebufferHeight != 0)
-		{
-			gbuffer.resize(framebufferWidth, framebufferHeight);
-			postProcessing.resize(framebufferWidth, framebufferHeight);
-            gui.setSize(framebufferWidth, framebufferHeight, glm::quarter_pi<float>(), cameraMode == stereo ? zZeroParallax : 10);
-			calculateViewProjection();
-		}
-	}
-	if (framebufferWidth == 0 || framebufferHeight == 0)
-	{
-		return;
-	}
-
-	std::chrono::high_resolution_clock::time_point now_time = std::chrono::high_resolution_clock::now();
-	double elapsed = std::chrono::duration<float>(now_time - last_time).count();
-	last_time = now_time;
-	fps_counter_elapsed += elapsed;
-	++rendered_frames;
-	if (fps_counter_elapsed >= 0.5f)
-	{
-		fps = static_cast<int>(rendered_frames / fps_counter_elapsed);
-		fps_counter_elapsed = 0;
-		rendered_frames = 0;
-	}
-
 	// Remove views and controllers without model
 	for (auto it = cloudViews.begin(); it != cloudViews.end();)
 	{
@@ -251,9 +223,45 @@ void cgvkp::rendering::release_renderer::render(window const& wnd)
 		}
 		else
 		{
-			(*it)->update(elapsed, wnd.get_user_input_object());
+			(*it)->update(seconds, input);
 			++it;
 		}
+	}
+}
+
+void cgvkp::rendering::release_renderer::render(window const& wnd)
+{
+	wnd.make_current();
+	if (wnd.get_size(windowWidth, windowHeight))
+	{
+		framebufferWidth = cameraMode == stereo ? windowWidth / 2 : windowWidth;
+		framebufferHeight = windowHeight;
+		if (framebufferWidth != 0 && framebufferHeight != 0)
+		{
+			gbuffer.resize(framebufferWidth, framebufferHeight);
+			postProcessing.resize(framebufferWidth, framebufferHeight);
+            gui.setSize(framebufferWidth, framebufferHeight, glm::quarter_pi<float>(), cameraMode == stereo ? zZeroParallax : 10);
+			calculateViewProjection();
+		}
+	}
+	if (framebufferWidth == 0 || framebufferHeight == 0)
+	{
+		return;
+	}
+
+	++frames;
+	auto tNow = std::chrono::high_resolution_clock::now();
+	auto dtLogic = tNow - tLogic;
+	if (dtLogic >= dt)
+	{
+		update(static_cast<double>(dtLogic.count()) / 1000000000, wnd.get_user_input_object());
+		tLogic = tNow;
+	}
+	if (tNow - tGame >= std::chrono::milliseconds(500))
+	{
+		fps = static_cast<int>(2 * frames);
+		frames = 0;
+		tGame = tNow;
 	}
 
 	glViewport(0, 0, framebufferWidth, framebufferHeight);
@@ -317,18 +325,15 @@ void cgvkp::rendering::release_renderer::fillGeometryBuffer(glm::mat4 const& pro
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	spriteGeometryPass.use();
 
-	float angleToView = acos(viewMatrix[3].z / glm::length(glm::vec3(viewMatrix[3])));
-	glm::mat4 rotation = glm::rotate(angleToView, glm::vec3(1, 0, 0));
 	for (auto const& v : cloudViews)
 	{
 		auto graphic_model = v->get_model();
 		if (graphic_model == nullptr) continue;
-		glm::mat4 world = glm::translate(graphic_model->position) * rotation * glm::toMat4(graphic_model->rotation) * glm::scale(graphic_model->scale);
-		spriteGeometryPass.setWorldView(viewMatrix * world);
-		spriteGeometryPass.setWorldViewProjection(projection * viewMatrix * world);
+		glm::mat4 worldView = viewMatrix * graphic_model->model_matrix;
+		spriteGeometryPass.setWorldView(worldView);
+		spriteGeometryPass.setWorldViewProjection(projection * worldView);
 		v->render();
 	}
-
 }
 
 void cgvkp::rendering::release_renderer::addAmbientLight() const
@@ -395,17 +400,25 @@ void cgvkp::rendering::release_renderer::addStarLights(glm::mat4 const& projecti
 	SpotLight starLight;
 	starLight.color = glm::vec3(0.9608f, 0.5059f, 0.1255f);	// average color in the star texture.
 	starLight.diffuseIntensity = 1;
-	starLight.direction = glm::vec3(0, -1, 0);	// in world space
+	starLight.direction = glm::vec3(viewMatrix * glm::vec4(0, -1, 0, 0));	// in view space
 	starLight.attenuation = glm::vec3(1, 0, 2);	// constant, linear, exponential
 	starLight.cutoff = glm::quarter_pi<float>();
+
+	glm::vec3 scale;
+	scale.y = starLight.calculateMaxDistance();
+	scale.x = scale.z = scale.y * tan(starLight.cutoff);
 
 	for (auto const& s : starViews)
 	{
 		if (!s->has_model()) continue;
 
-		starLight.position = glm::vec3(s->get_model()->model_matrix[3]);
-		spotLightPass.setLight(starLight, viewMatrix, projection);
-		pQuad->render();
+		starLight.position = glm::vec3(viewMatrix * s->get_model()->model_matrix[3]);	// in view space
+		spotLightPass.setLight(starLight);
+
+		glm::mat4 trans = glm::translate(glm::vec3(s->get_model()->model_matrix[3]));
+		glm::mat4 world = glm::scale(trans, scale);
+		spotLightPass.setWorldViewProjection(projection * viewMatrix * world);
+		pPyramid->render();
 	}
 }
 

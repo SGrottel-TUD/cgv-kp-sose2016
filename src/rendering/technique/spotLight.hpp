@@ -14,7 +14,8 @@ namespace cgvkp
 		public:
 			SpotLightTechnique() : projectionLocation(invalidLocation), lightLocation{ invalidLocation, invalidLocation, invalidLocation, invalidLocation, invalidLocation } {}
 			bool init();
-			void setLight(SpotLight const& light, glm::mat4 const& view, glm::mat4 const& projection) const;
+			void setLight(SpotLight const& light) const;
+			void setWorldViewProjection(glm::mat4 const& worldViewProjection) const;
 
 		private:
 			GLint projectionLocation;

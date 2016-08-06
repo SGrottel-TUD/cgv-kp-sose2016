@@ -19,7 +19,7 @@ cgvkp::rendering::controller::CloudController::CloudController(release_renderer*
 	std::default_random_engine generator;
 	std::uniform_real_distribution<float> xDistribution(distanceMinX, distanceMaxX);
 	std::uniform_real_distribution<float> yDistribution(-distanceY, distanceY);
-	std::uniform_real_distribution<float> angleDistribution(0, glm::two_pi<float>());
+	std::uniform_real_distribution<float> angleDistribution(-glm::radians(120.0f), glm::radians(120.0f));
 	std::uniform_real_distribution<float> velocityDistribution(-0.2f, 0.2f);
 
 	for (float z = -h; z < 0; z += distanceZ * (z < -1 ? -z : 1))
@@ -34,7 +34,8 @@ cgvkp::rendering::controller::CloudController::CloudController(release_renderer*
 		{
 			auto model = std::make_shared<model::cloud_model>();
 			model->position = glm::vec3(x, yDistribution(generator), z);
-			model->rotation = glm::quat(glm::vec3(0, 0, angleDistribution(generator)));
+			model->dAngle = angleDistribution(generator);
+			model->rotation = glm::quat(glm::vec3(0, 0, model->dAngle));
 			model->scale = glm::vec3(scaleDistribution(generator));
 			model->velocity = glm::vec3(velocityDistribution(generator), velocityDistribution(generator), 0);
 			model->model_matrix = glm::translate(model->position) * glm::toMat4(model->rotation) * glm::scale(model->scale);
@@ -48,13 +49,17 @@ cgvkp::rendering::controller::CloudController::CloudController(release_renderer*
 	}
 }
 
+void cgvkp::rendering::controller::CloudController::setCameraPosition(glm::vec3 const& position)
+{
+	float angleToView = acos(position.z / glm::length(position));
+	rotation = glm::quat(glm::vec3(0, angleToView, 0));
+}
+
 void cgvkp::rendering::controller::CloudController::update(double seconds, std::shared_ptr<abstract_user_input> input)
 {
 	float const distanceToGameArea = 4;
 	float const distanceY = 0.2f;
 
-	std::default_random_engine generator;
-	std::uniform_real_distribution<float> angleDistribution(-glm::radians(2.0f), glm::radians(2.0f));
 	for (auto const& pCloud : clouds)
 	{
 		pCloud->position += pCloud->velocity * static_cast<float>(seconds);
@@ -75,7 +80,7 @@ void cgvkp::rendering::controller::CloudController::update(double seconds, std::
 		{
 			pCloud->velocity.y = glm::abs(pCloud->velocity.y);
 		}
-		pCloud->rotation *= glm::quat(glm::vec3(0, 0, angleDistribution(generator)));
-		pCloud->model_matrix = glm::translate(pCloud->position) * glm::toMat4(pCloud->rotation) * glm::scale(pCloud->scale);
+		pCloud->rotation *= glm::quat(glm::vec3(0, 0, pCloud->dAngle * static_cast<float>(seconds)));
+		pCloud->model_matrix = glm::translate(pCloud->position) * glm::toMat4(rotation * pCloud->rotation) * glm::scale(pCloud->scale);
 	}
 }

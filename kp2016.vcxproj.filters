@@ -155,9 +155,6 @@
     <ClCompile Include="src\rendering\controller\periodic_rotation_controller.cpp">
       <Filter>rendering\controller\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\controller\cloud_controller.cpp">
-      <Filter>rendering\controller\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\rendering\controller\caught_star_controller.cpp">
       <Filter>rendering\controller\Source Files</Filter>
     </ClCompile>
@@ -375,9 +372,6 @@
     </ClInclude>
     <ClInclude Include="src\rendering\view\cloud_view.hpp">
       <Filter>rendering\view\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\controller\cloud_controller.hpp">
-      <Filter>rendering\controller\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\controller\caught_star_controller.hpp">
       <Filter>rendering\controller\Header Files</Filter>

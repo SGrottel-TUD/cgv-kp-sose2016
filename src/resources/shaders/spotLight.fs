@@ -20,7 +20,7 @@ struct SpotLight
 uniform Maps maps;
 uniform SpotLight light;
 
-in vec2 vsTextureCoord;
+noperspective in vec2 vsTextureCoord;
 out vec3 fsColor;
 
 void main()

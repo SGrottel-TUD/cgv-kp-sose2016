@@ -23,6 +23,7 @@
 #include "view/hand_view.hpp"
 #include "view/star_view.hpp"
 #include "controller/controller_base.hpp"
+#include "controller/cloudController.hpp"
 #include "gui.hpp"
 
 namespace cgvkp
@@ -65,6 +66,7 @@ namespace cgvkp
 		private:
 			void calculateViewProjection();
 			void renderScene(glm::mat4 const& projection) const;
+			void update(double seconds, std::shared_ptr<abstract_user_input> const& input);
 
 			// Rendering steps
 			void fillGeometryBuffer(glm::mat4 const& projection) const;
@@ -101,14 +103,16 @@ namespace cgvkp
 			background_technique background;
 			StarTechnique starPass;
 			SpriteGeometryTechnique spriteGeometryPass;
-			Mesh const * pQuad;
+			Mesh const* pQuad;
+			Mesh const* pPyramid;
 
 			glm::vec3 ambientLight;
 			DirectionalLight directionalLight;
 
-			std::chrono::high_resolution_clock::time_point last_time;
-			double fps_counter_elapsed;
-			unsigned int rendered_frames;
+			std::chrono::high_resolution_clock::duration dt;
+			std::chrono::high_resolution_clock::time_point tGame;
+			std::chrono::high_resolution_clock::time_point tLogic;
+			unsigned int frames;
 			int fps;
 
 			std::unordered_map<char const*, Mesh> meshes;
@@ -119,6 +123,7 @@ namespace cgvkp
 			std::list<view::star_view::ptr> starViews;
 
 			std::list<controller::controller_base::ptr> controllers;
+			std::shared_ptr<controller::CloudController> cloudController;
 
 			Gui gui;
 		};

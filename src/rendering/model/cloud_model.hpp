@@ -21,6 +21,7 @@ namespace cgvkp {
 				glm::quat rotation;
 				glm::vec3 scale;
 				glm::vec3 velocity;
+				float dAngle;
 			};
 		}
 	}

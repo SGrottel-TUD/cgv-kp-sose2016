@@ -1,5 +1,6 @@
 #pragma once
 
+#include <glm/gtx/quaternion.hpp>
 #include <list>
 #include <memory>
 #include "controller_base.hpp"
@@ -26,11 +27,13 @@ namespace cgvkp
 			{
 			public:
 				CloudController(release_renderer* pRenderer, data::world const& d, Mesh const& mesh);
+				void setCameraPosition(glm::vec3 const& position);
 				void update(double seconds, std::shared_ptr<abstract_user_input> input);
 				inline bool has_model() const { return true; }
 
 			private:
 				float w;
+				glm::quat rotation;
 				std::list<std::shared_ptr<model::cloud_model>> clouds;
 			};
 		}

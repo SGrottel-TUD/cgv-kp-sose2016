@@ -32,9 +32,6 @@ namespace controller {
         {
             active_models.push_back(data_star->id);
             if (stars.count(data_star->id) == 0) {
-#if defined(_DEBUG) || defined(DEBUG)
-                std::cout << "Creating star " << data_star->id << std::endl;
-#endif
                 // We need to create this star
                 auto star = std::make_shared<model::star_model>();
 				star->id = data_star->id;
@@ -52,9 +49,6 @@ namespace controller {
 
                 // And add it to the map
                 stars.insert(std::make_pair(data_star->id, star));
-#if defined(_DEBUG) || defined(DEBUG)
-                std::cout << stars.size() << " stars." << std::endl;
-#endif
             }
             // Now we are sure we know about the star
             // Update its data
@@ -88,9 +82,6 @@ namespace controller {
         {
             active_models.push_back(data_hand->id);
             if (hands.count(data_hand->id) == 0) {
-#if defined(_DEBUG) || defined(DEBUG)
-                std::cout << "Creating hand " << data_hand->id << std::endl;
-#endif
                 // We need to create this hand 
                 auto hand = std::make_shared<model::hand_model>();
                 renderer->add_model(hand);
@@ -107,9 +98,6 @@ namespace controller {
 
                 // And add it to the map
                 hands.insert(std::make_pair(data_hand->id, hand));
-#if defined(_DEBUG) || defined(DEBUG)
-                std::cout << hands.size() << " hands." << std::endl;
-#endif
             }
             // Now we are sure we know about the hand
             // Update its data

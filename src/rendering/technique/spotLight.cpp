@@ -42,51 +42,17 @@ bool cgvkp::rendering::SpotLightTechnique::init()
 	return true;
 }
 
-void cgvkp::rendering::SpotLightTechnique::setLight(SpotLight const& light, glm::mat4 const& view, glm::mat4 const& projection) const
+void cgvkp::rendering::SpotLightTechnique::setLight(SpotLight const& light) const
 {
-	float distance = light.calculateMaxDistance();
-	glm::vec3 positionView(view * glm::vec4(light.position, 1));
-	glm::vec3 directionView(view * glm::vec4(light.direction, 0));
-
-	// There are 3 points which approximately define a aabb for the light: the position, and an aabb around position + distance * direction which is a square with the length of distance * sin(cutoff / 2).
-	glm::vec4 positionProjected = projection * glm::vec4(positionView, 1);
-	glm::vec4 directionProjected = projection * glm::vec4(directionView, 0);
-	glm::vec4 aabbProjected = projection * glm::vec4(sin(light.cutoff / 2), sin(light.cutoff / 2), 0, 0);
-	glm::vec4 bottomLeft = positionProjected + distance * (directionProjected - aabbProjected);
-	glm::vec4 topRight = positionProjected + distance * (directionProjected + aabbProjected);
-
-	positionProjected /= positionProjected.w;
-	bottomLeft /= bottomLeft.w;
-	topRight /= topRight.w;
-
-	glm::vec2 pos(positionProjected);
-	glm::vec2 min(bottomLeft);
-	glm::vec2 max(topRight);
-
-	if (positionProjected.x < min.x)
-	{
-		min.x = positionProjected.x;
-	}
-	if (positionProjected.y < min.y)
-	{
-		min.y = positionProjected.y;
-	}
-	if (positionProjected.x > max.x)
-	{
-		max.x = positionProjected.x;
-	}
-	if (positionProjected.y > max.y)
-	{
-		max.y = positionProjected.y;
-	}
-
-	glm::mat4 quadProjection = glm::translate(glm::vec3(positionProjected.x, positionProjected.y, 0)) * glm::scale(glm::vec3(0.5f * (max - min), 1)) * glm::translate(glm::vec3(0, -1, 0));
-
-	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &quadProjection[0][0]);
-	glUniform3f(lightLocation.position, positionView.x, positionView.y, positionView.z);
-	glUniform3f(lightLocation.direction, directionView.x, directionView.y, directionView.z);
+	glUniform3f(lightLocation.position, light.position.x, light.position.y, light.position.z);
+	glUniform3f(lightLocation.direction, light.direction.x, light.direction.y, light.direction.z);
 	glm::vec3 color = light.color * light.diffuseIntensity;
 	glUniform3f(lightLocation.color, color.x, color.y, color.z);
 	glUniform3f(lightLocation.attenuation, light.attenuation.x, light.attenuation.y, light.attenuation.z);
 	glUniform1f(lightLocation.cutoff, cos(light.cutoff));
+}
+
+void cgvkp::rendering::SpotLightTechnique::setWorldViewProjection(glm::mat4 const& worldViewProjection) const
+{
+	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &worldViewProjection[0][0]);
 }

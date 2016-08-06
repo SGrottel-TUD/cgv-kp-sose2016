@@ -134,7 +134,9 @@ namespace util
         // Release memory
         free(data);
         // Return texture
+#if defined(_DEBUG) || defined(DEBUG)
         std::cout << "texture '" << filename << "' uploaded" << std::endl;
+#endif
         return tex;
     }
 }
