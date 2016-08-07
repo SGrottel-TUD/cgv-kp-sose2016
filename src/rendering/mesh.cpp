@@ -2,7 +2,7 @@
 #include "util/objImporter.hpp"
 
 cgvkp::rendering::Mesh::Mesh()
-	: pMeshname(nullptr), instanced(false), withAdjacencies(false), vertexArray(0), indexBuffer(0), indicesMode(GL_NONE), indicesCount(0), indicesType(GL_NONE)
+	: pMeshname(nullptr), instanced(false), numInstances(1), withAdjacencies(false), vertexArray(0), indexBuffer(0), indicesMode(GL_NONE), indicesCount(0), indicesType(GL_NONE)
 {
 	for (int i = 0; i < numAttributes; ++i)
 	{
@@ -11,7 +11,7 @@ cgvkp::rendering::Mesh::Mesh()
 }
 
 cgvkp::rendering::Mesh::Mesh(char const* _pMeshname, bool _instanced /* = false */, bool _withAdjacencies /* = false */)
-	: pMeshname(_pMeshname), instanced(_instanced), withAdjacencies(_withAdjacencies), vertexArray(0), indexBuffer(0), indicesMode(GL_NONE), indicesCount(0), indicesType(GL_NONE)
+	: pMeshname(_pMeshname), instanced(_instanced), numInstances(_instanced ? 0 : 1), withAdjacencies(_withAdjacencies), vertexArray(0), indexBuffer(0), indicesMode(GL_NONE), indicesCount(0), indicesType(GL_NONE)
 {
 	for (int i = 0; i < numAttributes; ++i)
 	{
@@ -131,21 +131,19 @@ void cgvkp::rendering::Mesh::render() const
 		glBindTexture(GL_TEXTURE_2D, pTexture->id());
 	}
 	glBindVertexArray(vertexArray);
-	glDrawElements(indicesMode, indicesCount, indicesType, nullptr);
+	if (numInstances == 1)
+	{
+		glDrawElements(indicesMode, indicesCount, indicesType, nullptr);
+	}
+	else
+	{
+		glDrawElementsInstanced(indicesMode, indicesCount, indicesType, nullptr, numInstances);
+	}
 }
 
-void cgvkp::rendering::Mesh::renderInstanced(std::vector<glm::mat4> const& worldView) const
+void cgvkp::rendering::Mesh::updateInstances(std::vector<glm::mat4> const& worldView)
 {
-	GLsizei numInstances = static_cast<GLsizei>(worldView.size());
+	numInstances = static_cast<GLsizei>(worldView.size());
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[worldViewMatrix]);
 	glBufferData(GL_ARRAY_BUFFER, numInstances * sizeof(glm::mat4), worldView.data(), GL_STREAM_DRAW);
-
-	int i = 0;
-	for (auto& pTexture : textures)
-	{
-		glActiveTexture(GL_TEXTURE0 + i++);
-		glBindTexture(GL_TEXTURE_2D, pTexture->id());
-	}
-	glBindVertexArray(vertexArray);
-	glDrawElementsInstanced(indicesMode, indicesCount, indicesType, nullptr, numInstances);
 }

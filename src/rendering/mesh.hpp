@@ -20,7 +20,7 @@ namespace cgvkp
 			bool init();
 			void deinit();
 			void render() const;
-			void renderInstanced(std::vector<glm::mat4> const&  worldView) const;
+			void updateInstances(std::vector<glm::mat4> const& worldView);
 
 		private:
 			enum VertexAttributeLocation
@@ -34,6 +34,7 @@ namespace cgvkp
 
 			char const* pMeshname;
 			bool instanced;
+			GLsizei numInstances;
 			bool withAdjacencies;
 
 			GLuint vertexArray;

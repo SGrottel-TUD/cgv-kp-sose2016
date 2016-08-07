@@ -19,7 +19,7 @@ cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world & data
 	// Create and add data, cloud controller
 	dt = std::chrono::microseconds(1000000 / 60);
 	controllers.push_back(std::make_shared<controller::data_controller>(this, data, meshes[hand], meshes[star]));
-	controllers.push_back(cloudController = std::make_shared<controller::CloudController>(this, data, meshes[cloud]));
+	controllers.push_back(cloudController = std::make_shared<controller::CloudController>(this, data, meshes[cloud], viewMatrix));
 
 	// Lights
 	ambientLight = glm::vec3(0.1, 0.1, 0.5);
@@ -184,17 +184,6 @@ void cgvkp::rendering::release_renderer::calculateViewProjection()
 void cgvkp::rendering::release_renderer::update(double seconds, std::shared_ptr<abstract_user_input> const& input)
 {
 	// Remove views and controllers without model
-	for (auto it = cloudViews.begin(); it != cloudViews.end();)
-	{
-		if (!(*it)->has_model())
-		{
-			it = cloudViews.erase(it);
-		}
-		else
-		{
-			++it;
-		}
-	}
 	for (auto it = handViews.begin(); it != handViews.end();)
 	{
 		if (!(*it)->has_model())
@@ -259,9 +248,9 @@ void cgvkp::rendering::release_renderer::render(window const& wnd)
 		update(static_cast<double>(dtLogic.count()) / 1000000000, wnd.get_user_input_object());
 		tLogic = tNow;
 	}
-	if (tNow - tGame >= std::chrono::milliseconds(500))
+	if (tNow - tGame >= std::chrono::milliseconds(1000))
 	{
-		fps = static_cast<int>(2 * frames);
+		fps = static_cast<int>(frames);
 		frames = 0;
 		tGame = tNow;
 	}
@@ -327,16 +316,7 @@ void cgvkp::rendering::release_renderer::fillGeometryBuffer(glm::mat4 const& pro
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	spriteGeometryPass.use();
 	spriteGeometryPass.setProjection(projection);
-
-	std::vector<glm::mat4> worldViewMatrices(cloudViews.size());
-#pragma omp parallel for
-	for (int i = 0; i < cloudViews.size(); ++i)
-	{
-		auto graphic_model = cloudViews[i]->get_model();
-		if (graphic_model == nullptr) continue;
-		worldViewMatrices[i] = viewMatrix * graphic_model->model_matrix;
-	}
-	meshes[cloud].renderInstanced(worldViewMatrices);
+	meshes[cloud].render();
 }
 
 void cgvkp::rendering::release_renderer::addAmbientLight() const

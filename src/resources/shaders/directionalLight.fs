@@ -17,7 +17,7 @@ struct DirectionalLight
 uniform Maps maps;
 uniform DirectionalLight light;
 
-in vec2 vsTextureCoord;
+noperspective in vec2 vsTextureCoord;
 out vec4 fsColor;
 
 void main()

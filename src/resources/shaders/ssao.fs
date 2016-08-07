@@ -15,7 +15,7 @@ uniform Maps maps;
 uniform vec3 randomDirections[6];	// must be in a unit radius sphere
 uniform vec3 ambientLight;
 
-in vec2 vsTextureCoord;
+noperspective in vec2 vsTextureCoord;
 out vec4 fsColor;
 
 float rand(vec2 v)
