@@ -60,27 +60,28 @@ void cgvkp::rendering::controller::CloudController::update(double seconds, std::
 	float const distanceToGameArea = 4;
 	float const distanceY = 0.2f;
 
-	for (auto const& pCloud : clouds)
+#pragma omp parallel for
+	for (int i = 0; i < clouds.size(); ++i)
 	{
-		pCloud->position += pCloud->velocity * static_cast<float>(seconds);
-		float wZ = tan(glm::quarter_pi<float>()) * (distanceToGameArea - pCloud->position.z) - w;
-		if (pCloud->position.x > w + wZ)
+		clouds[i]->position += clouds[i]->velocity * static_cast<float>(seconds);
+		float wZ = tan(glm::quarter_pi<float>()) * (distanceToGameArea - clouds[i]->position.z) - w;
+		if (clouds[i]->position.x > w + wZ)
 		{
-			pCloud->velocity.x = -glm::abs(pCloud->velocity.x);
+			clouds[i]->velocity.x = -glm::abs(clouds[i]->velocity.x);
 		}
-		if (pCloud->position.x < -wZ)
+		if (clouds[i]->position.x < -wZ)
 		{
-			pCloud->velocity.x = glm::abs(pCloud->velocity.x);
+			clouds[i]->velocity.x = glm::abs(clouds[i]->velocity.x);
 		}
-		if (pCloud->position.y > distanceY)
+		if (clouds[i]->position.y > distanceY)
 		{
-			pCloud->velocity.y = -glm::abs(pCloud->velocity.y);
+			clouds[i]->velocity.y = -glm::abs(clouds[i]->velocity.y);
 		}
-		if (pCloud->position.y < -distanceY)
+		if (clouds[i]->position.y < -distanceY)
 		{
-			pCloud->velocity.y = glm::abs(pCloud->velocity.y);
+			clouds[i]->velocity.y = glm::abs(clouds[i]->velocity.y);
 		}
-		pCloud->rotation *= glm::quat(glm::vec3(0, 0, pCloud->dAngle * static_cast<float>(seconds)));
-		pCloud->model_matrix = glm::translate(pCloud->position) * glm::toMat4(rotation * pCloud->rotation) * glm::scale(pCloud->scale);
+		clouds[i]->rotation *= glm::quat(glm::vec3(0, 0, clouds[i]->dAngle * static_cast<float>(seconds)));
+		clouds[i]->model_matrix = glm::translate(clouds[i]->position) * glm::toMat4(rotation * clouds[i]->rotation) * glm::scale(clouds[i]->scale);
 	}
 }

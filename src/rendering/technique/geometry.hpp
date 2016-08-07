@@ -10,16 +10,16 @@ namespace cgvkp
 		class GeometryTechnique : public Technique
 		{
 		public:
-			inline GeometryTechnique() : materialLocation(invalidLocation), worldViewLocation(invalidLocation), worldViewProjectionLocation(invalidLocation) {}
+			inline GeometryTechnique() : materialLocation(invalidLocation), projectionLocation(invalidLocation), worldViewLocation(invalidLocation) {}
 			virtual bool init();
 			void setMaterial() const;
+			void setProjection(glm::mat4 const& projection) const;
 			void setWorldView(glm::mat4 const& worldView) const;
-			void setWorldViewProjection(glm::mat4 const& worldViewProjection) const;
 
 		private:
 			GLint materialLocation;
+			GLint projectionLocation;
 			GLint worldViewLocation;
-			GLint worldViewProjectionLocation;
 		};
 	}
 }

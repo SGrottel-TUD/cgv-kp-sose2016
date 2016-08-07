@@ -1,8 +1,8 @@
 #pragma once
 
 #include <glm/gtx/quaternion.hpp>
-#include <list>
 #include <memory>
+#include <vector>
 #include "controller_base.hpp"
 
 namespace cgvkp
@@ -34,7 +34,7 @@ namespace cgvkp
 			private:
 				float w;
 				glm::quat rotation;
-				std::list<std::shared_ptr<model::cloud_model>> clouds;
+				std::vector<std::shared_ptr<model::cloud_model>> clouds;
 			};
 		}
 	}

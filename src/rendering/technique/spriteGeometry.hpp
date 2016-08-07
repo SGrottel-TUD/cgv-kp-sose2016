@@ -10,16 +10,14 @@ namespace cgvkp
 		class SpriteGeometryTechnique : public Technique
 		{
 		public:
-			inline SpriteGeometryTechnique() : materialLocation(invalidLocation), worldViewLocation(invalidLocation), worldViewProjectionLocation(invalidLocation) {}
+			inline SpriteGeometryTechnique() : projectionLocation(invalidLocation), materialLocation(invalidLocation) {}
 			virtual bool init();
 			void setMaterial() const;
-			void setWorldView(glm::mat4 const& worldView) const;
-			void setWorldViewProjection(glm::mat4 const& worldViewProjection) const;
+			void setProjection(glm::mat4 const& projection) const;
 
 		private:
 			GLint materialLocation;
-			GLint worldViewLocation;
-			GLint worldViewProjectionLocation;
+			GLint projectionLocation;
 		};
 	}
 }

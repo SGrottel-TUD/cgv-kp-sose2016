@@ -2,7 +2,9 @@
 
 #include <list>
 #include <GL/glew.h>
+#include <glm/mat4x4.hpp>
 #include <memory>
+#include <vector>
 #include "util/texture.hpp"
 
 namespace cgvkp
@@ -13,10 +15,12 @@ namespace cgvkp
 		{
 		public:
 			Mesh();
+			Mesh(char const* pMeshname, bool instanced = false, bool withAdjacencies = false);
 			inline ~Mesh() { deinit(); }
-			bool init(char const* pMeshname, bool withAdjacencies = false);
+			bool init();
 			void deinit();
 			void render() const;
+			void renderInstanced(std::vector<glm::mat4> const&  worldView) const;
 
 		private:
 			enum VertexAttributeLocation
@@ -24,8 +28,13 @@ namespace cgvkp
 				position = 0,
 				normal,
 				textureCoord,
+				worldViewMatrix,
 				numAttributes
 			};
+
+			char const* pMeshname;
+			bool instanced;
+			bool withAdjacencies;
 
 			GLuint vertexArray;
 			GLuint vertexBuffers[numAttributes];
