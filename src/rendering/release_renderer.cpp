@@ -9,18 +9,17 @@
 cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world & data, window& wnd)
 	: abstract_renderer(data), windowWidth(0), windowHeight(0), framebufferWidth(0), framebufferHeight(0), cameraMode(mono), gui(data, "CartoonRegular.ttf"), frames(0)
 {
-	Mesh const& quadMesh = meshes.insert({ "quad", Mesh() }).first->second;
-	Mesh const& cloudMesh = meshes.insert({ "cloudsprite", Mesh() }).first->second;
-	Mesh const& starMesh = meshes.insert({ "star", Mesh() }).first->second;
-	Mesh const& handMesh = meshes.insert({ "hand", Mesh() }).first->second;
-	pPyramid = &meshes.insert({ "pyramid", Mesh() }).first->second;
-
-	pQuad = &quadMesh;
+	meshes.resize(numMeshes);
+	meshes[quad] = Mesh("quad");
+	meshes[cloud] = Mesh("cloudsprite", true);
+	meshes[star] = Mesh("star");
+	meshes[hand] = Mesh("hand");
+	meshes[pyramid] = Mesh("pyramid");
 
 	// Create and add data, cloud controller
 	dt = std::chrono::microseconds(1000000 / 60);
-	controllers.push_back(std::make_shared<controller::data_controller>(this, data, handMesh, starMesh));
-	controllers.push_back(cloudController = std::make_shared<controller::CloudController>(this, data, cloudMesh));
+	controllers.push_back(std::make_shared<controller::data_controller>(this, data, meshes[hand], meshes[star]));
+	controllers.push_back(cloudController = std::make_shared<controller::CloudController>(this, data, meshes[cloud], viewMatrix));
 
 	// Lights
 	ambientLight = glm::vec3(0.1, 0.1, 0.5);
@@ -58,9 +57,12 @@ bool cgvkp::rendering::release_renderer::init_impl(window const& wnd)
 		return false;
 	}
 
-	for (auto& pair : meshes)
+	for (auto& mesh : meshes)
 	{
-		pair.second.init(pair.first);
+		if (!mesh.init())
+		{
+			return false;
+		}
 	}
 
 	tGame = tLogic = std::chrono::high_resolution_clock::now();
@@ -73,9 +75,9 @@ void cgvkp::rendering::release_renderer::deinit_impl()
 	glBindVertexArray(0);
 	glUseProgram(0);
 
-	for (auto& pair : meshes)
+	for (auto& mesh : meshes)
 	{
-		pair.second.deinit();
+		mesh.deinit();
 	}
 
 	background.deinit();
@@ -182,17 +184,6 @@ void cgvkp::rendering::release_renderer::calculateViewProjection()
 void cgvkp::rendering::release_renderer::update(double seconds, std::shared_ptr<abstract_user_input> const& input)
 {
 	// Remove views and controllers without model
-	for (auto it = cloudViews.begin(); it != cloudViews.end();)
-	{
-		if (!(*it)->has_model())
-		{
-			it = cloudViews.erase(it);
-		}
-		else
-		{
-			++it;
-		}
-	}
 	for (auto it = handViews.begin(); it != handViews.end();)
 	{
 		if (!(*it)->has_model())
@@ -257,9 +248,9 @@ void cgvkp::rendering::release_renderer::render(window const& wnd)
 		update(static_cast<double>(dtLogic.count()) / 1000000000, wnd.get_user_input_object());
 		tLogic = tNow;
 	}
-	if (tNow - tGame >= std::chrono::milliseconds(500))
+	if (tNow - tGame >= std::chrono::milliseconds(1000))
 	{
-		fps = static_cast<int>(2 * frames);
+		fps = static_cast<int>(frames);
 		frames = 0;
 		tGame = tNow;
 	}
@@ -304,18 +295,18 @@ void cgvkp::rendering::release_renderer::fillGeometryBuffer(glm::mat4 const& pro
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Render the background with a very low z value in view space to not get wrong results during post processing.
-	geometryPass.setWorldView(glm::translate(glm::vec3(0, 0, -10)));
-	geometryPass.setWorldViewProjection(glm::mat4(1));
+	geometryPass.setWorldView(glm::translate(glm::vec3(0, 0, -100)));
+	geometryPass.setProjection(glm::translate(glm::vec3(0, 0, 100)));
 	background.render();
-	pQuad->render();
+	meshes[quad].render();
 
 	glEnable(GL_DEPTH_TEST);
+	geometryPass.setProjection(projection);
 	for (auto const& v : handViews)
 	{
 		auto graphic_model = v->get_model();
 		if (graphic_model == nullptr) continue;
 		geometryPass.setWorldView(viewMatrix * graphic_model->model_matrix);
-		geometryPass.setWorldViewProjection(projection * viewMatrix * graphic_model->model_matrix);
 		v->render();
 	}
 
@@ -324,16 +315,8 @@ void cgvkp::rendering::release_renderer::fillGeometryBuffer(glm::mat4 const& pro
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	spriteGeometryPass.use();
-
-	for (auto const& v : cloudViews)
-	{
-		auto graphic_model = v->get_model();
-		if (graphic_model == nullptr) continue;
-		glm::mat4 worldView = viewMatrix * graphic_model->model_matrix;
-		spriteGeometryPass.setWorldView(worldView);
-		spriteGeometryPass.setWorldViewProjection(projection * worldView);
-		v->render();
-	}
+	spriteGeometryPass.setProjection(projection);
+	meshes[cloud].render();
 }
 
 void cgvkp::rendering::release_renderer::addAmbientLight() const
@@ -347,20 +330,20 @@ void cgvkp::rendering::release_renderer::addAmbientLight() const
 	glClear(GL_COLOR_BUFFER_BIT);
 	ssaoPass.use();
 	ssaoPass.setAmbientLight(ambientLight);
-	pQuad->render();
+	meshes[quad].render();
 
 	postProcessing.nextPass(1);
 	gaussianBlur.use();
 	gaussianBlur.setDirection(GaussianBlurTechnique::horizontal);
 	gaussianBlur.setBlurSize(framebufferWidth);
-	pQuad->render();
+	meshes[quad].render();
 
 	postProcessing.finalPass(1);
 	gbuffer.bindForWritingFinal();
 	gaussianBlur.setDirection(GaussianBlurTechnique::vertical);
 	gaussianBlur.setBlurSize(framebufferHeight);
 	glEnable(GL_BLEND);
-	pQuad->render();
+	meshes[quad].render();
 }
 
 void cgvkp::rendering::release_renderer::addDirectionalLight(DirectionalLight const& light) const
@@ -373,7 +356,7 @@ void cgvkp::rendering::release_renderer::addDirectionalLight(DirectionalLight co
 	directionalLightPass.use();
 
 	directionalLightPass.setLight(directionalLight);
-	pQuad->render();
+	meshes[quad].render();
 }
 
 void cgvkp::rendering::release_renderer::setBackground() const
@@ -385,7 +368,7 @@ void cgvkp::rendering::release_renderer::setBackground() const
 
 	background.setScreenSize(framebufferWidth, framebufferHeight);
 	background.render();
-	pQuad->render();
+	meshes[quad].render();
 }
 
 void cgvkp::rendering::release_renderer::addStarLights(glm::mat4 const& projection) const
@@ -418,7 +401,7 @@ void cgvkp::rendering::release_renderer::addStarLights(glm::mat4 const& projecti
 		glm::mat4 trans = glm::translate(glm::vec3(s->get_model()->model_matrix[3]));
 		glm::mat4 world = glm::scale(trans, scale);
 		spotLightPass.setWorldViewProjection(projection * viewMatrix * world);
-		pPyramid->render();
+		meshes[pyramid].render();
 	}
 }
 

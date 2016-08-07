@@ -7,16 +7,14 @@ bool cgvkp::rendering::SpriteGeometryTechnique::init()
 		return false;
 	}
 
+	projectionLocation = getUniformLocation("projection");
 	materialLocation = getUniformLocation("material");
-	worldViewLocation = getUniformLocation("worldView");
-	worldViewProjectionLocation = getUniformLocation("worldViewProjection");
 	GLint diffuseSamplerLocation = getUniformLocation("diffuseSampler");
 	GLint depthOffsetSamplerLocation = getUniformLocation("depthOffsetSampler");
 
 
 	if (materialLocation == invalidLocation ||
-		worldViewLocation == invalidLocation ||
-		worldViewProjectionLocation == invalidLocation ||
+		projectionLocation == invalidLocation ||
 		diffuseSamplerLocation == invalidLocation ||
 		depthOffsetSamplerLocation == invalidLocation)
 	{
@@ -33,12 +31,7 @@ void cgvkp::rendering::SpriteGeometryTechnique::setMaterial() const
 	glUniform2f(materialLocation, specularPower, specularIntensity);
 }
 
-void cgvkp::rendering::SpriteGeometryTechnique::setWorldView(glm::mat4 const& worldView) const
+void cgvkp::rendering::SpriteGeometryTechnique::setProjection(glm::mat4 const& projection) const
 {
-	glUniformMatrix4fv(worldViewLocation, 1, GL_FALSE, &worldView[0][0]);
-}
-
-void cgvkp::rendering::SpriteGeometryTechnique::setWorldViewProjection(glm::mat4 const& worldViewProjection) const
-{
-	glUniformMatrix4fv(worldViewProjectionLocation, 1, GL_FALSE, &worldViewProjection[0][0]);
+	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
 }

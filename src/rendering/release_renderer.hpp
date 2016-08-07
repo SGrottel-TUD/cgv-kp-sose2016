@@ -4,7 +4,6 @@
 #include <GL/glew.h>
 #include <glm/mat4x4.hpp>
 #include <list>
-#include <unordered_map>
 #include "abstract_renderer.hpp"
 #include "geometryBuffer.hpp"
 #include "postProcessingFramebuffer.hpp"
@@ -103,8 +102,6 @@ namespace cgvkp
 			background_technique background;
 			StarTechnique starPass;
 			SpriteGeometryTechnique spriteGeometryPass;
-			Mesh const* pQuad;
-			Mesh const* pPyramid;
 
 			glm::vec3 ambientLight;
 			DirectionalLight directionalLight;
@@ -115,10 +112,15 @@ namespace cgvkp
 			unsigned int frames;
 			int fps;
 
-			std::unordered_map<char const*, Mesh> meshes;
+			enum Meshes
+			{
+				quad = 0, cloud, star, hand, pyramid,
+				numMeshes
+			};
+			std::vector<Mesh> meshes;
 
 			std::list<model::model_base::ptr> models;
-			std::list<view::cloud_view::ptr> cloudViews;
+			std::vector<view::cloud_view::ptr> cloudViews;
 			std::list<view::hand_view::ptr> handViews;
 			std::list<view::star_view::ptr> starViews;
 

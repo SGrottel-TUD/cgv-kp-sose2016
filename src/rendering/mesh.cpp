@@ -2,7 +2,7 @@
 #include "util/objImporter.hpp"
 
 cgvkp::rendering::Mesh::Mesh()
-	: vertexArray(0), indexBuffer(0), indicesMode(GL_NONE), indicesCount(0), indicesType(GL_NONE)
+	: pMeshname(nullptr), instanced(false), numInstances(1), withAdjacencies(false), vertexArray(0), indexBuffer(0), indicesMode(GL_NONE), indicesCount(0), indicesType(GL_NONE)
 {
 	for (int i = 0; i < numAttributes; ++i)
 	{
@@ -10,7 +10,16 @@ cgvkp::rendering::Mesh::Mesh()
 	}
 }
 
-bool cgvkp::rendering::Mesh::init(char const* pMeshname, bool withAdjacencies /* = false */)
+cgvkp::rendering::Mesh::Mesh(char const* _pMeshname, bool _instanced /* = false */, bool _withAdjacencies /* = false */)
+	: pMeshname(_pMeshname), instanced(_instanced), numInstances(_instanced ? 0 : 1), withAdjacencies(_withAdjacencies), vertexArray(0), indexBuffer(0), indicesMode(GL_NONE), indicesCount(0), indicesType(GL_NONE)
+{
+	for (int i = 0; i < numAttributes; ++i)
+	{
+		vertexBuffers[i] = 0;
+	}
+}
+
+bool cgvkp::rendering::Mesh::init()
 {
 	util::ObjImporter mesh(pMeshname, withAdjacencies);
 	if (!mesh.isValid())
@@ -26,6 +35,10 @@ bool cgvkp::rendering::Mesh::init(char const* pMeshname, bool withAdjacencies /*
 	glBufferData(GL_ARRAY_BUFFER, mesh.getPositionsSize(), mesh.getPositions(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(position);
 	glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+	if (instanced)
+	{
+		glVertexAttribDivisor(position, 0);
+	}
 
 	if (mesh.hasNormals())
 	{
@@ -34,6 +47,10 @@ bool cgvkp::rendering::Mesh::init(char const* pMeshname, bool withAdjacencies /*
 		glBufferData(GL_ARRAY_BUFFER, mesh.getNormalsSize(), mesh.getNormals(), GL_STATIC_DRAW);
 		glEnableVertexAttribArray(normal);
 		glVertexAttribPointer(normal, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+		if (instanced)
+		{
+			glVertexAttribDivisor(normal, 0);
+		}
 	}
 	if (mesh.hasTextureCoords())
 	{
@@ -45,6 +62,22 @@ bool cgvkp::rendering::Mesh::init(char const* pMeshname, bool withAdjacencies /*
 		for(auto const& texturePath : mesh.getTexturePaths())
 		{
 			textures.push_back(util::texture::from_png(texturePath));
+		}
+		if (instanced)
+		{
+			glVertexAttribDivisor(textureCoord, 0);
+		}
+	}
+
+	if (instanced)
+	{
+		glGenBuffers(1, &vertexBuffers[worldViewMatrix]);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[worldViewMatrix]);
+		for (int i = 0; i < 4; ++i)	// Matrices are 4 x 4 vectors. glVertexAttribPointer only accepts sizes <= 4
+		{
+			glEnableVertexAttribArray(worldViewMatrix + i);
+			glVertexAttribPointer(worldViewMatrix + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), reinterpret_cast<GLvoid const*>(4 * sizeof(GLfloat) * i));
+			glVertexAttribDivisor(worldViewMatrix + i, 1);
 		}
 	}
 
@@ -91,12 +124,26 @@ void cgvkp::rendering::Mesh::deinit()
 
 void cgvkp::rendering::Mesh::render() const
 {
-	glBindVertexArray(vertexArray);
 	int i = 0;
 	for (auto& pTexture : textures)
 	{
 		glActiveTexture(GL_TEXTURE0 + i++);
 		glBindTexture(GL_TEXTURE_2D, pTexture->id());
 	}
-	glDrawElements(indicesMode, indicesCount, indicesType, nullptr);
+	glBindVertexArray(vertexArray);
+	if (numInstances == 1)
+	{
+		glDrawElements(indicesMode, indicesCount, indicesType, nullptr);
+	}
+	else
+	{
+		glDrawElementsInstanced(indicesMode, indicesCount, indicesType, nullptr, numInstances);
+	}
+}
+
+void cgvkp::rendering::Mesh::updateInstances(std::vector<glm::mat4> const& worldView)
+{
+	numInstances = static_cast<GLsizei>(worldView.size());
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[worldViewMatrix]);
+	glBufferData(GL_ARRAY_BUFFER, numInstances * sizeof(glm::mat4), worldView.data(), GL_STREAM_DRAW);
 }

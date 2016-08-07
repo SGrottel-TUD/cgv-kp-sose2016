@@ -5,7 +5,8 @@
 #include <glm/glm.hpp>
 #include <random>
 
-cgvkp::rendering::controller::CloudController::CloudController(release_renderer* pRenderer, data::world const& d, Mesh const& mesh)
+cgvkp::rendering::controller::CloudController::CloudController(release_renderer* pRenderer, data::world const& d, Mesh& _mesh, glm::mat4 const& _view)
+	: mesh(_mesh), view(_view)
 {
 	float const distanceToGameArea = 4;
 	float const distanceMinX = 0.1f;
@@ -38,7 +39,6 @@ cgvkp::rendering::controller::CloudController::CloudController(release_renderer*
 			model->rotation = glm::quat(glm::vec3(0, 0, model->dAngle));
 			model->scale = glm::vec3(scaleDistribution(generator));
 			model->velocity = glm::vec3(velocityDistribution(generator), velocityDistribution(generator), 0);
-			model->model_matrix = glm::translate(model->position) * glm::toMat4(model->rotation) * glm::scale(model->scale);
 			pRenderer->add_model(model);
 			clouds.push_back(model);
 
@@ -60,27 +60,30 @@ void cgvkp::rendering::controller::CloudController::update(double seconds, std::
 	float const distanceToGameArea = 4;
 	float const distanceY = 0.2f;
 
-	for (auto const& pCloud : clouds)
+	std::vector<glm::mat4> worldViewMatrices(clouds.size());
+#pragma omp parallel for
+	for (int i = 0; i < clouds.size(); ++i)
 	{
-		pCloud->position += pCloud->velocity * static_cast<float>(seconds);
-		float wZ = tan(glm::quarter_pi<float>()) * (distanceToGameArea - pCloud->position.z) - w;
-		if (pCloud->position.x > w + wZ)
+		clouds[i]->position += clouds[i]->velocity * static_cast<float>(seconds);
+		float wZ = tan(glm::quarter_pi<float>()) * (distanceToGameArea - clouds[i]->position.z) - w;
+		if (clouds[i]->position.x > w + wZ)
 		{
-			pCloud->velocity.x = -glm::abs(pCloud->velocity.x);
+			clouds[i]->velocity.x = -glm::abs(clouds[i]->velocity.x);
 		}
-		if (pCloud->position.x < -wZ)
+		if (clouds[i]->position.x < -wZ)
 		{
-			pCloud->velocity.x = glm::abs(pCloud->velocity.x);
+			clouds[i]->velocity.x = glm::abs(clouds[i]->velocity.x);
 		}
-		if (pCloud->position.y > distanceY)
+		if (clouds[i]->position.y > distanceY)
 		{
-			pCloud->velocity.y = -glm::abs(pCloud->velocity.y);
+			clouds[i]->velocity.y = -glm::abs(clouds[i]->velocity.y);
 		}
-		if (pCloud->position.y < -distanceY)
+		if (clouds[i]->position.y < -distanceY)
 		{
-			pCloud->velocity.y = glm::abs(pCloud->velocity.y);
+			clouds[i]->velocity.y = glm::abs(clouds[i]->velocity.y);
 		}
-		pCloud->rotation *= glm::quat(glm::vec3(0, 0, pCloud->dAngle * static_cast<float>(seconds)));
-		pCloud->model_matrix = glm::translate(pCloud->position) * glm::toMat4(rotation * pCloud->rotation) * glm::scale(pCloud->scale);
+		clouds[i]->rotation *= glm::quat(glm::vec3(0, 0, clouds[i]->dAngle * static_cast<float>(seconds)));
+		worldViewMatrices[i] = view * glm::translate(clouds[i]->position) * glm::toMat4(rotation * clouds[i]->rotation) * glm::scale(clouds[i]->scale);
 	}
+	mesh.updateInstances(worldViewMatrices);
 }

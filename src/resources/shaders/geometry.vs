@@ -1,7 +1,7 @@
 #version 330 core
 
 uniform mat4 worldView;
-uniform mat4 worldViewProjection;
+uniform mat4 projection;
 
 layout (location = 0) in vec3 inPosition;
 layout (location = 1) in vec3 inNormal;
@@ -12,8 +12,9 @@ out vec2 vsTextureCoord;
 
 void main()
 {
-	gl_Position = worldViewProjection * vec4(inPosition, 1.0);
-	vsPositionView = (worldView * vec4(inPosition, 1.0)).xyz;
+	vec4 positionView = worldView * vec4(inPosition, 1.0);
+	gl_Position = projection * positionView;
+	vsPositionView = positionView.xyz;
 	vsNormalView = (worldView * vec4(inNormal, 0.0)).xyz;
 	vsTextureCoord = inTextureCoord;
 }

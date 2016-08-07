@@ -12,15 +12,17 @@ cgvkp::rendering::model_listing_renderer::model_listing_renderer(const ::cgvkp::
     star_model(std::make_shared<model::star_model>()),
     star_view(std::make_shared<view::star_view>(starMesh)),
     hand_model(std::make_shared<model::hand_model>()),
-    hand_view(std::make_shared<view::hand_view>(handMesh)) {
+    hand_view(std::make_shared<view::hand_view>(handMesh)),
+	handMesh("hand"),
+	starMesh("star") {
 }
 cgvkp::rendering::model_listing_renderer::~model_listing_renderer() {}
 
 bool cgvkp::rendering::model_listing_renderer::init_impl(const window& wnd) {
     wnd.make_current();
 
-	handMesh.init("hand");
-	starMesh.init("star");
+	handMesh.init();
+	starMesh.init();
 
 	::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
