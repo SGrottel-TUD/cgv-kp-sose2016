@@ -20,8 +20,8 @@ cgvkp::rendering::controller::CloudController::CloudController(release_renderer*
 	std::default_random_engine generator;
 	std::uniform_real_distribution<float> xDistribution(distanceMinX, distanceMaxX);
 	std::uniform_real_distribution<float> yDistribution(-distanceY, distanceY);
-	std::uniform_real_distribution<float> angleDistribution(-glm::radians(120.0f), glm::radians(120.0f));
-	std::uniform_real_distribution<float> velocityDistribution(-0.2f, 0.2f);
+	std::uniform_real_distribution<float> angleDistribution(-glm::quarter_pi<float>(), glm::quarter_pi<float>());
+	std::uniform_real_distribution<float> velocityDistribution(-0.1f, 0.1f);
 
 	for (float z = -h; z < 0; z += distanceZ * (z < -1 ? -z : 1))
 	{

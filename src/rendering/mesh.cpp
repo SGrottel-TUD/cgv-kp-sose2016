@@ -79,6 +79,8 @@ bool cgvkp::rendering::Mesh::init()
 			glVertexAttribPointer(worldViewMatrix + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), reinterpret_cast<GLvoid const*>(4 * sizeof(GLfloat) * i));
 			glVertexAttribDivisor(worldViewMatrix + i, 1);
 		}
+
+		numInstances = 0;
 	}
 
 	glGenBuffers(1, &indexBuffer);
@@ -135,7 +137,7 @@ void cgvkp::rendering::Mesh::render() const
 	{
 		glDrawElements(indicesMode, indicesCount, indicesType, nullptr);
 	}
-	else
+	else if(numInstances > 0)
 	{
 		glDrawElementsInstanced(indicesMode, indicesCount, indicesType, nullptr, numInstances);
 	}
