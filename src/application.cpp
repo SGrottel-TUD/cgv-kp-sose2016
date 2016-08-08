@@ -40,7 +40,16 @@ bool application::init() {
 void application::run()
 {
 	// create release window
-	release_window = std::make_shared<rendering::window>(config.windowWidth, config.windowHeight);
+	GLFWmonitor* fullscreen;
+	if (config.fullscreen) { 
+		release_window = std::make_shared<rendering::window>(-1, -1, "KPCGV", glfwGetPrimaryMonitor());
+	}
+	else
+	{
+		release_window = std::make_shared<rendering::window>(config.windowWidth, config.windowHeight);
+	}
+	
+	//release_window = std::make_shared<rendering::window>(config.windowWidth, config.windowHeight, "KPCGV", fullscreen);
 	if (!release_window || !release_window->is_alive())
 	{
 		release_window.reset();
