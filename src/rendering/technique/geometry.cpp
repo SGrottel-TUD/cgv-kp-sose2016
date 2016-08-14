@@ -7,25 +7,16 @@ bool cgvkp::rendering::GeometryTechnique::init()
 		return false;
 	}
 
-	materialLocation = getUniformLocation("material");
 	projectionLocation = getUniformLocation("projection");
 	worldViewLocation = getUniformLocation("worldView");
 
-	if (materialLocation == invalidLocation ||
-		projectionLocation == invalidLocation ||
+	if (projectionLocation == invalidLocation ||
 		worldViewLocation == invalidLocation)
 	{
 		return false;
 	}
 
 	return true;
-}
-
-void cgvkp::rendering::GeometryTechnique::setMaterial() const
-{
-	float specularPower = 1;
-	float specularIntensity = 0;
-	glUniform2f(materialLocation, specularPower, specularIntensity);
 }
 
 void cgvkp::rendering::GeometryTechnique::setProjection(glm::mat4 const& projection) const

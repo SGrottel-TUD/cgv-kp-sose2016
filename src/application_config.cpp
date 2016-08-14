@@ -8,7 +8,6 @@ const cgvkp::application_config defaultConfig;
 
 cgvkp::application_config::application_config()
 	: active_vision(vision_inputs::debug),
-	active_renderer(renderers::debug),
 	debug(true),	// Should be changed for shipping.
 	resourcesBasePath("src/resources"),
 	windowWidth(1280),
@@ -22,7 +21,7 @@ cgvkp::application_config::application_config()
 }
 
 cgvkp::application_config::application_config(int argc, char **argv)
-	: application_config::application_config() 
+	: application_config()
 {
 	interpret_arguments(argc, argv);	
 }
@@ -44,9 +43,6 @@ cgvkp::application_config::application_config(int argc, char **argv, std::string
 void cgvkp::application_config::interpret_arguments(int argc, char** argv)
 {
 	for (int i = 0; i < argc; ++i) {
-		if (strncmp(argv[i], "-rM", 3) == 0) {
-			active_renderer = renderers::models;
-		}
 		if (strncmp(argv[i], "-vR", 3) == 0) {
 			active_vision = vision_inputs::release;
 		}
@@ -59,7 +55,7 @@ void cgvkp::application_config::interpret_arguments(int argc, char** argv)
 
 void cgvkp::application_config::load_file(std::string const& path)
 {
-	std::ifstream file(path, std::ios::in);
+	std::ifstream file(path);
 
 	if (file.is_open())
 	{

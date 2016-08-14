@@ -17,10 +17,6 @@ namespace cgvkp {
 
 
         // enum classes
-        enum class renderers : unsigned int {
-            debug = 0,
-            models
-        };
         enum class vision_inputs : unsigned int {
             debug = 0,
             release,
@@ -28,7 +24,6 @@ namespace cgvkp {
         };
 
         // Properties
-        renderers active_renderer;
         vision_inputs active_vision;
 
 		bool debug;

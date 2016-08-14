@@ -8,27 +8,13 @@ bool cgvkp::rendering::SpriteGeometryTechnique::init()
 	}
 
 	projectionLocation = getUniformLocation("projection");
-	materialLocation = getUniformLocation("material");
-	GLint diffuseSamplerLocation = getUniformLocation("diffuseSampler");
-	GLint depthOffsetSamplerLocation = getUniformLocation("depthOffsetSampler");
 
-
-	if (materialLocation == invalidLocation ||
-		projectionLocation == invalidLocation ||
-		diffuseSamplerLocation == invalidLocation ||
-		depthOffsetSamplerLocation == invalidLocation)
+	if (projectionLocation == invalidLocation)
 	{
 		return false;
 	}
 
 	return true;
-}
-
-void cgvkp::rendering::SpriteGeometryTechnique::setMaterial() const
-{
-	float specularPower = 1;
-	float specularIntensity = 0;
-	glUniform2f(materialLocation, specularPower, specularIntensity);
 }
 
 void cgvkp::rendering::SpriteGeometryTechnique::setProjection(glm::mat4 const& projection) const

@@ -9,10 +9,16 @@
 cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world & data, window& wnd)
 	: abstract_renderer(data), windowWidth(0), windowHeight(0), framebufferWidth(0), framebufferHeight(0), cameraMode(mono), gui(data, "CartoonRegular.ttf"), frames(0)
 {
+	// Camera
+	zNear = 0.01f;
+	zFar = 100;
+
+	// Meshes
 	meshes.resize(numMeshes);
 	meshes[quad] = Mesh("quad");
-	meshes[cloud] = Mesh("cloudsprite", true);
+	meshes[cloud] = Mesh("cloud", Mesh::instanced);
 	meshes[star] = Mesh("star");
+	meshes[space] = Mesh("space");
 	meshes[hand] = Mesh("hand");
 	meshes[pyramid] = Mesh("pyramid");
 
@@ -24,7 +30,7 @@ cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world & data
 	// Lights
 	ambientLight = glm::vec3(0.1, 0.1, 0.5);
 	directionalLight.color = glm::vec3(1, 1, 1);
-	directionalLight.diffuseIntensity = 0.5f;
+	directionalLight.diffuseIntensity = 0.8f;
 	directionalLight.direction = glm::normalize(glm::vec3(0, -2, -1));	// in view space.
 
 	// Gui
@@ -49,8 +55,7 @@ bool cgvkp::rendering::release_renderer::init_impl(window const& wnd)
 		!spotLightPass.init() ||
 		!ssaoPass.init() ||
 		!gaussianBlur.init() ||
-		!background.init() ||
-		!starPass.init() ||
+		!defaultPass.init() ||
 		!spriteGeometryPass.init() ||
 		!gui.init())
 	{
@@ -80,7 +85,7 @@ void cgvkp::rendering::release_renderer::deinit_impl()
 		mesh.deinit();
 	}
 
-	background.deinit();
+	defaultPass.deinit();
 	gaussianBlur.deinit();
 	ssaoPass.deinit();
 	directionalLightPass.deinit();
@@ -88,7 +93,6 @@ void cgvkp::rendering::release_renderer::deinit_impl()
 	geometryPass.deinit();
 	gbuffer.deinit();
 	postProcessing.deinit();
-	starPass.deinit();
 	spriteGeometryPass.deinit();
 	gui.deinit();
 }
@@ -151,13 +155,6 @@ void cgvkp::rendering::release_renderer::calculateViewProjection()
 	viewMatrix = glm::lookAt(position, lookAt, glm::vec3(0, 1, 0));
 
 	// Projection
-	float zNear = 0.01f;
-	if (zNear < 0.01f)
-	{
-		zNear = 0.01f;
-	}
-	float zFar = distance + h + 2;	// Estimated maximum depth.
-	zFar = 100;
 	if (cameraMode == stereo)
 	{
 		glm::vec3 translation = glm::vec3(eyeSeparation * tanHalfFovy * zZeroParallax * aspect, 0.0f, 0.0f);
@@ -277,7 +274,7 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 
 	glBlendEquation(GL_FUNC_ADD);
 
-	setBackground();
+	setBackground(projection);
 	addAmbientLight();
 	addDirectionalLight(directionalLight);
 	addStarLights(projection);
@@ -295,9 +292,8 @@ void cgvkp::rendering::release_renderer::fillGeometryBuffer(glm::mat4 const& pro
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Render the background with a very low z value in view space to not get wrong results during post processing.
-	geometryPass.setWorldView(glm::translate(glm::vec3(0, 0, -100)));
-	geometryPass.setProjection(glm::translate(glm::vec3(0, 0, 100)));
-	background.render();
+	geometryPass.setWorldView(glm::translate(glm::vec3(0, -100, -10000)));
+	geometryPass.setProjection(glm::translate(glm::vec3(0, 100, 10000)));
 	meshes[quad].render();
 
 	glEnable(GL_DEPTH_TEST);
@@ -359,16 +355,14 @@ void cgvkp::rendering::release_renderer::addDirectionalLight(DirectionalLight co
 	meshes[quad].render();
 }
 
-void cgvkp::rendering::release_renderer::setBackground() const
+void cgvkp::rendering::release_renderer::setBackground(glm::mat4 const& projection) const
 {
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 	gbuffer.bindForWritingFinal();
-	background.use();
-
-	background.setScreenSize(framebufferWidth, framebufferHeight);
-	background.render();
-	meshes[quad].render();
+	defaultPass.use();
+	defaultPass.setWorldViewProjection(projection * glm::scale(glm::vec3(106.7f, 80.05f, zFar)));	// x and y numbers are taken from the picture.
+	meshes[space].render();
 }
 
 void cgvkp::rendering::release_renderer::addStarLights(glm::mat4 const& projection) const
@@ -384,7 +378,7 @@ void cgvkp::rendering::release_renderer::addStarLights(glm::mat4 const& projecti
 	starLight.color = glm::vec3(0.9608f, 0.5059f, 0.1255f);	// average color in the star texture.
 	starLight.diffuseIntensity = 1;
 	starLight.direction = glm::vec3(viewMatrix * glm::vec4(0, -1, 0, 0));	// in view space
-	starLight.attenuation = glm::vec3(1, 0, 2);	// constant, linear, exponential
+	starLight.attenuation = glm::vec3(0, 0, 3);	// constant, linear, exponential
 	starLight.cutoff = glm::quarter_pi<float>();
 
 	glm::vec3 scale;
@@ -411,7 +405,7 @@ void cgvkp::rendering::release_renderer::addStars(glm::mat4 const& projection) c
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 	gbuffer.bindForWritingFinal();
-	starPass.use();
+	defaultPass.use();
 
 	float t = static_cast<float>(glfwGetTime()) / 8;
 	for (auto const& s : starViews)
@@ -419,11 +413,7 @@ void cgvkp::rendering::release_renderer::addStars(glm::mat4 const& projection) c
 		auto model = s->get_model();
 		if (model == nullptr) continue;
 
-		glm::vec2 offset = glm::vec2(cos(model->id), sin(model->id)) * t;
-		offset.x -= static_cast<long>(offset.x);
-		offset.y -= static_cast<long>(offset.y);
-		starPass.setTextureCoordOffset(offset);
-		starPass.setWorldViewProjection(projection * viewMatrix * model->model_matrix);
+		defaultPass.setWorldViewProjection(projection * viewMatrix * model->model_matrix);
 		s->render();
 	}
 }

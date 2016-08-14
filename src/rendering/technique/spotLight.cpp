@@ -19,7 +19,6 @@ bool cgvkp::rendering::SpotLightTechnique::init()
 	GLint positionViewMapLocation = getUniformLocation("maps.positionView");
 	GLint normalViewMapLocation = getUniformLocation("maps.normalView");
 	GLint diffuseColorMapLocation = getUniformLocation("maps.diffuseColor");
-	GLint materialMapLocation = getUniformLocation("maps.material");
 
 	if (projectionLocation == invalidLocation ||
 		lightLocation.position == invalidLocation ||
@@ -27,8 +26,7 @@ bool cgvkp::rendering::SpotLightTechnique::init()
 		lightLocation.attenuation == invalidLocation ||
 		positionViewMapLocation == invalidLocation ||
 		normalViewMapLocation == invalidLocation ||
-		diffuseColorMapLocation == invalidLocation ||
-		materialMapLocation == invalidLocation)
+		diffuseColorMapLocation == invalidLocation)
 	{
 		return false;
 	}
@@ -37,7 +35,6 @@ bool cgvkp::rendering::SpotLightTechnique::init()
 	glUniform1i(positionViewMapLocation, GeometryBuffer::positionView);
 	glUniform1i(normalViewMapLocation, GeometryBuffer::normalView);
 	glUniform1i(diffuseColorMapLocation, GeometryBuffer::diffuseColor);
-	glUniform1i(materialMapLocation, GeometryBuffer::material);
 
 	return true;
 }

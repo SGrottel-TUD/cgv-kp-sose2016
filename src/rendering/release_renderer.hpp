@@ -7,14 +7,13 @@
 #include "abstract_renderer.hpp"
 #include "geometryBuffer.hpp"
 #include "postProcessingFramebuffer.hpp"
-#include "technique/geometry.hpp"
+#include "technique/default.hpp"
 #include "technique/directionalLight.hpp"
-#include "technique/spotLight.hpp"
-#include "technique/ssao.hpp"
 #include "technique/gaussianBlur.hpp"
-#include "technique/background_technique.hpp"
-#include "technique/star.hpp"
+#include "technique/geometry.hpp"
+#include "technique/spotLight.hpp"
 #include "technique/spriteGeometry.hpp"
+#include "technique/ssao.hpp"
 #include "lights.hpp"
 #include "mesh.hpp"
 #include "model/model_base.hpp"
@@ -71,7 +70,7 @@ namespace cgvkp
 			void fillGeometryBuffer(glm::mat4 const& projection) const;
 			void addAmbientLight() const;
 			void addDirectionalLight(DirectionalLight const& light) const;
-			void setBackground() const;
+			void setBackground(glm::mat4 const& projection) const;
 			void addStarLights(glm::mat4 const& projection) const;
 			void addStars(glm::mat4 const& projection) const;
 
@@ -99,8 +98,7 @@ namespace cgvkp
 			SpotLightTechnique spotLightPass;
 			SSAOTechnique ssaoPass;
 			GaussianBlurTechnique gaussianBlur;
-			background_technique background;
-			StarTechnique starPass;
+			DefaultTechnique defaultPass;
 			SpriteGeometryTechnique spriteGeometryPass;
 
 			glm::vec3 ambientLight;
@@ -114,7 +112,7 @@ namespace cgvkp
 
 			enum Meshes
 			{
-				quad = 0, cloud, star, hand, pyramid,
+				cloud = 0, hand, pyramid, space, star, quad,
 				numMeshes
 			};
 			std::vector<Mesh> meshes;

@@ -2,7 +2,6 @@
 #include "rendering/window.hpp"
 #include "rendering/debug_renderer.hpp"
 #include "rendering/release_renderer.hpp"
-#include "rendering/model_listing_renderer.hpp"
 #include "rendering/debug_user_input.hpp"
 #include "vision/dummy_vision.hpp"
 #include "util/resource_file.hpp"
@@ -24,6 +23,8 @@ bool application::init() {
         return false;
     }
 
+	config.load_file("config.ini");
+
     data.init();
     data.get_config().set_size(4.0f, 3.0f); // 4x3 meter game area
     data.get_config().set_positional_epsilon(0.1f); // 10cm positional precision (used for hand matching)
@@ -37,10 +38,14 @@ bool application::init() {
     return true;
 }
 
+void application::deinit()
+{
+	config.save_file("config.ini");
+}
+
 void application::run()
 {
 	// create release window
-	GLFWmonitor* fullscreen;
 	if (config.fullscreen) { 
 		release_window = std::make_shared<rendering::window>(-1, -1, "KPCGV", glfwGetPrimaryMonitor());
 	}
@@ -87,16 +92,7 @@ void application::run()
 			debug_window.reset();
 		}
 		else {
-			// init renderer selected in Project Property Sheet
-			switch (config.active_renderer) {
-			case application_config::renderers::models:
-				debug_renderer = std::make_shared<rendering::model_listing_renderer>(data);
-				break;
-			default:
-				debug_renderer = std::make_shared<rendering::debug_renderer>(data);
-				break;
-			}
-
+			debug_renderer = std::make_shared<rendering::debug_renderer>(data);
 			if (!debug_renderer || !debug_renderer->init(*debug_window)) {
 				std::cout << "Failed to create Debug renderer" << std::endl;
 				debug_renderer.reset();
@@ -209,10 +205,6 @@ void application::run()
     assert(!debug_window);
 	assert(!release_renderer);
 	assert(!release_window);
-}
-
-void application::deinit() {
-    // empty atm
 }
 
 void application::toggle_fullscreen()

@@ -5,7 +5,6 @@ struct Maps
 	sampler2D positionView;
 	sampler2D normalView;
 	sampler2D diffuseColor;
-	sampler2D material;
 };
 
 struct DirectionalLight
@@ -22,8 +21,6 @@ out vec4 fsColor;
 
 void main()
 {
-	fsColor = vec4(0.0, 0.0, 0.0, 0.0);
-
 	vec3 normal = normalize(texture(maps.normalView, vsTextureCoord).xyz);
 
 	float diffuseFactor = -dot(light.direction, normal);
@@ -33,16 +30,10 @@ void main()
 		vec4 diffuseColor = texture(maps.diffuseColor, vsTextureCoord);
 
 		// diffuse
-		fsColor += diffuseColor * vec4(light.diffuseColor * diffuseFactor, 1.0);
-
-		// specular
-		float specularFactor = -dot(normalize(position), reflect(light.direction, normal));
-		if(specularFactor > 0.0)
-		{
-			vec2 material = texture(maps.material, vsTextureCoord).xy;    // = vec2(specularPower, specularIntensity)
-
-			specularFactor = pow(specularFactor, material.x);
-			fsColor += vec4(light.diffuseColor * material.y * specularFactor, 0.0);
-		}
+		fsColor = diffuseColor * vec4(light.diffuseColor * diffuseFactor, 1.0);
+	}
+	else
+	{
+		fsColor = vec4(0.0, 0.0, 0.0, 0.0);
 	}
 }
