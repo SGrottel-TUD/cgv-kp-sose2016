@@ -39,9 +39,10 @@ void cgvkp::rendering::Gui::loadMenu()
 
     data.set_game_mode(::cgvkp::data::world::game_mode::paused);
 
-	createButton("Spielen", std::bind(&Gui::loadScore, this), center, glm::vec2(0, normalFontSize));
-	createButton("Highscore", std::bind(&Gui::loadHighscore, this), center);
-	createButton("Beenden", exit, center, glm::vec2(0, -normalFontSize));
+	createButton("Spielen", std::bind(&Gui::loadScore, this), center, glm::vec2(0, 1.5f * normalFontSize));
+	createButton("Highscore", std::bind(&Gui::loadHighscore, this), center, glm::vec2(0, 0.5f * normalFontSize));
+	createButton("Optionen", std::bind(&Gui::loadOptions, this), center, glm::vec2(0, -0.5f * normalFontSize));
+	createButton("Beenden", exit, center, glm::vec2(0, -1.5f * normalFontSize));
 
 	setPositions();
 }
@@ -94,10 +95,27 @@ void cgvkp::rendering::Gui::loadHighscore()
 	setPositions();
 }
 
+void cgvkp::rendering::Gui::loadOptions()
+{
+	clear();
+	createLabel("Vollbildmodus", left, glm::vec2(10, 1.5f * normalFontSize));
+	//createButton(, );
+	createLabel("Stereo", left, glm::vec2(10, 0.5f * normalFontSize));
+	//createButton();
+	createLabel("Auflösung", left, glm::vec2(10, -0.5f * normalFontSize));
+	//createInput(); // x coord
+	//createInput(); // y coord
+	createLabel("VSync", left, glm::vec2(10, -1.5f * normalFontSize));
+	//createButton();
+	createButton("Back", std::bind(&Gui::loadMenu, this), bottom);
+
+	setPositions();
+
+}
+
 void cgvkp::rendering::Gui::loadEntry()
 {
 	clear();
-
 	float x = createLabel("Erreichte Punktzahl: ", left, glm::vec2(0, 10)).size.x;
 	createLabel(std::to_string(getScore()), left, glm::vec2(x, 10));
 	Label& label = createLabel("Gib deinen Namen ein: ", left, glm::vec2(0, -10));
@@ -218,7 +236,7 @@ glm::vec2 cgvkp::rendering::Gui::render(Label const& label, glm::mat4 const& vie
 			* glm::translate(glm::vec3(font.getSize(*str, label.fontSize) / 2.0f, 0)) * glm::rotate(angle, glm::vec3(0, 0, 1)) * glm::translate(glm::vec3(-font.getSize(*str, label.fontSize) / 2.0f, 0))
 			* glm::scale(glm::vec3(label.fontSize));
 		fontPass.setWorldViewProjection(viewProjectionMatrix * world);
-		position.x += font.render(*str) * label.fontSize;
+		position.x += font.render(static_cast<unsigned char>(*str)) * label.fontSize;
 	}
 
 	return glm::vec2(position);

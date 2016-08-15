@@ -37,6 +37,7 @@ namespace cgvkp
 			void loadScore();
 			void loadHighscore();
 			void loadEntry();
+			void loadOptions();
 
 			void updateMousePosition(float x, float y);
 			void click();

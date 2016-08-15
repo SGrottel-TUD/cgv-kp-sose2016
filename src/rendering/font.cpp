@@ -45,7 +45,7 @@ cgvkp::rendering::Font::Font(char const* pFilename)
 #endif
 	}
 
-	for (FT_ULong codePoint = ' '; codePoint <= '~'; ++codePoint)
+	for (FT_ULong codePoint = ' '; codePoint <= 256; ++codePoint)
 	{
 		loadGlyph(codePoint);
 	}
@@ -126,7 +126,7 @@ float cgvkp::rendering::Font::getWidth(char const* str, float fontSize) const
 	float width = 0;
 	for (; *str; ++str)
 	{
-		width += getWidth(*str, fontSize);
+		width += getWidth(static_cast<unsigned char>(*str), fontSize);
 	}
 
 	return width;
