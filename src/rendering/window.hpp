@@ -4,7 +4,10 @@
 #include <memory>
 #include <string>
 
+
 namespace cgvkp {
+	class application_config;
+
 namespace rendering {
 
     class abstract_user_input;
@@ -19,8 +22,7 @@ namespace rendering {
 			OnRelease = 4
 		};
 
-        // Use a width of '-1' and a monitor, to keep that monitors video mode
-		window(unsigned int w, unsigned int h, const char* title = "CGV KP SoSe2016", GLFWmonitor* fullscreen = nullptr);
+		window(application_config& config);
 		~window();
 
 		inline void close() const { glfwSetWindowShouldClose(handle, true); }
@@ -54,16 +56,15 @@ namespace rendering {
 		static void mousePositionCallback(GLFWwindow* window, double x, double y);
         static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
         static void mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+		static void window_pos_callback(GLFWwindow* window, int xpos, int ypos);
+			
 
-		bool create_window(int width, int height, char const* title, GLFWmonitor* fullscreen);
+
+		bool create_window();
 
         GLFWwindow* handle;
 		std::string title;
-		bool fullscreen;
-		int windowed_x;
-		int windowed_y;
-		int windowed_width;
-		int windowed_height;
+		application_config& config;
 		KeyEvents keys[GLFW_KEY_LAST + 1];
         std::shared_ptr<abstract_user_input> user_input;
 

@@ -9,13 +9,16 @@ const cgvkp::application_config defaultConfig;
 cgvkp::application_config::application_config()
 	: active_vision(vision_inputs::debug),
 	active_renderer(renderers::debug),
-	debug(true),	// Should be changed for shipping.
+	debug(true),								// Should be changed for shipping.
 	resourcesBasePath("src/resources"),
 	windowWidth(1280),
 	windowHeight(720),
 	cameraMode(rendering::release_renderer::CameraMode::mono),
 	eyeSeparation(0),
 	zZeroParallax(0),
+	windowPosx(0),
+	windowPosy(0),
+	vSync(0),
 	fullscreen(false)
 {
     // Intentionally empty
@@ -56,7 +59,6 @@ void cgvkp::application_config::interpret_arguments(int argc, char** argv)
 	}
 }
 
-
 void cgvkp::application_config::load_file(std::string const& path)
 {
 	std::ifstream file(path, std::ios::in);
@@ -83,6 +85,11 @@ std::ostream& cgvkp::operator<<(std::ostream& lhs, application_config const& rhs
 	lhs << (rhs.cameraMode == defaultConfig.cameraMode ? "#" : "") << "cameraMode = " << rhs.cameraMode << std::endl;
 	lhs << (rhs.eyeSeparation == defaultConfig.eyeSeparation ? "#" : "") << "eyeSeparation = " << rhs.eyeSeparation << std::endl;
 	lhs << (rhs.cameraMode == defaultConfig.cameraMode ? "#" : "") << "zZeroParallax = " << rhs.zZeroParallax << std::endl;
+	lhs << (rhs.windowPosx == defaultConfig.windowPosx ? "#" : "") << "windowPosx = " << rhs.windowPosx << std::endl;
+	lhs << (rhs.windowPosy == defaultConfig.windowPosy ? "#" : "") << "windowPosy = " << rhs.windowPosy << std::endl;
+	lhs << (rhs.fullscreenWidth == defaultConfig.fullscreenWidth ? "#" : "") << "fullscreenWidth = " << rhs.fullscreenWidth << std::endl;
+	lhs << (rhs.fullscreenHeight == defaultConfig.fullscreenHeight ? "#" : "") << "fullscreenHeight = " << rhs.fullscreenHeight << std::endl;
+	lhs << (rhs.vSync == defaultConfig.vSync ? "#" : "") << "vSync = " << rhs.vSync << std::endl;
 	
 	return lhs;
 }
@@ -126,6 +133,22 @@ std::istream& cgvkp::operator>>(std::istream& lhs, application_config& rhs)
 		{
 			ss >> rhs.windowHeight;
 		}
+		else if (key.find("windowPosx") != std::string::npos)
+		{
+			ss >> rhs.windowPosx;
+		}
+		else if (key.find("windowPosy") != std::string::npos)
+		{
+			ss >> rhs.windowPosy;
+		}
+		else if (key.find("fullscreenWidth") != std::string::npos)
+		{
+			ss >> rhs.fullscreenWidth;
+		}
+		else if (key.find("fullscreenWidth") != std::string::npos)
+		{
+			ss >> rhs.fullscreenHeight;
+		}
 		else if (key.find("cameraMode") != std::string::npos)
 		{
 			int mode = 0;
@@ -139,6 +162,10 @@ std::istream& cgvkp::operator>>(std::istream& lhs, application_config& rhs)
 		else if (key.find("zZeroParallax") != std::string::npos)
 		{
 			ss >> rhs.zZeroParallax;
+		}
+		else if (key.find("vSync") != std::string::npos)
+		{
+			ss >> rhs.vSync;
 		}
 	}
 

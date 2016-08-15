@@ -2,6 +2,7 @@
 #include <GL/glew.h>
 #include "abstract_user_input.hpp"
 #include "window.hpp"
+#include "application_config.hpp"
 
 using namespace cgvkp;
 
@@ -30,15 +31,16 @@ namespace
     }
 }
 
-rendering::window::window(unsigned int w, unsigned int h, const char* title /* = "CGV KP SoSe2016" */, GLFWmonitor* fullscreen /* = nullptr */)
+rendering::window::window(application_config& _config)
+	: config(_config)
 {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // ogl 3.3 core
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	this->title = title;
-	if (!create_window(w, h, title, fullscreen))
+	title = "CGV KP SoSe2016";
+	if (!create_window())
 	{
 		return;
 	}
@@ -116,29 +118,36 @@ bool rendering::window::get_size(int &out_width, int &out_height) const {
     return rv;
 }
 
-bool rendering::window::create_window(int width, int height, char const* title, GLFWmonitor* fullscreen) {
-	if (fullscreen != nullptr) {
-		const GLFWvidmode* mode = ::glfwGetVideoMode(fullscreen);
+bool rendering::window::create_window()
+{
+	if (config.fullscreen) 
+	{
+		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+		const GLFWvidmode* mode = ::glfwGetVideoMode(monitor);
 
 		glfwWindowHint(GLFW_RED_BITS, mode->redBits);
 		glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
 		glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 		glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-
-		if (width == -1 || height == -1) {
-			width = mode->width;
-			height = mode->height;
+		
+		if (config.fullscreenHeight == 0 || config.fullscreenWidth == 0)
+		{
+			config.fullscreenHeight = mode->height;
+			config.fullscreenWidth = mode->width;
 		}
+
+		handle = ::glfwCreateWindow(config.fullscreenWidth, config.fullscreenHeight, title.c_str(), monitor, nullptr);
+	}
+	else
+	{
+		handle = ::glfwCreateWindow(config.windowWidth, config.windowHeight, title.c_str(), nullptr, nullptr);
 	}
 
-	handle = ::glfwCreateWindow(width, height, title, fullscreen, nullptr);
 
 	if (!handle) {
 		std::cerr << "glfwCreateWindow failed" << std::endl;
 		return false;
 	}
-
-	this->fullscreen = fullscreen != nullptr;
 
 	glfwSetWindowUserPointer(handle, this);
 
@@ -147,29 +156,36 @@ bool rendering::window::create_window(int width, int height, char const* title, 
 	glfwSetScrollCallback(handle, mouse_scroll_callback);
 	glfwSetKeyCallback(handle, key_callback);
 	glfwSetCharCallback(handle, character_callback);
+	glfwSetWindowPosCallback(handle, window_pos_callback);
 
 	glfwMakeContextCurrent(handle);
-	//glfwSwapInterval(1);
+	
+	if (config.vSync)
+	{
+		glfwSwapInterval(1);
+	}
+	else if (glfwExtensionSupported("WGL_EXT_swap_control_tear") || glfwExtensionSupported("GLX_EXT_swap_control_tear"))
+	{
+		glfwSwapInterval(-1);
+	}
+	else
+	{
+		glfwSwapInterval(0);
+	}
+
+	if (!config.fullscreen)
+	{
+		glfwSetWindowPos(handle, config.windowPosx, config.windowPosy);
+	}
 
 	return true;
 }
 
-void rendering::window::toggle_fullscreen() {
-	if (fullscreen) {
-		glfwDestroyWindow(handle);
-
-		if(create_window(windowed_width, windowed_height, title.c_str(), nullptr)) {
-			glfwSetWindowPos(handle, windowed_x, windowed_y);
-		}
-	}
-	else {
-		glfwGetWindowPos(handle, &windowed_x, &windowed_y);
-		glfwGetWindowSize(handle, &windowed_width, &windowed_height);
-
-		glfwDestroyWindow(handle);
-
-		create_window(-1, -1, title.c_str(), glfwGetPrimaryMonitor());
-	}
+void rendering::window::toggle_fullscreen()
+{
+	glfwDestroyWindow(handle);
+	config.fullscreen = !config.fullscreen;
+	create_window();
 }
 
 void rendering::window::mousePositionCallback(GLFWwindow* window, double x, double y)
@@ -245,4 +261,11 @@ void rendering::window::character_callback(GLFWwindow* window, unsigned int code
 	{
 		w->inputCodePoint(codepoint);
 	}
+} 
+
+void rendering::window::window_pos_callback(GLFWwindow* window, int xpos, int ypos)
+{
+	rendering::window* w = static_cast<rendering::window*>(glfwGetWindowUserPointer(window));
+	w->config.windowPosx = xpos;
+	w->config.windowPosy = ypos;
 }

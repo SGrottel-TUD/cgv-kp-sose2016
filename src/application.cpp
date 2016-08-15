@@ -40,16 +40,7 @@ bool application::init() {
 void application::run()
 {
 	// create release window
-	GLFWmonitor* fullscreen;
-	if (config.fullscreen) { 
-		release_window = std::make_shared<rendering::window>(-1, -1, "KPCGV", glfwGetPrimaryMonitor());
-	}
-	else
-	{
-		release_window = std::make_shared<rendering::window>(config.windowWidth, config.windowHeight);
-	}
-	
-	//release_window = std::make_shared<rendering::window>(config.windowWidth, config.windowHeight, "KPCGV", fullscreen);
+	release_window = std::make_shared<rendering::window>(config);
 	if (!release_window || !release_window->is_alive())
 	{
 		release_window.reset();
@@ -79,10 +70,14 @@ void application::run()
 	}
 
 
+	application_config debugConfig;
+	debugConfig.windowWidth = 1280;
+	debugConfig.windowHeight = 720;
+	debugConfig.fullscreen = 0;
     // create debug window
 	if (config.debug)
 	{
-		debug_window = std::make_shared<rendering::window>(1280, 720, "CGV KP SoSe2016 - Debug");
+		debug_window = std::make_shared<rendering::window>(debugConfig);
 		if (!debug_window || !debug_window->is_alive()) {
 			debug_window.reset();
 		}
@@ -222,7 +217,6 @@ void application::toggle_fullscreen()
 		release_window->make_current();
 		release_renderer->deinit();
 		release_window->toggle_fullscreen();
-		config.fullscreen = !config.fullscreen;
 		release_renderer->init(*release_window);
 	}
 }
