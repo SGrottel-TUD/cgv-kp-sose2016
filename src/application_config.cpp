@@ -15,8 +15,8 @@ cgvkp::application_config::application_config()
 	cameraMode(rendering::release_renderer::CameraMode::mono),
 	eyeSeparation(0),
 	zZeroParallax(0),
-	windowPosx(0),
-	windowPosy(0),
+	windowPosx(5),
+	windowPosy(30),
 	vSync(0),
 	fullscreen(false)
 {

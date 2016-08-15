@@ -80,6 +80,8 @@ void application::run()
 	debugConfig.windowWidth = 1280;
 	debugConfig.windowHeight = 720;
 	debugConfig.fullscreen = 0;
+	debugConfig.windowPosx = 5;
+	debugConfig.windowPosy = 30;
     // create debug window
 	if (config.debug)
 	{

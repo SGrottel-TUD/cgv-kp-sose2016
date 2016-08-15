@@ -236,7 +236,7 @@ void rendering::window::key_callback(GLFWwindow* window, int key, int scancode, 
 		}
 	}
 
-	if (key <= GLFW_KEY_LAST)
+	if (key > -1 && key <= GLFW_KEY_LAST)
 	{
 		auto const& k = w->keys[key];
 		if (action == GLFW_PRESS && k.onPress)
