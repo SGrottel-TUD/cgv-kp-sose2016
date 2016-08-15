@@ -14,8 +14,15 @@ namespace cgvkp
 		class Mesh
 		{
 		public:
+			enum Flags
+			{
+				none			= 0x00,
+				instanced		= 0x01,
+				withAdjacencies	= 0x02
+			};
+
 			Mesh();
-			Mesh(char const* pMeshname, bool instanced = false, bool withAdjacencies = false);
+			Mesh(char const* pMeshname, Flags flags = none);
 			inline ~Mesh() { deinit(); }
 			bool init();
 			void deinit();
@@ -33,9 +40,8 @@ namespace cgvkp
 			};
 
 			char const* pMeshname;
-			bool instanced;
+			Flags flags;
 			GLsizei numInstances;
-			bool withAdjacencies;
 
 			GLuint vertexArray;
 			GLuint vertexBuffers[numAttributes];
@@ -45,5 +51,7 @@ namespace cgvkp
 			GLenum indicesType;
 			std::list<std::shared_ptr<util::texture>> textures;
 		};
+
+		inline Mesh::Flags operator|(Mesh::Flags const& lhs, Mesh::Flags const& rhs) { return static_cast<Mesh::Flags>(static_cast<int>(lhs) | static_cast<int>(rhs)); }
 	}
 }

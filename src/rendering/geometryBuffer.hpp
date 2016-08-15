@@ -14,7 +14,6 @@ namespace cgvkp
 				positionView = 0,
 				normalView,
 				diffuseColor,
-				material,
 				final,
 				numTextures
 			};

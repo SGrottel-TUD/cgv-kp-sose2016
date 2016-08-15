@@ -143,9 +143,6 @@
     <ClCompile Include="src\rendering\release_renderer.cpp">
       <Filter>rendering\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\model_listing_renderer.cpp">
-      <Filter>rendering\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\util\resource_file.cpp">
       <Filter>util\Source Files</Filter>
     </ClCompile>
@@ -158,9 +155,6 @@
     <ClCompile Include="src\rendering\controller\caught_star_controller.cpp">
       <Filter>rendering\controller\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\controller\sub_cloud_controller.cpp">
-      <Filter>rendering\controller\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\util\objImporter.cpp">
       <Filter>util\Source Files</Filter>
     </ClCompile>
@@ -170,17 +164,11 @@
     <ClCompile Include="src\rendering\mesh.cpp">
       <Filter>rendering\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\technique\technique_normal_as_colour.cpp">
-      <Filter>rendering\technique\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\rendering\technique\technique.cpp">
       <Filter>rendering\technique\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\util\texture.cpp">
       <Filter>util\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\technique\background_technique.cpp">
-      <Filter>rendering\technique\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\technique\ssao.cpp">
       <Filter>rendering\technique\Source Files</Filter>
@@ -198,9 +186,6 @@
       <Filter>rendering\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\technique\directionalLight.cpp">
-      <Filter>rendering\technique\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\technique\star.cpp">
       <Filter>rendering\technique\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\technique\spotLight.cpp">
@@ -227,14 +212,17 @@
     <ClCompile Include="src\rendering\gui.cpp">
       <Filter>rendering\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\technique\fontTechnique.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\rendering\technique\spriteGeometry.cpp">
       <Filter>rendering\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\controller\cloudController.cpp">
       <Filter>rendering\controller\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\default.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\technique\fontTechnique.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -331,9 +319,6 @@
     <ClInclude Include="src\rendering\release_renderer.hpp">
       <Filter>rendering\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\rendering\model_listing_renderer.hpp">
-      <Filter>rendering\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\util\resource_file.hpp">
       <Filter>util\Header Files</Filter>
     </ClInclude>
@@ -376,9 +361,6 @@
     <ClInclude Include="src\rendering\controller\caught_star_controller.hpp">
       <Filter>rendering\controller\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\rendering\controller\sub_cloud_controller.hpp">
-      <Filter>rendering\controller\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\util\objImporter.hpp">
       <Filter>util\Header Files</Filter>
     </ClInclude>
@@ -391,14 +373,8 @@
     <ClInclude Include="src\rendering\technique\technique.hpp">
       <Filter>rendering\technique\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\rendering\technique\technique_normal_as_colour.hpp">
-      <Filter>rendering\technique\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\util\texture.hpp">
       <Filter>util\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\technique\background_technique.hpp">
-      <Filter>rendering\technique\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\util\bezier.hpp">
       <Filter>util\Header Files</Filter>
@@ -406,17 +382,11 @@
     <ClInclude Include="src\util\spline_curve.hpp">
       <Filter>util\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\rendering\guiElements.hpp">
-      <Filter>rendering\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\rendering\font.hpp">
       <Filter>rendering\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\gui.hpp">
       <Filter>rendering\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\technique\fontTechnique.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\technique\ssao.hpp">
       <Filter>rendering\technique\Header Files</Filter>
@@ -436,17 +406,23 @@
     <ClInclude Include="src\rendering\technique\directionalLight.hpp">
       <Filter>rendering\technique\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\rendering\technique\star.hpp">
-      <Filter>rendering\technique\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\rendering\technique\spotLight.hpp">
       <Filter>rendering\technique\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\rendering\technique\spriteGeometry.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\rendering\controller\cloudController.hpp">
       <Filter>rendering\controller\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\default.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\fontTechnique.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\spriteGeometry.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\guiElements.hpp">
+      <Filter>rendering\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
