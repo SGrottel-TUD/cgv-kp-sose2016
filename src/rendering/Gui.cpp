@@ -7,12 +7,8 @@ float const cgvkp::rendering::Gui::titleFontSize = 100.0f;
 
 bool cgvkp::rendering::Gui::init()
 {
-	if (!font.init())
-	{
-		return false;
-	}
-
-	if (!fontPass.init())
+	if (!font.init() ||
+		!fontPass.init())
 	{
 		return false;
 	}
@@ -98,19 +94,15 @@ void cgvkp::rendering::Gui::loadHighscore()
 void cgvkp::rendering::Gui::loadOptions()
 {
 	clear();
+
+	createLabel("Optionen", top, glm::vec2(0, 0), titleFontSize);
 	createLabel("Vollbildmodus", left, glm::vec2(10, 1.5f * normalFontSize));
-	//createButton(, );
 	createLabel("Stereo", left, glm::vec2(10, 0.5f * normalFontSize));
-	//createButton();
 	createLabel("Auflösung", left, glm::vec2(10, -0.5f * normalFontSize));
-	//createInput(); // x coord
-	//createInput(); // y coord
 	createLabel("VSync", left, glm::vec2(10, -1.5f * normalFontSize));
-	//createButton();
 	createButton("Back", std::bind(&Gui::loadMenu, this), bottom);
 
 	setPositions();
-
 }
 
 void cgvkp::rendering::Gui::loadEntry()
@@ -183,7 +175,6 @@ void cgvkp::rendering::Gui::render(glm::mat4 projectionMatrix) const
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
-	//glClear(GL_DEPTH_BUFFER_BIT);
 	fontPass.use();
 	projectionMatrix *= guiProjection;
 	for (auto& label : labels)
@@ -306,14 +297,14 @@ cgvkp::rendering::Input& cgvkp::rendering::Gui::createInput(Anchor anchor /*= ce
 	return input;
 }
 
-cgvkp::rendering::Button& cgvkp::rendering::Gui::createButton(std::string const& text, std::function<void()> onClick, Anchor anchor /*= center*/, glm::vec2 const& offset /*= glm::vec2(0, 0)*/, float fontSize /* = normalFontSize */, glm::vec3 const& color /*= glm::vec3(1, 1, 1)*/)
+cgvkp::rendering::Button& cgvkp::rendering::Gui::createButton(char const* pText, std::function<void()> onClick, Anchor anchor /*= center*/, glm::vec2 const& offset /*= glm::vec2(0, 0)*/, float fontSize /* = normalFontSize */, glm::vec3 const& color /*= glm::vec3(1, 1, 1)*/)
 {
 	buttons.emplace_back();
 
 	Button& button = buttons.back();
-	button.text = text;
+	button.text = pText;
 	button.color = color;
-	button.size = font.getSize(text.c_str(), fontSize);
+	button.size = font.getSize(pText, fontSize);
 	button.anchor = anchor;
 	button.offset = offset;
 	button.onClick = onClick;

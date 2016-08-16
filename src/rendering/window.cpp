@@ -159,19 +159,7 @@ bool rendering::window::create_window()
 	glfwSetWindowPosCallback(handle, window_pos_callback);
 
 	glfwMakeContextCurrent(handle);
-	
-	if (config.vSync)
-	{
-		glfwSwapInterval(1);
-	}
-	else if (glfwExtensionSupported("WGL_EXT_swap_control_tear") || glfwExtensionSupported("GLX_EXT_swap_control_tear"))
-	{
-		glfwSwapInterval(-1);
-	}
-	else
-	{
-		glfwSwapInterval(0);
-	}
+	glfwSwapInterval(config.vSync ? 1 : 0);
 
 	if (!config.fullscreen)
 	{

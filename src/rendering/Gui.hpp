@@ -48,7 +48,7 @@ namespace cgvkp
 			Label& createLabel(std::string const& text, Anchor anchor = center, glm::vec2 const& offset = glm::vec2(0, 0), float fontSize = normalFontSize, glm::vec3 const& color = glm::vec3(1, 1, 1)) { return createLabel(text.c_str(), anchor, offset, fontSize, color); }
 			Label& createLabel(std::function<std::string()> getText, Anchor anchor = center, glm::vec2 const& offset = glm::vec2(0, 0), float fontSize = normalFontSize, glm::vec3 const& color = glm::vec3(1, 1, 1));
 			Input& createInput(Anchor anchor = center, glm::vec2 const& offset = glm::vec2(0, 0), float fontSize = normalFontSize, float width = 50, glm::vec3 const& color = glm::vec3(1, 1, 1));
-			Button& createButton(std::string const& text, std::function<void()> onClick, Anchor anchor = center, glm::vec2 const& offset = glm::vec2(0, 0), float fontSize = normalFontSize, glm::vec3 const& color = glm::vec3(1, 1, 1));
+			Button& createButton(char const* pText, std::function<void()> onClick, Anchor anchor = center, glm::vec2 const& offset = glm::vec2(0, 0), float fontSize = normalFontSize, glm::vec3 const& color = glm::vec3(1, 1, 1));
 			void setPosition(Label& label);
 			void setPositions();
 			glm::vec2 render(Label const& label, glm::mat4 const& projectionMatrix) const;
