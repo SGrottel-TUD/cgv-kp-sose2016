@@ -2,7 +2,6 @@
 
 struct Maps
 {
-	sampler2D positionView;
 	sampler2D normalView;
 	sampler2D diffuseColor;
 };
@@ -26,7 +25,6 @@ void main()
 	float diffuseFactor = -dot(light.direction, normal);
 	if (diffuseFactor > 0.0)
 	{
-		vec3 position = texture(maps.positionView, vsTextureCoord).xyz;
 		vec4 diffuseColor = texture(maps.diffuseColor, vsTextureCoord);
 
 		// diffuse

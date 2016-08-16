@@ -7,12 +7,8 @@ float const cgvkp::rendering::Gui::titleFontSize = 100.0f;
 
 bool cgvkp::rendering::Gui::init()
 {
-	if (!font.init())
-	{
-		return false;
-	}
-
-	if (!fontPass.init())
+	if (!font.init() ||
+		!fontPass.init())
 	{
 		return false;
 	}
@@ -39,9 +35,10 @@ void cgvkp::rendering::Gui::loadMenu()
 
     data.set_game_mode(::cgvkp::data::world::game_mode::paused);
 
-	createButton("Spielen", std::bind(&Gui::loadScore, this), center, glm::vec2(0, normalFontSize));
-	createButton("Highscore", std::bind(&Gui::loadHighscore, this), center);
-	createButton("Beenden", exit, center, glm::vec2(0, -normalFontSize));
+	createButton("Spielen", std::bind(&Gui::loadScore, this), center, glm::vec2(0, 1.5f * normalFontSize));
+	createButton("Highscore", std::bind(&Gui::loadHighscore, this), center, glm::vec2(0, 0.5f * normalFontSize));
+	createButton("Optionen", std::bind(&Gui::loadOptions, this), center, glm::vec2(0, -0.5f * normalFontSize));
+	createButton("Beenden", exit, center, glm::vec2(0, -1.5f * normalFontSize));
 
 	setPositions();
 }
@@ -94,10 +91,23 @@ void cgvkp::rendering::Gui::loadHighscore()
 	setPositions();
 }
 
-void cgvkp::rendering::Gui::loadEntry()
+void cgvkp::rendering::Gui::loadOptions()
 {
 	clear();
 
+	createLabel("Optionen", top, glm::vec2(0, 0), titleFontSize);
+	createLabel("Vollbildmodus", left, glm::vec2(10, 1.5f * normalFontSize));
+	createLabel("Stereo", left, glm::vec2(10, 0.5f * normalFontSize));
+	createLabel("Auflösung", left, glm::vec2(10, -0.5f * normalFontSize));
+	createLabel("VSync", left, glm::vec2(10, -1.5f * normalFontSize));
+	createButton("Back", std::bind(&Gui::loadMenu, this), bottom);
+
+	setPositions();
+}
+
+void cgvkp::rendering::Gui::loadEntry()
+{
+	clear();
 	float x = createLabel("Erreichte Punktzahl: ", left, glm::vec2(0, 10)).size.x;
 	createLabel(std::to_string(getScore()), left, glm::vec2(x, 10));
 	Label& label = createLabel("Gib deinen Namen ein: ", left, glm::vec2(0, -10));
@@ -165,7 +175,6 @@ void cgvkp::rendering::Gui::render(glm::mat4 projectionMatrix) const
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
-	//glClear(GL_DEPTH_BUFFER_BIT);
 	fontPass.use();
 	projectionMatrix *= guiProjection;
 	for (auto& label : labels)
@@ -218,7 +227,7 @@ glm::vec2 cgvkp::rendering::Gui::render(Label const& label, glm::mat4 const& vie
 			* glm::translate(glm::vec3(font.getSize(*str, label.fontSize) / 2.0f, 0)) * glm::rotate(angle, glm::vec3(0, 0, 1)) * glm::translate(glm::vec3(-font.getSize(*str, label.fontSize) / 2.0f, 0))
 			* glm::scale(glm::vec3(label.fontSize));
 		fontPass.setWorldViewProjection(viewProjectionMatrix * world);
-		position.x += font.render(*str) * label.fontSize;
+		position.x += font.render(static_cast<unsigned char>(*str)) * label.fontSize;
 	}
 
 	return glm::vec2(position);
@@ -288,14 +297,14 @@ cgvkp::rendering::Input& cgvkp::rendering::Gui::createInput(Anchor anchor /*= ce
 	return input;
 }
 
-cgvkp::rendering::Button& cgvkp::rendering::Gui::createButton(std::string const& text, std::function<void()> onClick, Anchor anchor /*= center*/, glm::vec2 const& offset /*= glm::vec2(0, 0)*/, float fontSize /* = normalFontSize */, glm::vec3 const& color /*= glm::vec3(1, 1, 1)*/)
+cgvkp::rendering::Button& cgvkp::rendering::Gui::createButton(char const* pText, std::function<void()> onClick, Anchor anchor /*= center*/, glm::vec2 const& offset /*= glm::vec2(0, 0)*/, float fontSize /* = normalFontSize */, glm::vec3 const& color /*= glm::vec3(1, 1, 1)*/)
 {
 	buttons.emplace_back();
 
 	Button& button = buttons.back();
-	button.text = text;
+	button.text = pText;
 	button.color = color;
-	button.size = font.getSize(text.c_str(), fontSize);
+	button.size = font.getSize(pText, fontSize);
 	button.anchor = anchor;
 	button.offset = offset;
 	button.onClick = onClick;

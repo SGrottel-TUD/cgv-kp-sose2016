@@ -1,13 +1,12 @@
 #pragma once
 
+#include <ft2build.h>
+#include <GL/glew.h>
+#include <glm/glm.hpp>
 #include <map>
 #include <string>
-#include <ft2build.h>
-#include <glm/glm.hpp>
 #include <vector>
 #include FT_FREETYPE_H
-#include <GL/glew.h>
-
 
 namespace cgvkp
 {
@@ -20,6 +19,7 @@ namespace cgvkp
 			~Font();
 			bool init();
 			void deinit();
+			bool loadGlyph(FT_ULong codePoint);
 			inline glm::vec2 getSize(char const* str, float fontSize) const { return glm::vec2(getWidth(str, fontSize), getHeight(fontSize)); }
 			inline glm::vec2 getSize(FT_ULong codePoint, float fontSize) const { return glm::vec2(getWidth(codePoint, fontSize), getHeight(fontSize)); }
 			float getWidth(FT_ULong codePoint, float fontSize) const;
@@ -29,14 +29,6 @@ namespace cgvkp
 			float render(FT_ULong codePoint) const;
 
 		private:
-			struct Contour
-			{
-				int start;
-				int num;
-				bool clockwise;
-				glm::vec2 min;
-				glm::vec2 max;
-			};
 			struct Glyph
 			{
 			public:
@@ -49,12 +41,6 @@ namespace cgvkp
 				std::vector<glm::vec3> vertices;
 				std::vector<int> indices;
 			};
-
-			bool loadGlyph(FT_ULong codePoint);
-			void addCurve(std::vector<glm::vec2> const& contourVertices, Contour& vr, bool conic, std::vector<glm::vec2>& vertices) const;
-			bool getClockwise(std::vector<glm::vec2> const& onPoints) const;
-			void triangulate(std::vector<Contour> const& contours, std::vector<glm::vec2>& vertices, std::vector<int>& indices) const;
-			void convertTo3D(Glyph& glyph, std::vector<Contour> const& contours, std::vector<glm::vec2> const& vertices, std::vector<int> const& indices) const;
 
 			FT_Library library;
 			FT_Face face;
