@@ -1,5 +1,4 @@
 #pragma once
-#include "rendering/release_renderer.hpp"
 #include <iostream>
 #include <iosfwd>
 
@@ -22,6 +21,11 @@ namespace cgvkp {
             release,
             dummy
         };
+        enum CameraMode
+        {
+            mono = 0,
+            stereo = 1
+        };
 
         // Properties
         vision_inputs active_vision;
@@ -35,7 +39,7 @@ namespace cgvkp {
 		bool fullscreen;
 		int fullscreenWidth;
 		int fullscreenHeight;
-		rendering::release_renderer::CameraMode cameraMode;
+		CameraMode cameraMode;
 		float eyeSeparation;
 		float zZeroParallax;
 		bool vSync;

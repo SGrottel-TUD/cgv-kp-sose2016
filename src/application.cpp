@@ -70,8 +70,8 @@ void application::run()
 			release_window->register_key_callback(GLFW_KEY_UP, std::bind(&application::increase_zzero_parallax, this, 0.1f), rendering::window::OnPress | rendering::window::OnRepeat);
 			release_window->register_key_callback(GLFW_KEY_LEFT, std::bind(&application::increase_eye_separation, this, -0.001f), rendering::window::OnPress | rendering::window::OnRepeat);
 			release_window->register_key_callback(GLFW_KEY_RIGHT, std::bind(&application::increase_eye_separation, this, 0.001f), rendering::window::OnPress | rendering::window::OnRepeat);
-			release_window->register_key_callback(GLFW_KEY_M, std::bind(&application::set_camera_mode, this, rendering::release_renderer::mono));
-			release_window->register_key_callback(GLFW_KEY_S, std::bind(&application::set_camera_mode, this, rendering::release_renderer::stereo));
+			release_window->register_key_callback(GLFW_KEY_M, std::bind(&application::set_camera_mode, this, application_config::CameraMode::mono));
+			release_window->register_key_callback(GLFW_KEY_S, std::bind(&application::set_camera_mode, this, application_config::CameraMode::stereo));
 		}
 	}
 
@@ -253,7 +253,7 @@ void application::increase_zzero_parallax(float val)
 	}
 }
 
-void application::set_camera_mode(rendering::release_renderer::CameraMode mode)
+void application::set_camera_mode(application_config::CameraMode mode)
 {
 	config.cameraMode = mode;
 

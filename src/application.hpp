@@ -4,6 +4,7 @@
 #include "data/world.hpp"
 #include "application_config.hpp"
 #include "rendering/abstract_renderer.hpp"
+#include "rendering/release_renderer.hpp"
 #include "rendering/remote_renderer_server.hpp"
 
 namespace cgvkp {
@@ -24,7 +25,7 @@ namespace cgvkp {
 		void toggle_fullscreen();
 		void increase_eye_separation(float val);
 		void increase_zzero_parallax(float val);
-		void set_camera_mode(rendering::release_renderer::CameraMode mode);
+		void set_camera_mode(application_config::CameraMode mode);
 
 		application_config config;
 		data::world data;
