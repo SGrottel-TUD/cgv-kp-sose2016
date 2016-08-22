@@ -12,7 +12,7 @@ cgvkp::application_config::application_config()
 	resourcesBasePath("src/resources"),
 	windowWidth(1280),
 	windowHeight(720),
-	cameraMode(rendering::release_renderer::CameraMode::mono),
+	cameraMode(application_config::CameraMode::mono),
 	eyeSeparation(0),
 	zZeroParallax(0),
 	windowPosx(5),
@@ -111,6 +111,15 @@ std::istream& cgvkp::operator>>(std::istream& lhs, application_config& rhs)
 		{
 			ss >> rhs.debug;
 		}
+        if (key.find("vision") != std::string::npos)
+        {
+            if (value.find("dummy") != std::string::npos)
+                rhs.active_vision = application_config::vision_inputs::dummy;
+            if (value.find("debug") != std::string::npos)
+                rhs.active_vision = application_config::vision_inputs::debug;
+            if (value.find("release") != std::string::npos)
+                rhs.active_vision = application_config::vision_inputs::release;
+        }
 		else if (key.find("resourcesBasePath") != std::string::npos)
 		{
 			std::string ignore;
@@ -149,7 +158,7 @@ std::istream& cgvkp::operator>>(std::istream& lhs, application_config& rhs)
 		{
 			int mode = 0;
 			ss >> mode;
-			rhs.cameraMode = static_cast<rendering::release_renderer::CameraMode>(mode);
+			rhs.cameraMode = static_cast<application_config::CameraMode>(mode);
 		}
 		else if (key.find("eyeSeparation") != std::string::npos)
 		{
