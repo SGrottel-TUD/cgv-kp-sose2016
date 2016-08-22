@@ -7,7 +7,7 @@
 const cgvkp::application_config defaultConfig;
 
 cgvkp::application_config::application_config()
-	: active_vision(vision_inputs::debug),
+	: active_vision(vision_inputs::dummy),
 	debug(true),	// Should be changed for shipping.
 	resourcesBasePath("src/resources"),
 	windowWidth(1280),
@@ -111,6 +111,15 @@ std::istream& cgvkp::operator>>(std::istream& lhs, application_config& rhs)
 		{
 			ss >> rhs.debug;
 		}
+        if (key.find("vision") != std::string::npos)
+        {
+            if (value.find("dummy") != std::string::npos)
+                rhs.active_vision = application_config::vision_inputs::dummy;
+            if (value.find("debug") != std::string::npos)
+                rhs.active_vision = application_config::vision_inputs::debug;
+            if (value.find("release") != std::string::npos)
+                rhs.active_vision = application_config::vision_inputs::release;
+        }
 		else if (key.find("resourcesBasePath") != std::string::npos)
 		{
 			std::string ignore;
