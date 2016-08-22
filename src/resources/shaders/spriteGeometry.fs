@@ -1,6 +1,7 @@
 #version 330 core
 
 uniform sampler2D diffuseSampler;
+uniform sampler2D normalSampler;
 
 in vec3 vsPositionView;
 in vec2 vsTextureCoord;
@@ -12,5 +13,6 @@ void main()
 {
 	fsDiffuse = texture(diffuseSampler, vsTextureCoord);
 	fsPositionView = vec4(vsPositionView, fsDiffuse.a);
-	fsNormalView = vec4(0.0, 0.0, 1.0, fsDiffuse.a);
+	fsNormalView = texture(normalSampler, vsTextureCoord);
+	
 }
