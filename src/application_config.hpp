@@ -17,10 +17,6 @@ namespace cgvkp {
 
 
         // enum classes
-        enum class renderers : unsigned int {
-            debug = 0,
-            models
-        };
         enum class vision_inputs : unsigned int {
             debug = 0,
             release,
@@ -28,17 +24,21 @@ namespace cgvkp {
         };
 
         // Properties
-        renderers active_renderer;
         vision_inputs active_vision;
 
 		bool debug;
 		std::string resourcesBasePath;
 		int windowWidth;
 		int windowHeight;
+		int windowPosx;
+		int windowPosy;
 		bool fullscreen;
+		int fullscreenWidth;
+		int fullscreenHeight;
 		rendering::release_renderer::CameraMode cameraMode;
 		float eyeSeparation;
 		float zZeroParallax;
+		bool vSync;
 
 	private:
 		void interpret_arguments(int argc, char** argv);

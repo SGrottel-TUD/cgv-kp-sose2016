@@ -7,13 +7,11 @@ bool cgvkp::rendering::GeometryTechnique::init()
 		return false;
 	}
 
-	materialLocation = getUniformLocation("material");
+	projectionLocation = getUniformLocation("projection");
 	worldViewLocation = getUniformLocation("worldView");
-	worldViewProjectionLocation = getUniformLocation("worldViewProjection");
 
-	if (materialLocation == invalidLocation ||
-		worldViewLocation == invalidLocation ||
-		worldViewProjectionLocation == invalidLocation)
+	if (projectionLocation == invalidLocation ||
+		worldViewLocation == invalidLocation)
 	{
 		return false;
 	}
@@ -21,19 +19,12 @@ bool cgvkp::rendering::GeometryTechnique::init()
 	return true;
 }
 
-void cgvkp::rendering::GeometryTechnique::setMaterial() const
+void cgvkp::rendering::GeometryTechnique::setProjection(glm::mat4 const& projection) const
 {
-	float specularPower = 1;
-	float specularIntensity = 0;
-	glUniform2f(materialLocation, specularPower, specularIntensity);
+	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
 }
 
 void cgvkp::rendering::GeometryTechnique::setWorldView(glm::mat4 const& worldView) const
 {
 	glUniformMatrix4fv(worldViewLocation, 1, GL_FALSE, &worldView[0][0]);
-}
-
-void cgvkp::rendering::GeometryTechnique::setWorldViewProjection(glm::mat4 const& worldViewProjection) const
-{
-	glUniformMatrix4fv(worldViewProjectionLocation, 1, GL_FALSE, &worldViewProjection[0][0]);
 }

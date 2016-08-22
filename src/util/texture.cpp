@@ -68,7 +68,7 @@ namespace util
         if (fopen_s(&fp, filename.data(), "rb") != 0)
         {
             // Open failed, try again using resource_file
-            if (fopen_s(&fp, resource_file::find_resource_file("textures/" + filename).data(), "rb") != 0)
+            if (fopen_s(&fp, resource_file::getResourcePath("textures", filename).data(), "rb") != 0)
             {
                 std::cerr << "Could not open texture: '" << filename << "'" << std::endl;
                 return tex;
@@ -134,7 +134,9 @@ namespace util
         // Release memory
         free(data);
         // Return texture
+#if defined(_DEBUG) || defined(DEBUG)
         std::cout << "texture '" << filename << "' uploaded" << std::endl;
+#endif
         return tex;
     }
 }

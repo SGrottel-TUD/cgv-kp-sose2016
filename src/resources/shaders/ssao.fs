@@ -15,8 +15,8 @@ uniform Maps maps;
 uniform vec3 randomDirections[6];	// must be in a unit radius sphere
 uniform vec3 ambientLight;
 
-in vec2 vsTextureCoord;
-out vec3 fsColor;
+noperspective in vec2 vsTextureCoord;
+out vec4 fsColor;
 
 float rand(vec2 v)
 {
@@ -27,7 +27,7 @@ void main()
 {
 	vec3 normal = normalize(texture(maps.normalView, vsTextureCoord).xyz);
 	float depth = texture(maps.positionView, vsTextureCoord).z;
-	vec3 diffuseColor = texture(maps.diffuseColor, vsTextureCoord).xyz;
+	vec4 diffuseColor = texture(maps.diffuseColor, vsTextureCoord);
 	
 	float distancePerStep = rand(vsTextureCoord);
 	//float distancePerStep = 0.5;
@@ -48,7 +48,7 @@ void main()
 			vec3 delta = direction * distance * radius;
 			float sampledDepth = texture(maps.positionView, vsTextureCoord + delta.xy).z;
 
-			if (sampledDepth - depth > 0.0)
+			if (sampledDepth - depth >= 0.0)
 			{
 				occlusion += 1;//numSteps / (1.0 + weight * weight);
 			}
@@ -56,5 +56,5 @@ void main()
 	}
 
 	float occlusionAmount = 1.0 - occlusion / (numSteps * numDirections);
-	fsColor = diffuseColor * vec3(occlusionAmount) * ambientLight;
+	fsColor = diffuseColor * occlusionAmount * vec4(ambientLight, 1.0);
 }

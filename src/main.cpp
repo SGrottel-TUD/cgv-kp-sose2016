@@ -23,8 +23,6 @@ int main(int argc, char **argv) {
 
         retval = -1;
 
-		app.config = cgvkp::application_config(argc, argv, "config.ini");
-
         if (!app.init()) {
             throw std::runtime_error("application::init returned false");
         }
@@ -34,7 +32,6 @@ int main(int argc, char **argv) {
 
         retval = -3;
         app.deinit();
-		app.config.save_file("config.ini");
 
         retval = 0;
 

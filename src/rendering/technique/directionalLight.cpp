@@ -11,26 +11,20 @@ bool cgvkp::rendering::DirectionalLightTechnique::init()
 
 	diffuseColorLocation = getUniformLocation("light.diffuseColor");
 	directionLocation = getUniformLocation("light.direction");
-	GLint positionViewMapLocation = getUniformLocation("maps.positionView");
 	GLint normalViewMapLocation = getUniformLocation("maps.normalView");
 	GLint diffuseColorMapLocation = getUniformLocation("maps.diffuseColor");
-	GLint materialMapLocation = getUniformLocation("maps.material");
 
 	if (diffuseColorLocation == invalidLocation ||
 		directionLocation == invalidLocation ||
-		positionViewMapLocation == invalidLocation ||
 		normalViewMapLocation == invalidLocation ||
-		diffuseColorMapLocation == invalidLocation ||
-		materialMapLocation == invalidLocation)
+		diffuseColorMapLocation == invalidLocation)
 	{
 		return false;
 	}
 
 	use();
-	glUniform1i(positionViewMapLocation, GeometryBuffer::positionView);
 	glUniform1i(normalViewMapLocation, GeometryBuffer::normalView);
 	glUniform1i(diffuseColorMapLocation, GeometryBuffer::diffuseColor);
-	glUniform1i(materialMapLocation, GeometryBuffer::material);
 
 	return true;
 }

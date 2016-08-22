@@ -4,17 +4,16 @@
 #include <GL/glew.h>
 #include <glm/mat4x4.hpp>
 #include <list>
-#include <unordered_map>
 #include "abstract_renderer.hpp"
 #include "geometryBuffer.hpp"
 #include "postProcessingFramebuffer.hpp"
-#include "technique/geometry.hpp"
+#include "technique/default.hpp"
 #include "technique/directionalLight.hpp"
-#include "technique/spotLight.hpp"
-#include "technique/ssao.hpp"
 #include "technique/gaussianBlur.hpp"
-#include "technique/background_technique.hpp"
-#include "technique/star.hpp"
+#include "technique/geometry.hpp"
+#include "technique/spotLight.hpp"
+#include "technique/spriteGeometry.hpp"
+#include "technique/ssao.hpp"
 #include "lights.hpp"
 #include "mesh.hpp"
 #include "model/model_base.hpp"
@@ -22,6 +21,7 @@
 #include "view/hand_view.hpp"
 #include "view/star_view.hpp"
 #include "controller/controller_base.hpp"
+#include "controller/cloudController.hpp"
 #include "gui.hpp"
 
 namespace cgvkp
@@ -64,12 +64,13 @@ namespace cgvkp
 		private:
 			void calculateViewProjection();
 			void renderScene(glm::mat4 const& projection) const;
+			void update(double seconds, std::shared_ptr<abstract_user_input> const& input);
 
 			// Rendering steps
 			void fillGeometryBuffer(glm::mat4 const& projection) const;
 			void addAmbientLight() const;
 			void addDirectionalLight(DirectionalLight const& light) const;
-			void addBackground() const;
+			void setBackground(glm::mat4 const& projection) const;
 			void addStarLights(glm::mat4 const& projection) const;
 			void addStars(glm::mat4 const& projection) const;
 
@@ -97,26 +98,32 @@ namespace cgvkp
 			SpotLightTechnique spotLightPass;
 			SSAOTechnique ssaoPass;
 			GaussianBlurTechnique gaussianBlur;
-			background_technique background;
-			StarTechnique starPass;
-			Mesh* pQuad;
+			DefaultTechnique defaultPass;
+			SpriteGeometryTechnique spriteGeometryPass;
 
 			glm::vec3 ambientLight;
 			DirectionalLight directionalLight;
 
-			std::chrono::high_resolution_clock::time_point last_time;
-			double fps_counter_elapsed;
-			unsigned int rendered_frames;
+			std::chrono::high_resolution_clock::duration dt;
+			std::chrono::high_resolution_clock::time_point tGame;
+			std::chrono::high_resolution_clock::time_point tLogic;
+			unsigned int frames;
 			int fps;
 
-			std::unordered_map<char const*, Mesh> meshes;
+			enum Meshes
+			{
+				cloud = 0, hand, pyramid, space, star, quad,
+				numMeshes
+			};
+			std::vector<Mesh> meshes;
 
 			std::list<model::model_base::ptr> models;
-			std::list<view::cloud_view::ptr> cloudViews;
+			std::vector<view::cloud_view::ptr> cloudViews;
 			std::list<view::hand_view::ptr> handViews;
 			std::list<view::star_view::ptr> starViews;
 
 			std::list<controller::controller_base::ptr> controllers;
+			std::shared_ptr<controller::CloudController> cloudController;
 
 			Gui gui;
 		};

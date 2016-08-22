@@ -5,7 +5,6 @@ struct Maps
 	sampler2D positionView;
 	sampler2D normalView;
 	sampler2D diffuseColor;
-	sampler2D material;
 };
 
 struct SpotLight
@@ -20,17 +19,14 @@ struct SpotLight
 uniform Maps maps;
 uniform SpotLight light;
 
-in vec2 vsTextureCoord;
+noperspective in vec2 vsTextureCoord;
 out vec3 fsColor;
 
 void main()
 {
-	fsColor = vec3(0.0, 0.0, 0.0);
-	
 	vec3 position = texture(maps.positionView, vsTextureCoord).xyz;
 	vec3 normal = normalize(texture(maps.normalView, vsTextureCoord).xyz);
-	vec3 diffuseColor = texture(maps.diffuseColor, vsTextureCoord).xyz;
-	vec2 material = texture(maps.material, vsTextureCoord).xy;    // = vec2(specularPower, specularIntensity)
+	vec3 diffuseColor = texture(maps.diffuseColor, vsTextureCoord).rgb;
 
 	vec3 lightToFragment = position - light.position;
 	float distance = length(lightToFragment);
@@ -42,16 +38,11 @@ void main()
 	{
 		// diffuse
 		fsColor = light.color * diffuseFactor;
-
-		// specular
-		float specularFactor = -dot(normalize(position), reflect(lightToFragment, normal));
-		if(specularFactor > 0.0)
-		{
-			specularFactor = pow(specularFactor, material.x);
-			fsColor += vec3(light.color * material.y * specularFactor);
-		}
-
 		float attenuation = dot(light.attenuation, vec3(1.0, distance, distance * distance));
 		fsColor *= diffuseColor / max(1.0, attenuation) * ((spotFactor - light.cutoff) / (1.0 - light.cutoff));
+	}
+	else
+	{
+		fsColor = vec3(0.0, 0.0, 0.0);
 	}
 }

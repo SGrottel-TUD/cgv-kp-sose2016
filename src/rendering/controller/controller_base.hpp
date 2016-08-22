@@ -12,15 +12,14 @@ namespace controller {
         typedef std::shared_ptr<controller_base> ptr;
         typedef std::weak_ptr<controller_base> weak_ptr;
 
-        controller_base();
-        virtual ~controller_base();
+		virtual ~controller_base() {}
 
         inline void set_model(model::model_base::weak_ptr m) {
             model = m;
         }
 
         // Answer if the object has a model
-        virtual bool has_model() const;
+        virtual bool has_model() const { return !model.expired(); }
 
         /**
          * @param seconds Time elapsed since last call, in seconds

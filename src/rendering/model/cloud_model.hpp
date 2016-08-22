@@ -1,7 +1,7 @@
 #pragma once
 #include "rendering/model/graphic_model_base.hpp"
-#include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <vector>
 
 namespace cgvkp {
@@ -17,6 +17,11 @@ namespace cgvkp {
 				float speed;
 				std::vector<float> speed_curve;
 				int curve_iterator;
+				glm::vec3 position;
+				glm::quat rotation;
+				glm::vec3 scale;
+				glm::vec3 velocity;
+				float dAngle;
 			};
 		}
 	}

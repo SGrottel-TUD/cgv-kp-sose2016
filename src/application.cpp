@@ -2,7 +2,6 @@
 #include "rendering/window.hpp"
 #include "rendering/debug_renderer.hpp"
 #include "rendering/release_renderer.hpp"
-#include "rendering/model_listing_renderer.hpp"
 #include "rendering/debug_user_input.hpp"
 #include "vision/dummy_vision.hpp"
 #include "util/resource_file.hpp"
@@ -24,6 +23,8 @@ bool application::init() {
         return false;
     }
 
+	config.load_file("config.ini");
+
     data.init();
     data.get_config().set_size(4.0f, 3.0f); // 4x3 meter game area
     data.get_config().set_positional_epsilon(0.1f); // 10cm positional precision (used for hand matching)
@@ -37,10 +38,15 @@ bool application::init() {
     return true;
 }
 
+void application::deinit()
+{
+	config.save_file("config.ini");
+}
+
 void application::run()
 {
 	// create release window
-	release_window = std::make_shared<rendering::window>(config.windowWidth, config.windowHeight);
+	release_window = std::make_shared<rendering::window>(config);
 	if (!release_window || !release_window->is_alive())
 	{
 		release_window.reset();
@@ -70,24 +76,21 @@ void application::run()
 	}
 
 
+	application_config debugConfig;
+	debugConfig.windowWidth = 1280;
+	debugConfig.windowHeight = 720;
+	debugConfig.fullscreen = 0;
+	debugConfig.windowPosx = 5;
+	debugConfig.windowPosy = 30;
     // create debug window
 	if (config.debug)
 	{
-		debug_window = std::make_shared<rendering::window>(1280, 720, "CGV KP SoSe2016 - Debug");
+		debug_window = std::make_shared<rendering::window>(debugConfig);
 		if (!debug_window || !debug_window->is_alive()) {
 			debug_window.reset();
 		}
 		else {
-			// init renderer selected in Project Property Sheet
-			switch (config.active_renderer) {
-			case application_config::renderers::models:
-				debug_renderer = std::make_shared<rendering::model_listing_renderer>(data);
-				break;
-			default:
-				debug_renderer = std::make_shared<rendering::debug_renderer>(data);
-				break;
-			}
-
+			debug_renderer = std::make_shared<rendering::debug_renderer>(data);
 			if (!debug_renderer || !debug_renderer->init(*debug_window)) {
 				std::cout << "Failed to create Debug renderer" << std::endl;
 				debug_renderer.reset();
@@ -211,10 +214,6 @@ void application::run()
 	assert(!release_window);
 }
 
-void application::deinit() {
-    // empty atm
-}
-
 void application::toggle_fullscreen()
 {
 	if (release_renderer)
@@ -222,7 +221,6 @@ void application::toggle_fullscreen()
 		release_window->make_current();
 		release_renderer->deinit();
 		release_window->toggle_fullscreen();
-		config.fullscreen = !config.fullscreen;
 		release_renderer->init(*release_window);
 	}
 }

@@ -9,9 +9,7 @@ namespace model {
     class star_model : public graphic_model_base {
     public:
         star_model() : graphic_model_base(
-            glm::scale(
-                glm::rotate(glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
-                glm::vec3(0.2f))
+            glm::scale(glm::vec3(0.2f))
         ) {}
 
 		int id;

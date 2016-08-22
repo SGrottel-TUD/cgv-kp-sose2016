@@ -228,7 +228,7 @@ bool cgvkp::util::ObjImporter::load(char const* pMeshname, bool withAdjacencies)
 			ss >> mtlFile;
 			// Adapt directory
 
-			readTexturePathFromMtl("meshes/" + mtlFile);
+			readTexturePathFromMtl(mtlFile);
 		}
 		else if (type == "usemtl")
 		{
@@ -449,7 +449,7 @@ bool cgvkp::util::ObjImporter::load(char const* pMeshname, bool withAdjacencies)
 
 bool cgvkp::util::ObjImporter::readTexturePathFromMtl(std::string const& filename)
 {
-	std::ifstream file(resource_file::find_resource_file(filename));
+	std::ifstream file(resource_file::getResourcePath("meshes", filename));
 
 	if (!file.good())
 	{
@@ -462,23 +462,24 @@ bool cgvkp::util::ObjImporter::readTexturePathFromMtl(std::string const& filenam
 	// Read the data.
 	std::string line;
 	bool pathRead = false;
-	while (!pathRead && std::getline(file, line))
+	while (std::getline(file, line))
 	{
 		std::stringstream ss;
 		ss << line;
 		std::string type;
 		ss >> type;
 
-		if (type == "map_Kd")
+		if (type == "map_Kd" || type == "map_Ka")
 		{
+			std::string texturePath;
 			ss >> texturePath;
+			texturePaths.push_back(texturePath);
 #if defined(_DEBUG) || defined(DEBUG)
 			std::cout << "Got texture path: " << texturePath << std::endl;
 #endif
 			pathRead = true;
 		}
 	}
-	file.close();
 
 	return pathRead;
 }
