@@ -7,7 +7,8 @@
 #include "window.hpp"
 
 cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world & data, window& wnd)
-	: abstract_renderer(data), windowWidth(0), windowHeight(0), framebufferWidth(0), framebufferHeight(0), cameraMode(mono), gui(data, "CartoonRegular.ttf"), frames(0)
+	: abstract_renderer(data), windowWidth(0), windowHeight(0), framebufferWidth(0), framebufferHeight(0),
+    cameraMode(cgvkp::application_config::CameraMode::mono), gui(data, "CartoonRegular.ttf"), frames(0)
 {
 	// Camera
 	zNear = 0.01f;
@@ -97,7 +98,7 @@ void cgvkp::rendering::release_renderer::deinit_impl()
 	gui.deinit();
 }
 
-void cgvkp::rendering::release_renderer::setCameraMode(CameraMode mode)
+void cgvkp::rendering::release_renderer::setCameraMode(cgvkp::application_config::CameraMode mode)
 {
 	cameraMode = mode;
 	windowWidth = 0;	// Reset window width. The test in the render method will do the rest.
@@ -114,7 +115,8 @@ void cgvkp::rendering::release_renderer::setStereoParameters(float _eyeSeparatio
 	if (framebufferWidth != 0 && framebufferHeight != 0)
 	{
 		calculateViewProjection();
-		gui.setSize(framebufferWidth, framebufferHeight, glm::quarter_pi<float>(), cameraMode == stereo ? zZeroParallax : 10);
+		gui.setSize(framebufferWidth, framebufferHeight, glm::quarter_pi<float>(),
+            cameraMode == cgvkp::application_config::CameraMode::stereo ? zZeroParallax : 10);
 	}
 }
 
@@ -155,7 +157,7 @@ void cgvkp::rendering::release_renderer::calculateViewProjection()
 	viewMatrix = glm::lookAt(position, lookAt, glm::vec3(0, 1, 0));
 
 	// Projection
-	if (cameraMode == stereo)
+	if (cameraMode == cgvkp::application_config::CameraMode::stereo)
 	{
 		glm::vec3 translation = glm::vec3(eyeSeparation * tanHalfFovy * zZeroParallax * aspect, 0.0f, 0.0f);
 
@@ -222,13 +224,14 @@ void cgvkp::rendering::release_renderer::render(window const& wnd)
 	wnd.make_current();
 	if (wnd.get_size(windowWidth, windowHeight))
 	{
-		framebufferWidth = cameraMode == stereo ? windowWidth / 2 : windowWidth;
+        bool stereo = (cameraMode == application_config::CameraMode::stereo);
+		framebufferWidth = stereo ? windowWidth / 2 : windowWidth;
 		framebufferHeight = windowHeight;
 		if (framebufferWidth != 0 && framebufferHeight != 0)
 		{
 			gbuffer.resize(framebufferWidth, framebufferHeight);
 			postProcessing.resize(framebufferWidth, framebufferHeight);
-            gui.setSize(framebufferWidth, framebufferHeight, glm::quarter_pi<float>(), cameraMode == stereo ? zZeroParallax : 10);
+            gui.setSize(framebufferWidth, framebufferHeight, glm::quarter_pi<float>(), stereo ? zZeroParallax : 10);
 			calculateViewProjection();
 		}
 	}
@@ -259,7 +262,7 @@ void cgvkp::rendering::release_renderer::render(window const& wnd)
 	gbuffer.bindForReadingFinal();
 	glBlitFramebuffer(0, 0, framebufferWidth, framebufferHeight, 0, 0, framebufferWidth, framebufferHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
-	if (cameraMode == stereo)
+	if (cameraMode == application_config::CameraMode::stereo)
 	{
 		// Render right image.
 		renderScene(rightProjection);

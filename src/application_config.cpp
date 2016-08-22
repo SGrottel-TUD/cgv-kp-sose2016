@@ -7,12 +7,12 @@
 const cgvkp::application_config defaultConfig;
 
 cgvkp::application_config::application_config()
-	: active_vision(vision_inputs::dummy),
+	: active_vision(vision_inputs::debug),
 	debug(true),	// Should be changed for shipping.
 	resourcesBasePath("src/resources"),
 	windowWidth(1280),
 	windowHeight(720),
-	cameraMode(rendering::release_renderer::CameraMode::mono),
+	cameraMode(application_config::CameraMode::mono),
 	eyeSeparation(0),
 	zZeroParallax(0),
 	windowPosx(5),
@@ -158,7 +158,7 @@ std::istream& cgvkp::operator>>(std::istream& lhs, application_config& rhs)
 		{
 			int mode = 0;
 			ss >> mode;
-			rhs.cameraMode = static_cast<rendering::release_renderer::CameraMode>(mode);
+			rhs.cameraMode = static_cast<application_config::CameraMode>(mode);
 		}
 		else if (key.find("eyeSeparation") != std::string::npos)
 		{
