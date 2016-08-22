@@ -7,7 +7,7 @@
 const cgvkp::application_config defaultConfig;
 
 cgvkp::application_config::application_config()
-	: active_vision(vision_inputs::debug),
+	: active_vision(vision_inputs::dummy),
 	debug(true),	// Should be changed for shipping.
 	resourcesBasePath("src/resources"),
 	windowWidth(1280),
