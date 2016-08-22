@@ -63,6 +63,9 @@
     <ClCompile Include="src\rendering\window.cpp">
       <Filter>rendering\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\application_config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\data\world_config.hpp">
@@ -97,6 +100,9 @@
     </ClInclude>
     <ClInclude Include="src\data\world_remote.hpp">
       <Filter>data\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\application_config.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "application_config.hpp"
 #include "data/world_remote.hpp"
 #include "rendering/debug_renderer.hpp"
 #include "rendering/debug_user_input.hpp"
@@ -68,7 +69,9 @@ int main(int argc, char **argv)
     }
     auto start_time = std::chrono::high_resolution_clock::now();
     // create debug window
-    auto debug_window = std::make_shared<cgvkp::rendering::window>(1280, 720, "CGV KP SoSe2016 - Remote Debug");
+    cgvkp::application_config config;
+    config.debug = true;
+    auto debug_window = std::make_shared<cgvkp::rendering::window>(config);
     std::shared_ptr<cgvkp::rendering::debug_renderer> debug_renderer;
     if (!debug_window || !debug_window->is_alive()) {
         debug_window.reset();

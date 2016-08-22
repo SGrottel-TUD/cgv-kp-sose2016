@@ -119,6 +119,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\application_config.cpp" />
     <ClCompile Include="src\data\input_layer.cpp" />
     <ClCompile Include="src\data\world.cpp" />
     <ClCompile Include="src\data\world_config.cpp" />
@@ -131,6 +132,7 @@
     <ClCompile Include="src\vision\abstract_vision.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\application_config.hpp" />
     <ClInclude Include="src\data\input_layer.hpp" />
     <ClInclude Include="src\data\tripple_buffer.hpp" />
     <ClInclude Include="src\data\world.hpp" />
