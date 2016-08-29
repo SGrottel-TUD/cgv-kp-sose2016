@@ -53,7 +53,7 @@ void application::run()
 	}
 	else
 	{
-		release_renderer = std::make_shared<rendering::release_renderer>(data, *release_window);
+		release_renderer = std::make_shared<rendering::release_renderer>(config, data, *release_window);
 		if (!release_renderer || !release_renderer->init(*release_window))
 		{
 			std::cout << "Failed to create Release renderer" << std::endl;
@@ -65,7 +65,6 @@ void application::run()
 			release_renderer->setCameraMode(config.cameraMode);
 			release_renderer->setStereoParameters(config.eyeSeparation, config.zZeroParallax);
 
-			release_window->register_key_callback(GLFW_KEY_F, std::bind(&application::toggle_fullscreen, this), rendering::window::OnRelease);
 			release_window->register_key_callback(GLFW_KEY_DOWN, std::bind(&application::increase_zzero_parallax, this, -0.1f), rendering::window::OnPress | rendering::window::OnRepeat);
 			release_window->register_key_callback(GLFW_KEY_UP, std::bind(&application::increase_zzero_parallax, this, 0.1f), rendering::window::OnPress | rendering::window::OnRepeat);
 			release_window->register_key_callback(GLFW_KEY_LEFT, std::bind(&application::increase_eye_separation, this, -0.001f), rendering::window::OnPress | rendering::window::OnRepeat);
@@ -203,17 +202,6 @@ void application::run()
     assert(!debug_window);
 	assert(!release_renderer);
 	assert(!release_window);
-}
-
-void application::toggle_fullscreen()
-{
-	if (release_renderer)
-	{
-		release_window->make_current();
-		release_renderer->deinit();
-		release_window->toggle_fullscreen();
-		release_renderer->init(*release_window);
-	}
 }
 
 void application::increase_eye_separation(float val)
