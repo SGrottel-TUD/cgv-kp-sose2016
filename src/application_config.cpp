@@ -8,13 +8,17 @@ const cgvkp::application_config defaultConfig;
 
 cgvkp::application_config::application_config()
 	: active_vision(vision_inputs::debug),
+#if defined(DEBUG) || defined(_DEBUG)
 	debug(true),	// Should be changed for shipping.
+#else
+	debug(false),
+#endif
 	resourcesBasePath("src/resources"),
 	windowWidth(1280),
 	windowHeight(720),
 	cameraMode(rendering::release_renderer::CameraMode::mono),
-	eyeSeparation(0),
-	zZeroParallax(0),
+	eyeSeparation(0.05f),
+	zZeroParallax(5),
 	windowPosx(5),
 	windowPosy(30),
 	vSync(0),

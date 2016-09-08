@@ -57,6 +57,7 @@ bool cgvkp::rendering::release_renderer::init_impl(window const& wnd)
 		!gaussianBlur.init() ||
 		!defaultPass.init() ||
 		!spriteGeometryPass.init() ||
+		!backgroundPass.init() ||
 		!gui.init())
 	{
 		return false;
@@ -69,6 +70,9 @@ bool cgvkp::rendering::release_renderer::init_impl(window const& wnd)
 			return false;
 		}
 	}
+
+	backgroundPass.use();
+	backgroundPass.setNormal(-directionalLight.direction);	// The background will be as illuminated by the directional light as possible.
 
 	tGame = tLogic = std::chrono::high_resolution_clock::now();
 
@@ -270,15 +274,22 @@ void cgvkp::rendering::release_renderer::render(window const& wnd)
 
 void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection) const
 {
+	gbuffer.bindForWritingFinal();
+	glClear(GL_COLOR_BUFFER_BIT);
 	fillGeometryBuffer(projection);
 
 	glBlendEquation(GL_FUNC_ADD);
 
-	setBackground(projection);
 	addAmbientLight();
 	addDirectionalLight(directionalLight);
 	addStarLights(projection);
 	addStars(projection);
+	/*glDisable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
+	gbuffer.bindForReadingGeometry();
+	gbuffer.bindForWritingFinal();
+	gbDebug.use();
+	meshes[quad].render();*/
 	gbuffer.bindForWritingFinal();
 	gui.render(projection);
 }
@@ -286,17 +297,19 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 void cgvkp::rendering::release_renderer::fillGeometryBuffer(glm::mat4 const& projection) const
 {
 	gbuffer.bindForWritingGeometry();
-	geometryPass.use();
 
 	glDepthMask(GL_TRUE);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Render the background with a very low z value in view space to not get wrong results during post processing.
-	geometryPass.setWorldView(glm::translate(glm::vec3(0, -100, -10000)));
-	geometryPass.setProjection(glm::translate(glm::vec3(0, 100, 10000)));
-	meshes[quad].render();
+	backgroundPass.use();
+	float h = data.get_config().height();
+	glm::mat4 worldView = glm::scale(glm::vec3(10.67f, 8.005f, h + 10));	// x and y are taken from the picture.
+	backgroundPass.setWorldView(worldView);
+	backgroundPass.setProjection(projection);
+	meshes[space].render();
 
 	glEnable(GL_DEPTH_TEST);
+	geometryPass.use();
 	geometryPass.setProjection(projection);
 	for (auto const& v : handViews)
 	{
@@ -346,23 +359,13 @@ void cgvkp::rendering::release_renderer::addDirectionalLight(DirectionalLight co
 {
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_ONE, GL_ONE);
 	gbuffer.bindForReadingGeometry();
 	gbuffer.bindForWritingFinal();
 	directionalLightPass.use();
 
 	directionalLightPass.setLight(directionalLight);
 	meshes[quad].render();
-}
-
-void cgvkp::rendering::release_renderer::setBackground(glm::mat4 const& projection) const
-{
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_BLEND);
-	gbuffer.bindForWritingFinal();
-	defaultPass.use();
-	defaultPass.setWorldViewProjection(projection * glm::scale(glm::vec3(106.7f, 80.05f, zFar)));	// x and y numbers are taken from the picture.
-	meshes[space].render();
 }
 
 void cgvkp::rendering::release_renderer::addStarLights(glm::mat4 const& projection) const
@@ -389,6 +392,7 @@ void cgvkp::rendering::release_renderer::addStarLights(glm::mat4 const& projecti
 	{
 		if (!s->has_model()) continue;
 
+		glm::vec4 p = s->get_model()->model_matrix[3];
 		starLight.position = glm::vec3(viewMatrix * s->get_model()->model_matrix[3]);	// in view space
 		spotLightPass.setLight(starLight);
 

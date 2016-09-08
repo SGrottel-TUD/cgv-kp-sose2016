@@ -42,6 +42,7 @@
     <ClCompile Include="src\rendering\gui.cpp" />
     <ClCompile Include="src\rendering\mesh.cpp" />
     <ClCompile Include="src\rendering\postProcessingFramebuffer.cpp" />
+    <ClCompile Include="src\rendering\technique\background.cpp" />
     <ClCompile Include="src\rendering\technique\default.cpp" />
     <ClCompile Include="src\rendering\technique\spriteGeometry.cpp" />
     <ClCompile Include="src\rendering\technique\fontTechnique.cpp" />
@@ -72,6 +73,7 @@
     <None Include="src\resources\shaders\background.vs" />
     <None Include="src\resources\shaders\directionalLight.fs" />
     <None Include="src\resources\shaders\gaussianBlur.fs" />
+    <None Include="src\resources\shaders\gBufferDebug.fs" />
     <None Include="src\resources\shaders\geometry.fs" />
     <None Include="src\resources\shaders\geometry.vs" />
     <None Include="src\resources\shaders\normal_as_colour.fs" />
@@ -105,6 +107,7 @@
     <ClInclude Include="src\rendering\mesh.hpp" />
     <ClInclude Include="src\rendering\model\graphic_model_base.hpp" />
     <ClInclude Include="src\rendering\postProcessingFramebuffer.hpp" />
+    <ClInclude Include="src\rendering\technique\background.hpp" />
     <ClInclude Include="src\rendering\technique\default.hpp" />
     <ClInclude Include="src\rendering\technique\spriteGeometry.hpp" />
     <ClInclude Include="src\rendering\technique\fontTechnique.hpp" />

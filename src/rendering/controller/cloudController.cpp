@@ -9,7 +9,7 @@ cgvkp::rendering::controller::CloudController::CloudController(release_renderer*
 	: mesh(_mesh), view(_view)
 {
 	float const distanceToGameArea = 4;
-	float const distanceMinX = 0.1f;
+	float const distanceMinX = 0.4f;
 	float const distanceMaxX = 0.5f;
 	float const distanceY = 0.1f;
 	float const distanceZ = 0.03f;

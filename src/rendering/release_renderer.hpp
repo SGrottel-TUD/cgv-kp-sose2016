@@ -7,6 +7,7 @@
 #include "abstract_renderer.hpp"
 #include "geometryBuffer.hpp"
 #include "postProcessingFramebuffer.hpp"
+#include "technique/background.hpp"
 #include "technique/default.hpp"
 #include "technique/directionalLight.hpp"
 #include "technique/gaussianBlur.hpp"
@@ -70,7 +71,6 @@ namespace cgvkp
 			void fillGeometryBuffer(glm::mat4 const& projection) const;
 			void addAmbientLight() const;
 			void addDirectionalLight(DirectionalLight const& light) const;
-			void setBackground(glm::mat4 const& projection) const;
 			void addStarLights(glm::mat4 const& projection) const;
 			void addStars(glm::mat4 const& projection) const;
 
@@ -100,6 +100,7 @@ namespace cgvkp
 			GaussianBlurTechnique gaussianBlur;
 			DefaultTechnique defaultPass;
 			SpriteGeometryTechnique spriteGeometryPass;
+			BackgroundTechnique backgroundPass;
 
 			glm::vec3 ambientLight;
 			DirectionalLight directionalLight;

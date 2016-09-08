@@ -1,5 +1,4 @@
 #include "gaussianBlur.hpp"
-#include "../geometryBuffer.hpp"
 
 bool cgvkp::rendering::GaussianBlurTechnique::init()
 {

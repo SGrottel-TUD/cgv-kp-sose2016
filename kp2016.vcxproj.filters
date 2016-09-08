@@ -224,6 +224,9 @@
     <ClCompile Include="src\rendering\technique\fontTechnique.cpp">
       <Filter>rendering\technique\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\rendering\technique\background.cpp">
+      <Filter>rendering\technique\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -257,9 +260,6 @@
     <None Include="src\resources\shaders\spotLight.fs">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="src\resources\shaders\ssao.fs">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
     <None Include="src\resources\shaders\star.fs">
       <Filter>Resource Files\shaders</Filter>
     </None>
@@ -274,6 +274,12 @@
     </None>
     <None Include="src\resources\meshes\star.mtl">
       <Filter>Resource Files\meshes</Filter>
+    </None>
+    <None Include="src\resources\shaders\gBufferDebug.fs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="src\resources\shaders\ssao.fs">
+      <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -423,6 +429,9 @@
     </ClInclude>
     <ClInclude Include="src\rendering\guiElements.hpp">
       <Filter>rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\technique\background.hpp">
+      <Filter>rendering\technique\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
