@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <glm/mat4x4.hpp>
 #include <list>
+#include "application_config.hpp"
 #include "abstract_renderer.hpp"
 #include "geometryBuffer.hpp"
 #include "postProcessingFramebuffer.hpp"
@@ -36,16 +37,10 @@ namespace cgvkp
 		class release_renderer : public abstract_renderer
 		{
 		public:
-			enum CameraMode
-			{
-				mono = 0,
-				stereo = 1
-			};
-
 			release_renderer(data::world & data, window& wnd);
 			virtual void render(window const& wnd);
 
-			void setCameraMode(CameraMode mode);
+			void setCameraMode(application_config::CameraMode mode);
 			void setStereoParameters(float eyeSeparation, float zZeroParallax);
 
 			inline float getDistance() const { return distance; }
@@ -85,7 +80,7 @@ namespace cgvkp
 			glm::mat4 viewMatrix;
 			glm::mat4 leftProjection;	// Holds the projection matrix in mono mode.
 			glm::mat4 rightProjection;
-			CameraMode cameraMode;
+			application_config::CameraMode cameraMode;
 			float eyeSeparation;
 			float zZeroParallax;
 
