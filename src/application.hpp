@@ -19,9 +19,9 @@ namespace cgvkp {
 		bool init();
 		void run();
 		void deinit();
+		void saveScore();
 
 	private:
-		void toggle_fullscreen();
 		void increase_eye_separation(float val);
 		void increase_zzero_parallax(float val);
 		void set_camera_mode(application_config::CameraMode mode);

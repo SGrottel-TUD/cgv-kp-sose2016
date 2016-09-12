@@ -85,7 +85,7 @@ void cgvkp::rendering::GeometryBuffer::bindForWritingGeometry() const
 
 void cgvkp::rendering::GeometryBuffer::bindForReadingGeometry() const
 {
-	for (int i = 0; i < numTextures; ++i)
+	for (int i = 0; i < final; ++i)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, textures[i]);

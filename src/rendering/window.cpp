@@ -159,7 +159,8 @@ bool rendering::window::create_window()
 	glfwSetWindowPosCallback(handle, window_pos_callback);
 
 	glfwMakeContextCurrent(handle);
-	glfwSwapInterval(config.vSync ? 1 : 0);
+	
+	setVsync();
 
 	if (!config.fullscreen)
 	{
@@ -169,10 +170,14 @@ bool rendering::window::create_window()
 	return true;
 }
 
-void rendering::window::toggle_fullscreen()
+void cgvkp::rendering::window::setVsync()
+{
+	glfwSwapInterval(config.vSync ? 1 : 0);
+}
+
+void rendering::window::reload()
 {
 	glfwDestroyWindow(handle);
-	config.fullscreen = !config.fullscreen;
 	create_window();
 }
 
