@@ -6,9 +6,9 @@
 #include "controller/cloudController.hpp"
 #include "window.hpp"
 
-cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world & data, window& wnd)
-	: abstract_renderer(data), windowWidth(0), windowHeight(0), framebufferWidth(0), framebufferHeight(0),
-    cameraMode(cgvkp::application_config::CameraMode::mono), gui(data, "CartoonRegular.ttf"), frames(0)
+cgvkp::rendering::release_renderer::release_renderer(application_config& config, data::world & data, window& _wnd)
+	: abstract_renderer(data), wnd(_wnd), windowWidth(0), windowHeight(0), framebufferWidth(0), framebufferHeight(0),
+    cameraMode(cgvkp::application_config::CameraMode::mono), gui(config, data, "CartoonRegular.ttf"), frames(0)
 {
 	// Camera
 	zNear = 0.01f;
@@ -38,11 +38,16 @@ cgvkp::rendering::release_renderer::release_renderer(::cgvkp::data::world & data
 	wnd.setMousePositionCallback([&](double x, double y) { gui.updateMousePosition(static_cast<float>(x), static_cast<float>(y)); });
 	wnd.setLeftMouseButtonCallback(std::bind(&Gui::click, &gui));
 	wnd.setInputCodePointCallback(std::bind(&Gui::inputCodePoint, &gui, std::placeholders::_1));
+	gui.setCameramodeCallback(std::bind(&release_renderer::setCameraMode, this, std::placeholders::_1));
+	gui.setReloadCallback(std::bind(&release_renderer::reload, this));
 	gui.setExitCallback(std::bind(&window::close, &wnd));
 	gui.setHighscoresCallback([]() { return std::list<Score>(); });
 	gui.setScoreCallback(std::bind(&data::world::get_score, &data));
 	gui.setFPSCallback([&]() { return fps; });
+	gui.setVsyncCallback(std::bind(&window::setVsync, &wnd));
 	gui.loadMenu();
+
+	wnd.register_key_callback(GLFW_KEY_F, [&]() {config.fullscreen = !config.fullscreen; reload();}, rendering::window::OnRelease);
 }
 
 bool cgvkp::rendering::release_renderer::init_impl(window const& wnd)
@@ -100,6 +105,14 @@ void cgvkp::rendering::release_renderer::deinit_impl()
 	postProcessing.deinit();
 	spriteGeometryPass.deinit();
 	gui.deinit();
+}
+
+void cgvkp::rendering::release_renderer::reload()
+{
+	wnd.make_current();
+	deinit();
+	wnd.reload();
+	init(wnd);
 }
 
 void cgvkp::rendering::release_renderer::setCameraMode(cgvkp::application_config::CameraMode mode)

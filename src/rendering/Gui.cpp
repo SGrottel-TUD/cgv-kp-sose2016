@@ -86,6 +86,7 @@ void cgvkp::rendering::Gui::loadHighscore()
 		offsetName.y -= 5;
 		offsetNum.y -= 5;
 	}
+
 	createButton("Back", std::bind(&Gui::loadMenu, this), bottom);
 
 	setPositions();
@@ -96,14 +97,29 @@ void cgvkp::rendering::Gui::loadOptions()
 	clear();
 
 	createLabel("Optionen", top, glm::vec2(0, 0), titleFontSize);
+
 	createLabel("Vollbildmodus", left, glm::vec2(10, 1.5f * normalFontSize));
+	createButton(config.fullscreen ? "ON" : "OFF", [&]() {config.fullscreen = !config.fullscreen; reload(); loadOptions();}, center, glm::vec2(10, 1.5f * normalFontSize));
+
 	createLabel("Stereo", left, glm::vec2(10, 0.5f * normalFontSize));
-	createLabel("Auflösung", left, glm::vec2(10, -0.5f * normalFontSize));
+	createButton(config.cameraMode ? "ON" : "OFF", [&]() {config.cameraMode == config.mono ? config.cameraMode = config.stereo : config.cameraMode = config.mono; setCameramode(config.cameraMode); loadOptions();}, center, glm::vec2(10, 0.5f * normalFontSize));
+
+	glm::vec2 length = createLabel("Auflösung", left, glm::vec2(10, -0.5f * normalFontSize)).size;
+	Input inputHeight = createInput(left, glm::vec2(length.x + 50, -0.5f * normalFontSize), normalFontSize, 200.0f);
+	Input inputWidth = createInput(left, glm::vec2(length.x + 260, -0.5f * normalFontSize), normalFontSize, 200.0f);
+	//config.fullscreenHeight = static_cast<int>(inputHeight.getText());
+	//inputWidth.getText() =  static_cast<int>(inputWidth.getText());;
+	createButton("Übernhemen", std::bind(&Gui::loadOptions, this), center, glm::vec2(10, -0.5f * normalFontSize));
+	
 	createLabel("VSync", left, glm::vec2(10, -1.5f * normalFontSize));
+	createButton(config.vSync ? "ON" : "OFF", [&]() {config.vSync = !config.vSync; setVsync(); loadOptions();}, center, glm::vec2(10, -1.5f * normalFontSize));
+
 	createButton("Back", std::bind(&Gui::loadMenu, this), bottom);
 
 	setPositions();
 }
+
+
 
 void cgvkp::rendering::Gui::loadEntry()
 {

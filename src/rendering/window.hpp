@@ -28,7 +28,8 @@ namespace rendering {
 		inline void close() const { glfwSetWindowShouldClose(handle, true); }
         inline bool is_alive() const { return handle != nullptr && !glfwWindowShouldClose(handle); }
         inline void do_events() const { if(is_alive()) glfwPollEvents(); }
-		void toggle_fullscreen();
+		void reload();
+		void setVsync();
         inline void make_current() const { if(handle) glfwMakeContextCurrent(handle); }
         inline void swap_buffers() const { if(is_alive()) glfwSwapBuffers(handle); }
 

@@ -37,7 +37,7 @@ namespace cgvkp
 		class release_renderer : public abstract_renderer
 		{
 		public:
-			release_renderer(data::world & data, window& wnd);
+			release_renderer(application_config& config, data::world& data, window& wnd);
 			virtual void render(window const& wnd);
 
 			void setCameraMode(application_config::CameraMode mode);
@@ -61,6 +61,7 @@ namespace cgvkp
 			void calculateViewProjection();
 			void renderScene(glm::mat4 const& projection) const;
 			void update(double seconds, std::shared_ptr<abstract_user_input> const& input);
+			void reload();
 
 			// Rendering steps
 			void fillGeometryBuffer(glm::mat4 const& projection) const;
@@ -69,6 +70,7 @@ namespace cgvkp
 			void addStarLights(glm::mat4 const& projection) const;
 			void addStars(glm::mat4 const& projection) const;
 
+			window& wnd;
 			GLsizei windowWidth;
 			GLsizei windowHeight;
 			GLsizei framebufferWidth;

@@ -2,10 +2,12 @@
 
 #include <functional>
 #include <list>
+#include "application_config.hpp"
 #include "font.hpp"
 #include "guiElements.hpp"
 #include "technique/fontTechnique.hpp"
 #include "data/world.hpp"
+#include "window.hpp"
 
 namespace cgvkp
 {
@@ -20,14 +22,17 @@ namespace cgvkp
 		class Gui
 		{
 		public:
-			inline Gui(::cgvkp::data::world & data, char const* pFontFilename) : data(data), font(pFontFilename), framebufferWidth(0), framebufferHeight(0), pHoveredButton(nullptr), pActiveInput(nullptr) {}
+			inline Gui(application_config& _config, data::world& data, char const* pFontFilename) : config(_config), data(data), font(pFontFilename), framebufferWidth(0), framebufferHeight(0), pHoveredButton(nullptr), pActiveInput(nullptr) {}
 			inline ~Gui() { deinit(); }
 			bool init();
 			inline void deinit() { font.deinit(); fontPass.deinit(); }
+			inline void setCameramodeCallback(std::function<void(application_config::CameraMode mode)> const& callback) { setCameramode = callback; }
+			inline void setReloadCallback(std::function<void()> const& callback) { reload = callback; }
 			inline void setExitCallback(std::function<void()> const& callback) { exit = callback; }
 			inline void setHighscoresCallback(std::function<std::list<Score>()> const& callback) { getHighscores = callback; }
 			inline void setScoreCallback(std::function<unsigned int()> const& callback) { getScore = callback; }
 			inline void setFPSCallback(std::function<int()> const& callback) { getFPS = callback; }
+			inline void setVsyncCallback(std::function<void()> const& callback) { setVsync = callback; }
 			void setSize(GLsizei framebufferWidth, GLsizei framebufferHeight, float fovy, float zPlane);
 
 			void render(glm::mat4 projectionMatrix) const;
@@ -38,6 +43,7 @@ namespace cgvkp
 			void loadHighscore();
 			void loadEntry();
 			void loadOptions();
+			
 
 			void updateMousePosition(float x, float y);
 			void click();
@@ -55,7 +61,8 @@ namespace cgvkp
 			void render(Button const& button, glm::mat4 const& projectionMatrix) const;
 			void render(Input const& input, glm::mat4 const& projectionMatrix) const;
 
-            ::cgvkp::data::world & data;
+			application_config& config;
+            data::world & data;
 
 			Font font;
 			float framebufferWidth;
@@ -73,7 +80,10 @@ namespace cgvkp
 			std::function<int()> getFPS;
 			std::function<unsigned int()> getScore;
 			std::function<std::list<Score>()> getHighscores;
+			std::function<void()> reload;
 			std::function<void()> exit;
+			std::function<void()> setVsync;
+			std::function<void(application_config::CameraMode mode)> setCameramode;
 
 			static float const normalFontSize;
 			static float const titleFontSize;
