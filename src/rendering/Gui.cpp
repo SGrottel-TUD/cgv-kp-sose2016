@@ -106,10 +106,10 @@ void cgvkp::rendering::Gui::loadOptions()
 
 	glm::vec2 length = createLabel("Auflösung", left, glm::vec2(10, -0.5f * normalFontSize)).size;
 	Input inputHeight = createInput(left, glm::vec2(length.x + 50, -0.5f * normalFontSize), normalFontSize, 200.0f);
-	Input inputWidth = createInput(left, glm::vec2(length.x + 260, -0.5f * normalFontSize), normalFontSize, 200.0f);
-	//config.fullscreenHeight = static_cast<int>(inputHeight.getText());
-	//inputWidth.getText() =  static_cast<int>(inputWidth.getText());;
-	createButton("Übernhemen", std::bind(&Gui::loadOptions, this), center, glm::vec2(10, -0.5f * normalFontSize));
+	Input inputWidth = createInput(left, glm::vec2(length.x + 250, -0.5f * normalFontSize), normalFontSize, 200.0f);
+	config.fullscreenHeight = (atoi(inputHeight.getText().c_str()));
+	createButton("Übernhemen", [&]() {
+	config.fullscreenWidth = static_cast<int>(atoi(inputWidth.getText().c_str())); loadOptions();}, center, glm::vec2(inputWidth.size.x + 50, -0.5f * normalFontSize));
 	
 	createLabel("VSync", left, glm::vec2(10, -1.5f * normalFontSize));
 	createButton(config.vSync ? "ON" : "OFF", [&]() {config.vSync = !config.vSync; setVsync(); loadOptions();}, center, glm::vec2(10, -1.5f * normalFontSize));
