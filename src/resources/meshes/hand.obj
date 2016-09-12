@@ -9,7 +9,7 @@
 # Faces: 17924
 #
 ####
-mtllib ./hand.obj.mtl
+mtllib ./hand.mtl
 
 vn -6.283187 0.000000 0.000000
 v -70.607086 0.208227 -0.166388

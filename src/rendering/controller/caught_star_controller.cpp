@@ -56,12 +56,12 @@ namespace controller {
         std::shared_ptr<model::star_model> star) :
         hand(hand), star(star), hand_start(hand->model_matrix), star_start(star->model_matrix)
     {
-        hand_target =
-            glm::scale(glm::vec3(0.05f)) *
-            glm::rotate(glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)) *
-            glm::rotate(glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)) *
-            glm::rotate(glm::radians(40.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
-            glm::rotate(glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		hand_target =
+			glm::scale(glm::vec3(0.05f)) *
+			glm::rotate(glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)) *
+			glm::rotate(glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)) *
+			glm::rotate(glm::radians(50.0f), glm::vec3(1.0f, 0.0f, 0.0f));// *
+            //glm::rotate(glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
         star_target =
             glm::scale(
                 glm::rotate(glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
