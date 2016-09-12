@@ -7,6 +7,7 @@
 #include "util/resource_file.hpp"
 #include <cassert>
 #include <iostream>
+#include <fstream>
 
 using namespace cgvkp;
 
@@ -230,6 +231,30 @@ void application::increase_zzero_parallax(float val)
 	{
 		release_renderer->setStereoParameters(config.eyeSeparation, config.zZeroParallax);
 	}
+}
+
+void application::saveScore()
+{
+	std::fstream fs("score.txt");
+	std::list<int> scores;
+	
+	while (!fs.eof())
+	{
+		int i;
+		fs >> i;
+	}
+	scores.push_back(data.get_score());
+	scores.sort();
+
+	fs.clear();
+
+	for (auto it = scores.begin(); it != scores.end(); it++)
+	{
+		fs << scores.back();
+		scores.pop_back();
+	}
+	fs.close();
+
 }
 
 void application::set_camera_mode(application_config::CameraMode mode)

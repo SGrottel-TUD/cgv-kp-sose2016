@@ -19,6 +19,7 @@ namespace cgvkp {
 		bool init();
 		void run();
 		void deinit();
+		void saveScore();
 
 	private:
 		void increase_eye_separation(float val);
