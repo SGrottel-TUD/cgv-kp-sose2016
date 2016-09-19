@@ -319,7 +319,7 @@ void cgvkp::rendering::release_renderer::fillGeometryBuffer(glm::mat4 const& pro
 
 	backgroundPass.use();
 	float h = data.get_config().height();
-	glm::mat4 worldView = glm::scale(glm::vec3(10.67f, 8.005f, h + 10));	// x and y are taken from the picture.
+	glm::mat4 worldView = glm::scale(glm::vec3(9.0f, 6.75f, h + 10));	// x and y are taken from the picture.
 	backgroundPass.setWorldView(worldView);
 	backgroundPass.setProjection(projection);
 	meshes[space].render();
