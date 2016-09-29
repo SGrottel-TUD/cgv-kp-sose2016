@@ -100,12 +100,6 @@ void application::run()
 	}
 
 	std::shared_ptr<vision::abstract_vision> vision;
-	if (debug_window)
-	{
-		auto debug_vision = std::make_shared<rendering::debug_user_input>(data.get_input_layer());
-		vision = debug_vision;
-		debug_window->set_user_input_object(debug_vision);
-	}
 
     switch (config.active_vision) {
     case application_config::vision_inputs::dummy:
