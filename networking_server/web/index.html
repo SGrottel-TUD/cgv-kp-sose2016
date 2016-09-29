@@ -1,0 +1,165 @@
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+<style>
+body {margin: 0; }
+canvas { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<script src='js/three.js'></script>
+<script src='js/scripts.js'></script>
+<script>
+game.setupConnection();
+
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(
+  75, window.innerWidth / window.innerHeight, 0.1, 1000
+);
+var renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+var geometry = new THREE.BoxGeometry( 0.05, 0.05, 0.05 );
+var star_material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+var hand_material = new THREE.MeshBasicMaterial( { color: 0x000088 } );
+var caught_material = new THREE.MeshBasicMaterial( { color: 0x880000 } );
+var ground_material = new THREE.MeshBasicMaterial( { color: 0x666600 } );
+var ground = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), ground_material);
+ground.geometry.rotateX(3 * Math.PI / 2);
+ground.geometry.translate(0.5, 0.0, 0.5);
+scene.add(ground);
+
+camera.position.x = 0.5;
+camera.position.y = 0.5;
+camera.position.z = 1.3;
+camera.lookAt(new THREE.Vector3(camera.position.x, 0, 0));
+
+game.render = function() {
+  document.title = 'CGVKP - Score: ' + game.score;
+};
+
+renderer.stars = {};
+renderer.hands = [];
+
+render = function() {
+  requestAnimationFrame( render );
+
+  var toRemove = [];
+  for (var i in renderer.stars)
+    toRemove[toRemove.length] = i;
+  for (var i = 0; i < game.stars.length; ++i) {
+    var star = game.stars[i];
+    if (!renderer.stars[star.id]) {
+      var cube = new THREE.Mesh( geometry, star_material );
+      renderer.stars[star.id] = cube;
+      scene.add(renderer.stars[star.id]);
+    }
+    if (star.inHand)
+      renderer.stars[star.id].material = caught_material;
+    toRemove.splice(toRemove.indexOf(star.id), 1);
+    renderer.stars[star.id].position.set(
+      star.rel_x, star.height, 1-star.rel_y);
+  }
+  toRemove.forEach(function(i) {
+    var star = renderer.stars[i];
+    delete renderer.stars[i];
+    scene.remove(star);
+  });
+
+  renderer.render( scene, camera );
+}
+render();
+
+var evs = {drag: false, down: false, target: false};
+
+document.onmousedown = function(e) {
+  evs.drag = false;
+  evs.target = false;
+  evs.down = {x: e.clientX, y: e.clientY, ty: 0};
+  var mouse = new THREE.Vector2(
+    (e.clientX / window.innerWidth) * 2 - 1,
+    -(e.clientY / window.innerHeight) * 2 + 1);
+  var raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera(mouse, camera);
+  var intersects = raycaster.intersectObjects(renderer.hands);
+  if (intersects.length > 0) {
+    evs.target = intersects[0].object;
+    evs.down.ty = evs.target.position.y;
+  }
+ 
+  console.log('evs', evs.down);
+
+};
+document.onmousemove = function(e) {
+  if (evs.down && !evs.drag && (
+    new THREE.Vector2(e.clientX + evs.down.x, e.clientY - evs.down.y)).length() > 20)
+  {
+    evs.drag = true;
+  }
+  if (!evs.drag)
+    return;
+
+  if (evs.target) {
+    evs.target.position.setY(Math.min(0.6, evs.down.ty - ((e.clientY - evs.down.y) / window.innerHeight)));
+    hs = [];
+    renderer.hands.forEach(function(i) {
+      var p = i.position;
+      hs[hs.length] = {x: p.x * game.width, y: (1-p.z)* game.height, h: p.y};
+    });
+    game.setHands(hs);
+    if (evs.target.position.y < 0) {
+      renderer.hands.splice(renderer.hands.indexOf(evs.target), 1);
+      scene.remove(evs.target);
+      evs.target = false;
+    }
+  }
+  return false;
+};
+document.onmouseup = function(e) {
+  console.log('up');
+  return false;
+};
+
+document.onclick = function(e) {
+  console.log('click', evs);
+  var drag = evs.drag;
+  evs.down = false;
+  evs.drag = false;
+  if (drag)
+    return false;
+  var mouse = new THREE.Vector2(
+    (e.clientX / window.innerWidth) * 2 - 1,
+    -(e.clientY / window.innerHeight) * 2 + 1);
+  var raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera(mouse, camera);
+  var intersects = raycaster.intersectObjects([ground]);
+  if (intersects.length > 0) {
+    var h = {x: intersects[0].point.x, y: 1-intersects[0].point.z,
+      h: 0.05};
+    var h3d = new THREE.Mesh(geometry, hand_material);
+    h3d.position.set(h.x, h.h, 1-h.y);
+    h.x *= game.width; h.y *= game.height;
+    renderer.hands[renderer.hands.length] = h3d;
+    scene.add(h3d);
+    game.addHand(h);
+    console.log(h);
+  }
+  return false;
+};
+document.addEventListener('touchstart', function(e) {
+  console.log('touchstart');
+  return document.onmousedown(e.touches[0]);
+}, false);
+document.addEventListener('touchend', function(e) {
+  return document.onclick(e.touches[0]);
+}, false);
+document.addEventListener('touchmove',  function(e) {
+  e.preventDefault();
+  return document.onmousemove(e.touches[0]);
+}, false);
+
+
+</script>
+</body>
+</html>

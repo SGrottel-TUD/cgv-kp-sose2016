@@ -1,0 +1,5 @@
+Twisted==16.4.1
+-e git://github.com/evilham/TwistedWebsocket.git@97d5c79aa2387b1163561170da916c86f008d670#egg=TwistedWebsocket-master
+argparse==1.2.1
+wsgiref==0.1.2
+zope.interface==4.3.2
