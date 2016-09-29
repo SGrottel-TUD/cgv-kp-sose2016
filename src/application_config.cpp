@@ -84,6 +84,9 @@ std::ostream& cgvkp::operator<<(std::ostream& lhs, application_config::vision_in
     case application_config::vision_inputs::release:
         lhs << "release";
         break;
+    case application_config::vision_inputs::network:
+        lhs << "network";
+        break;
     default:
         lhs << "debug";
         break;
@@ -137,6 +140,8 @@ std::istream& cgvkp::operator>>(std::istream& lhs, application_config& rhs)
                 rhs.active_vision = application_config::vision_inputs::dummy;
             if (value.find("debug") != std::string::npos)
                 rhs.active_vision = application_config::vision_inputs::debug;
+            if (value.find("network") != std::string::npos)
+                rhs.active_vision = application_config::vision_inputs::network;
             if (value.find("release") != std::string::npos)
                 rhs.active_vision = application_config::vision_inputs::release;
         }

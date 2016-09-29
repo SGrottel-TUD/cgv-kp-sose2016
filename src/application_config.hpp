@@ -19,7 +19,8 @@ namespace cgvkp {
         enum class vision_inputs : unsigned int {
             debug = 0,
             release,
-            dummy
+            dummy,
+            network
         };
         enum CameraMode
         {

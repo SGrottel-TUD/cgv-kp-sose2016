@@ -124,8 +124,11 @@ void application::run()
 		}
 	}
 
-    remote_renderer_server = std::make_shared<rendering::remote_renderer_server>(data);
-    remote_renderer_server->init(*((release_window) ? release_window : debug_window));
+    if (config.active_vision == application_config::vision_inputs::network)
+    {
+        remote_renderer_server = std::make_shared<rendering::remote_renderer_server>(data);
+        remote_renderer_server->init(*((release_window) ? release_window : debug_window));
+    }
     // main loop
     uint64_t last_sim_frame = 0;
     while (debug_window || release_window) {
@@ -139,7 +142,8 @@ void application::run()
         }
         // Remote vision
         data.merge_input();
-        remote_renderer_server->update(data.get_input_layer());
+        if (config.active_vision == application_config::vision_inputs::network)
+            remote_renderer_server->update(data.get_input_layer());
 
         // 2) updating data model
         data.merge_input(); // merge input from the input_layer (vision) into the data model
@@ -150,7 +154,8 @@ void application::run()
         }
 
         // 3) and now for the rendering
-        remote_renderer_server->render();
+        if (config.active_vision == application_config::vision_inputs::network)
+            remote_renderer_server->render();
 		if (debug_window)
 		{
 			if (debug_window->is_alive())
@@ -192,8 +197,11 @@ void application::run()
 		}
 
     }
-    remote_renderer_server->deinit();
-    remote_renderer_server.reset();
+    if (config.active_vision == application_config::vision_inputs::network)
+    {
+        remote_renderer_server->deinit();
+        remote_renderer_server.reset();
+    }
 
     // shutdown vision
     if (vision) {
