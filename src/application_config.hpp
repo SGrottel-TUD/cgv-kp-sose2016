@@ -48,6 +48,7 @@ namespace cgvkp {
 		void interpret_arguments(int argc, char** argv);
     };
 
+	std::ostream& operator<<(std::ostream& lhs, application_config::vision_inputs const& rhs);
 	std::ostream& operator<<(std::ostream& lhs, application_config const& rhs);
 	std::istream& operator>>(std::istream& lhs, application_config& rhs);
 }

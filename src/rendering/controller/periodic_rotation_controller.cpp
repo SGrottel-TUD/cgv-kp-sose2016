@@ -12,9 +12,9 @@ namespace cgvkp {
             {
                 std::random_device r;
                 std::default_random_engine random_engine(std::seed_seq{ r(), r(), r() });
-                // Make axis random
+                // Make axis random (Looks stupid with the new hand, that's why I comment it out for now)
                 std::uniform_real_distribution<float> uniform(-1.0f, 1.0f);
-                axis.x = uniform(random_engine);
+				axis.x = 0;//uniform(random_engine);
                 axis = glm::normalize(axis);
                 // Also period
                 uniform = std::uniform_real_distribution<float>(2.0f, 6.0f);

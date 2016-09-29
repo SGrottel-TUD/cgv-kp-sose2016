@@ -104,7 +104,7 @@ namespace controller {
             std::shared_ptr<model::hand_model> hand = hands[data_hand->id].lock();
             hand->model_matrix[3].x = data_hand->x;
             hand->model_matrix[3].y = trans_height(data_hand->height);
-            hand->model_matrix[3].z = -data_hand->y;
+            hand->model_matrix[3].z = -data_hand->y + 0.15f;
 
             // Check if it was caught
             if (data_hand->star != nullptr)

@@ -8,6 +8,7 @@
 #include "abstract_renderer.hpp"
 #include "geometryBuffer.hpp"
 #include "postProcessingFramebuffer.hpp"
+#include "technique/background.hpp"
 #include "technique/default.hpp"
 #include "technique/directionalLight.hpp"
 #include "technique/gaussianBlur.hpp"
@@ -36,7 +37,7 @@ namespace cgvkp
 		class release_renderer : public abstract_renderer
 		{
 		public:
-			release_renderer(data::world & data, window& wnd);
+			release_renderer(application_config& config, data::world& data, window& wnd);
 			virtual void render(window const& wnd);
 
 			void setCameraMode(application_config::CameraMode mode);
@@ -60,15 +61,16 @@ namespace cgvkp
 			void calculateViewProjection();
 			void renderScene(glm::mat4 const& projection) const;
 			void update(double seconds, std::shared_ptr<abstract_user_input> const& input);
+			void reload();
 
 			// Rendering steps
 			void fillGeometryBuffer(glm::mat4 const& projection) const;
 			void addAmbientLight() const;
 			void addDirectionalLight(DirectionalLight const& light) const;
-			void setBackground(glm::mat4 const& projection) const;
 			void addStarLights(glm::mat4 const& projection) const;
 			void addStars(glm::mat4 const& projection) const;
 
+			window& wnd;
 			GLsizei windowWidth;
 			GLsizei windowHeight;
 			GLsizei framebufferWidth;
@@ -95,6 +97,7 @@ namespace cgvkp
 			GaussianBlurTechnique gaussianBlur;
 			DefaultTechnique defaultPass;
 			SpriteGeometryTechnique spriteGeometryPass;
+			BackgroundTechnique backgroundPass;
 
 			glm::vec3 ambientLight;
 			DirectionalLight directionalLight;

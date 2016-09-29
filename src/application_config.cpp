@@ -8,13 +8,17 @@ const cgvkp::application_config defaultConfig;
 
 cgvkp::application_config::application_config()
 	: active_vision(vision_inputs::debug),
-	debug(true),	// Should be changed for shipping.
+#if defined(DEBUG) || defined(_DEBUG)
+	debug(true),
+#else
+	debug(false),
+#endif
 	resourcesBasePath("src/resources"),
 	windowWidth(1280),
 	windowHeight(720),
 	cameraMode(application_config::CameraMode::mono),
-	eyeSeparation(0),
-	zZeroParallax(0),
+	eyeSeparation(0.05f),
+	zZeroParallax(5),
 	windowPosx(5),
 	windowPosy(30),
 	vSync(0),
@@ -71,9 +75,25 @@ void cgvkp::application_config::save_file(std::string const& path)
 	file << *this;
 }
 
+std::ostream& cgvkp::operator<<(std::ostream& lhs, application_config::vision_inputs const& rhs)
+{
+    switch (rhs) {
+    case application_config::vision_inputs::dummy:
+        lhs << "dummy";
+        break;
+    case application_config::vision_inputs::release:
+        lhs << "release";
+        break;
+    default:
+        lhs << "debug";
+        break;
+    }
+    return lhs;
+}
 std::ostream& cgvkp::operator<<(std::ostream& lhs, application_config const& rhs)
 {
 	lhs << (rhs.debug == defaultConfig.debug ? "#" : "") << "debug = " << (rhs.debug ? 1 : 0) << std::endl;
+	lhs << (rhs.active_vision == defaultConfig.active_vision ? "#" : "") << "vision = " << rhs.active_vision << std::endl;
 	lhs << (rhs.resourcesBasePath == defaultConfig.resourcesBasePath ? "#" : "") << "resourcesBasePath = \"" << rhs.resourcesBasePath << "\"" << std::endl;
 	lhs << (rhs.fullscreen == defaultConfig.fullscreen ? "#" : "") << "fullscreen = " << (rhs.fullscreen ? 1 : 0) << std::endl;
 	lhs << (rhs.windowWidth == defaultConfig.windowWidth ? "#" : "") << "windowWidth = " << rhs.windowWidth << std::endl;
