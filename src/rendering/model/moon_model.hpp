@@ -9,7 +9,10 @@ namespace cgvkp {
 			class moon_model : public graphic_model_base {
 			public:
 				moon_model() : graphic_model_base(
-					glm::translate(glm::vec3(4, 2, -10))
+					glm::translate(glm::vec3(2, 1, -5)) *
+					glm::rotate(glm::radians(100.0f), glm::vec3(0.0f, 1.0f, 0.0f)) *
+					glm::rotate(glm::radians(10.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
+					glm::scale(glm::vec3(0.5f))
 				) {}
 			};
 		}
