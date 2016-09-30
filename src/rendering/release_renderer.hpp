@@ -22,6 +22,7 @@
 #include "view/cloud_view.hpp"
 #include "view/hand_view.hpp"
 #include "view/star_view.hpp"
+#include "view/moon_view.hpp"
 #include "controller/controller_base.hpp"
 #include "controller/cloudController.hpp"
 #include "gui.hpp"
@@ -68,7 +69,7 @@ namespace cgvkp
 			void addAmbientLight() const;
 			void addDirectionalLight(DirectionalLight const& light) const;
 			void addStarLights(glm::mat4 const& projection) const;
-			void addStars(glm::mat4 const& projection) const;
+			void addStarsAndMoon(glm::mat4 const& projection) const;
 
 			window& wnd;
 			GLsizei windowWidth;
@@ -110,7 +111,7 @@ namespace cgvkp
 
 			enum Meshes
 			{
-				cloud = 0, hand, pyramid, space, star, quad,
+				cloud = 0, hand, pyramid, space, star, moon, quad,
 				numMeshes
 			};
 			std::vector<Mesh> meshes;
@@ -119,6 +120,7 @@ namespace cgvkp
 			std::vector<view::cloud_view::ptr> cloudViews;
 			std::list<view::hand_view::ptr> handViews;
 			std::list<view::star_view::ptr> starViews;
+			view::moon_view::ptr moonView;
 
 			std::list<controller::controller_base::ptr> controllers;
 			std::shared_ptr<controller::CloudController> cloudController;

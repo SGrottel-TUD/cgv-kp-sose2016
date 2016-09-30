@@ -43,6 +43,7 @@ namespace cgvkp {
 		float eyeSeparation;
 		float zZeroParallax;
 		bool vSync;
+		bool fps;
 
 	private:
 		void interpret_arguments(int argc, char** argv);

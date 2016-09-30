@@ -157,6 +157,7 @@ bool rendering::window::create_window()
 	glfwSetKeyCallback(handle, key_callback);
 	glfwSetCharCallback(handle, character_callback);
 	glfwSetWindowPosCallback(handle, window_pos_callback);
+	glfwSetWindowSizeCallback(handle, window_size_callback);
 
 	glfwMakeContextCurrent(handle);
 	
@@ -261,4 +262,11 @@ void rendering::window::window_pos_callback(GLFWwindow* window, int xpos, int yp
 	rendering::window* w = static_cast<rendering::window*>(glfwGetWindowUserPointer(window));
 	w->config.windowPosx = xpos;
 	w->config.windowPosy = ypos;
+}
+
+void rendering::window::window_size_callback(GLFWwindow* window, int width, int height)
+{
+	rendering::window* w = static_cast<rendering::window*>(glfwGetWindowUserPointer(window));
+	w->config.windowWidth = width;
+	w->config.windowHeight = height;
 }

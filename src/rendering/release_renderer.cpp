@@ -4,6 +4,7 @@
 #include "data/world.hpp"
 #include "controller/data_controller.hpp"
 #include "controller/cloudController.hpp"
+#include "model/moon_model.hpp"
 #include "window.hpp"
 
 cgvkp::rendering::release_renderer::release_renderer(application_config& config, data::world & data, window& _wnd)
@@ -22,11 +23,16 @@ cgvkp::rendering::release_renderer::release_renderer(application_config& config,
 	meshes[space] = Mesh("space");
 	meshes[hand] = Mesh("hand");
 	meshes[pyramid] = Mesh("pyramid");
+	meshes[moon] = Mesh("moon");
 
-	// Create and add data, cloud controller
+	// Create and add data, cloud controller, moon model and view
 	dt = std::chrono::microseconds(1000000 / 60);
 	controllers.push_back(std::make_shared<controller::data_controller>(this, data, meshes[hand], meshes[star]));
 	controllers.push_back(cloudController = std::make_shared<controller::CloudController>(this, data, meshes[cloud], viewMatrix));
+	model::moon_model::ptr moonModel = std::make_shared<model::moon_model>();
+	models.push_back(moonModel);
+	moonView = std::make_shared<view::moon_view>(meshes[moon]);
+	moonView->set_model(moonModel);
 
 	// Lights
 	ambientLight = glm::vec3(0.1, 0.1, 0.5);
@@ -299,7 +305,7 @@ void cgvkp::rendering::release_renderer::renderScene(glm::mat4 const& projection
 	addAmbientLight();
 	addDirectionalLight(directionalLight);
 	addStarLights(projection);
-	addStars(projection);
+	addStarsAndMoon(projection);
 	/*glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 	gbuffer.bindForReadingGeometry();
@@ -419,7 +425,7 @@ void cgvkp::rendering::release_renderer::addStarLights(glm::mat4 const& projecti
 	}
 }
 
-void cgvkp::rendering::release_renderer::addStars(glm::mat4 const& projection) const
+void cgvkp::rendering::release_renderer::addStarsAndMoon(glm::mat4 const& projection) const
 {
 	glDepthMask(GL_TRUE);
 	glEnable(GL_DEPTH_TEST);
@@ -436,4 +442,10 @@ void cgvkp::rendering::release_renderer::addStars(glm::mat4 const& projection) c
 		defaultPass.setWorldViewProjection(projection * viewMatrix * model->model_matrix);
 		s->render();
 	}
+
+	
+	// Moon
+	auto moonModel = moonView->get_model();
+	defaultPass.setWorldViewProjection(projection * moonModel->model_matrix);
+	moonView->render();
 }
