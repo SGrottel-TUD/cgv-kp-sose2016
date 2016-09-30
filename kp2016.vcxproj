@@ -109,6 +109,7 @@
     <ClInclude Include="src\rendering\mesh.hpp" />
     <ClInclude Include="src\rendering\model\graphic_model_base.hpp" />
     <ClInclude Include="src\rendering\remote_renderer_server.hpp" />
+    <ClInclude Include="src\rendering\model\moon_model.hpp" />
     <ClInclude Include="src\rendering\postProcessingFramebuffer.hpp" />
     <ClInclude Include="src\rendering\technique\background.hpp" />
     <ClInclude Include="src\rendering\technique\default.hpp" />
@@ -128,6 +129,7 @@
     <ClInclude Include="src\rendering\technique\technique.hpp" />
     <ClInclude Include="src\rendering\view\cloud_view.hpp" />
     <ClInclude Include="src\rendering\view\hand_view.hpp" />
+    <ClInclude Include="src\rendering\view\moon_view.hpp" />
     <ClInclude Include="src\rendering\view\star_view.hpp" />
     <ClInclude Include="src\rendering\view\view_base.hpp" />
     <ClInclude Include="src\rendering\window.hpp" />

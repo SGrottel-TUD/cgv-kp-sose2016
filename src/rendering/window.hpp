@@ -58,6 +58,7 @@ namespace rendering {
         static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
         static void mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 		static void window_pos_callback(GLFWwindow* window, int xpos, int ypos);
+		static void window_size_callback(GLFWwindow* window, int width, int height);
 			
 
 

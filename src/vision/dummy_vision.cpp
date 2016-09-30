@@ -1,5 +1,6 @@
 #include "dummy_vision.hpp"
 #include <cassert>
+#include <iostream>
 
 using namespace cgvkp;
 
@@ -68,17 +69,14 @@ void vision::dummy_vision::deinit_impl() {
 }
 
 void vision::dummy_vision::cleanup_data() {
-    std::vector<size_t> to_delete;
     for (int i = (int)hands.size() - 1; i >= 0; --i)
     {
         if (hands[i].h < 0.0f)
         {
-            to_delete.push_back(i);
             hands.erase(hands.begin() + i);
+            properties.erase(properties.begin() + i);
         }
     }
-    for (int i = (int)to_delete.size() - 1; i >= 0; --i)
-        properties.erase(properties.begin() + to_delete[i]);
 }
 void vision::dummy_vision::spawn_hand(time_point start_time) {
     data::input_layer::hand hand;

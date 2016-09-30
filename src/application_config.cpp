@@ -10,8 +10,10 @@ cgvkp::application_config::application_config()
 	: active_vision(vision_inputs::debug),
 #if defined(DEBUG) || defined(_DEBUG)
 	debug(true),
+	fps(true),
 #else
 	debug(false),
+	fps(false),
 #endif
 	resourcesBasePath("src/resources"),
 	windowWidth(1280),
@@ -93,6 +95,7 @@ std::ostream& cgvkp::operator<<(std::ostream& lhs, application_config::vision_in
     }
     return lhs;
 }
+
 std::ostream& cgvkp::operator<<(std::ostream& lhs, application_config const& rhs)
 {
 	lhs << (rhs.debug == defaultConfig.debug ? "#" : "") << "debug = " << (rhs.debug ? 1 : 0) << std::endl;
@@ -100,7 +103,7 @@ std::ostream& cgvkp::operator<<(std::ostream& lhs, application_config const& rhs
 	lhs << (rhs.resourcesBasePath == defaultConfig.resourcesBasePath ? "#" : "") << "resourcesBasePath = \"" << rhs.resourcesBasePath << "\"" << std::endl;
 	lhs << (rhs.fullscreen == defaultConfig.fullscreen ? "#" : "") << "fullscreen = " << (rhs.fullscreen ? 1 : 0) << std::endl;
 	lhs << (rhs.windowWidth == defaultConfig.windowWidth ? "#" : "") << "windowWidth = " << rhs.windowWidth << std::endl;
-	lhs << (rhs.windowHeight == defaultConfig.windowHeight ? "#" : "") << "windowHeigth = " << rhs.windowHeight << std::endl;
+	lhs << (rhs.windowHeight == defaultConfig.windowHeight ? "#" : "") << "windowHeight = " << rhs.windowHeight << std::endl;
 	lhs << (rhs.cameraMode == defaultConfig.cameraMode ? "#" : "") << "cameraMode = " << rhs.cameraMode << std::endl;
 	lhs << (rhs.eyeSeparation == defaultConfig.eyeSeparation ? "#" : "") << "eyeSeparation = " << rhs.eyeSeparation << std::endl;
 	lhs << (rhs.cameraMode == defaultConfig.cameraMode ? "#" : "") << "zZeroParallax = " << rhs.zZeroParallax << std::endl;
@@ -108,7 +111,8 @@ std::ostream& cgvkp::operator<<(std::ostream& lhs, application_config const& rhs
 	lhs << (rhs.windowPosy == defaultConfig.windowPosy ? "#" : "") << "windowPosy = " << rhs.windowPosy << std::endl;
 	lhs << (rhs.fullscreenWidth == defaultConfig.fullscreenWidth ? "#" : "") << "fullscreenWidth = " << rhs.fullscreenWidth << std::endl;
 	lhs << (rhs.fullscreenHeight == defaultConfig.fullscreenHeight ? "#" : "") << "fullscreenHeight = " << rhs.fullscreenHeight << std::endl;
-	lhs << (rhs.vSync == defaultConfig.vSync ? "#" : "") << "vSync = " << rhs.vSync << std::endl;
+	lhs << (rhs.vSync == defaultConfig.vSync ? "#" : "") << "vSync = " << (rhs.vSync ? 1 : 0) << std::endl;
+	lhs << (rhs.fps == defaultConfig.fps ? "#" : "") << "fps = " << (rhs.fps ? 1 : 0) << std::endl;
 	
 	return lhs;
 }
@@ -155,7 +159,7 @@ std::istream& cgvkp::operator>>(std::istream& lhs, application_config& rhs)
 		{
 			ss >> rhs.fullscreen;
 		}
-		else if (key.find("windoWidth") != std::string::npos)
+		else if (key.find("windowWidth") != std::string::npos)
 		{
 			ss >> rhs.windowWidth;
 		}
@@ -196,6 +200,10 @@ std::istream& cgvkp::operator>>(std::istream& lhs, application_config& rhs)
 		else if (key.find("vSync") != std::string::npos)
 		{
 			ss >> rhs.vSync;
+		}
+		else if (key.find("fps") != std::string::npos)
+		{
+			ss >> rhs.fps;
 		}
 	}
 

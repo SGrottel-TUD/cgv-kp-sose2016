@@ -442,6 +442,12 @@
     <ClInclude Include="src\rendering\technique\background.hpp">
       <Filter>rendering\technique\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\rendering\view\moon_view.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\model\moon_model.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Object Include="src\resources\meshes\star.obj">
