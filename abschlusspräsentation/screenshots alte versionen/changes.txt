@@ -1,0 +1,40 @@
+14:
+  * ältester laufender commit
+  * release renderer: test mesh für stereoskopie
+  * ich glaube in dem dummy oder debug renderer hatten wir auch schon stern/hand modelle dargestellt, habe ich aber nicht noch mal überprüft
+13:
+  * sterne und hände werden dargestellt, mit periodic rotation
+  * normal-as-color shader
+12:
+  * wolken als kugel meshes
+11:
+  * wolken mit subclouds
+  * texturen bzw. materials
+10:
+  * beleuchtung
+9:
+  * Hintergrund...
+8:
+  * ...Hintergrund...
+7:
+  * ...und Hintergrund.
+  * Beleuchtung wurde auch viel dran rumgespielt
+  * Hier haben die Hände noch die Wolken weggedrückt
+6:
+  * SSAO, kein directional light
+5:
+  * Wolken erstmals als Sprites
+  * Neue Stern Textur
+  * wieder directional light
+4:
+  * Neue und mehr Wolken sprites
+3:
+  * finale stern textur
+  * weiter tweaks für wolken sprites
+2:
+  * finale wolken sprites
+  * hintergrund mit flachem mond
+1:
+  * neue hände mit stock
+  * mond als mesh
+  * neuer hintergrund
